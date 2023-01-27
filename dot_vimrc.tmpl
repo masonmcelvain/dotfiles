@@ -1,3 +1,7 @@
+{{ if eq .chezmoi.hostname "mason-xps" -}}
+packadd chezmoi.vim
+{{- end }}
+
 " Get the defaults that most users want.
 source $VIMRUNTIME/defaults.vim
 
@@ -9,8 +13,6 @@ else
       set undofile	" keep an undo file (undo changes after closing)
    endif
 endif
-
-packadd chezmoi.vim
 
 set nocompatible         " No compatibility with vi.
 filetype on              " Recognize syntax by file extension.
@@ -148,11 +150,13 @@ xnoremap <C-p> "0p
 " https://github.com/dense-analysis/ale#standard-installation (see docs)
 " https://github.com/ntpeters/vim-better-whitespace.git
 
+{{ if eq .chezmoi.hostname "mason-xps" -}}
 " Enable `fzf`
 source /usr/share/doc/fzf/examples/fzf.vim
 " Fun fzf in vim with `:FZF`
 " https://github.com/junegunn/fzf/blob/master/README-VIM.md
 set rtp+=/usr/bin/fzf
+{{- end }}
 
 "------------------------------------------------------------------------------
 " Trailing Spaces
