@@ -17,19 +17,9 @@
 	autosetupmerge = true
 	autosetuprebase = always
 [user]
-{{- if eq .chezmoi.hostname "mason-xps" }}
-	signingkey = B9D41C44B17973D6
-{{- else if .chezmoi.hostname "cominor.com" }}
-   signingkey = E9CA4E039435925B
-{{- else }}
-   signingkey = fill-me-in
-{{- end }}
+	signingkey = {{ .gitconfig.signingkey }}
 	name = Mason McElvain
-{{- if eq .chezmoi.hostname "cominor.com" }}
-   email = mason@ifixit.com
-{{- else }}
-	email = 52104630+masonmcelvain@users.noreply.github.com
-{{- end }}
+   email = {{ .gitconfig.email | quote }}
    useConfigOnly = true
 [init]
 	defaultBranch = main
