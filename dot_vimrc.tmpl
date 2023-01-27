@@ -12,9 +12,6 @@ endif
 
 packadd chezmoi.vim
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Mason's edits
-
 set nocompatible         " No compatibility with vi.
 filetype on              " Recognize syntax by file extension.
 filetype indent on       " Check for indent file.
@@ -79,8 +76,9 @@ autocmd BufWritePost _vimrc         so ~/_vimrc
 autocmd BufWritePost vimrc          so ~/.vimrc
 augroup END
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"------------------------------------------------------------------------------
 " Keybindings
+"------------------------------------------------------------------------------
 
 " Stupid shift mistakes.
 :command W w
@@ -133,10 +131,22 @@ xnoremap <C-Y> "+y
 " Make paste use register 0 (for consecutive pastes after yank)
 xnoremap <C-p> "0p
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"------------------------------------------------------------------------------
 " Addons
-
-execute pathogen#infect()
+"------------------------------------------------------------------------------
+" Recipe:
+" ```
+" mkdir -p ~/.vim/pack/tpope/start
+" cd ~/.vim/pack/tpope/start
+" git clone https://tpope.io/vim/vim-commentary.git
+" vim -u NONE -c "helptags commentary/doc" -c q (if it has a doc/ dir)
+" ```
+" https://tpope.io/vim/sensible.git
+" https://tpope.io/vim/vim-fugitive.git
+" https://tpope.io/vim/vim-surround.git
+" https://tpope.io/vim/vim-commentary.git
+" https://github.com/dense-analysis/ale#standard-installation (see docs)
+" https://github.com/ntpeters/vim-better-whitespace.git
 
 " Enable `fzf`
 source /usr/share/doc/fzf/examples/fzf.vim
@@ -144,10 +154,50 @@ source /usr/share/doc/fzf/examples/fzf.vim
 " https://github.com/junegunn/fzf/blob/master/README-VIM.md
 set rtp+=/usr/bin/fzf
 
-" Trailing spaces
+"------------------------------------------------------------------------------
+" Trailing Spaces
+"------------------------------------------------------------------------------
 let g:strip_whitespace_on_save = 1
 let g:better_whitespace_filetypes_blacklist=['diff', 'git', 'gitcommit', 'unite', 'qf', 'help', 'fugitive']
 " Shortcut for deleting trailing whitespace (Alt + S)
 " https://vi.stackexchange.com/a/2363
 execute "set <M-S>=\eS"
 nnoremap <M-S> :StripWhitespace<CR>
+
+"------------------------------------------------------------------------------
+" ALE
+"------------------------------------------------------------------------------
+nnoremap gd :ALEGoToDefinition<CR>
+nnoremap gr :ALEFindReferences<CR>
+nnoremap gh :ALEHover<CR>
+nnoremap gs :ALESymbolSearch<CR>
+
+" Enable completion where available.
+" This setting must be set before ALE is loaded.
+"
+" You should not turn this setting on if you wish to use ALE as a completion
+" source for other completion plugins, like Deoplete.
+let g:ale_completion_enabled = 1
+
+" Put these lines at the very end of your vimrc file.
+"
+" Load all plugins now.
+" Plugins need to be added to runtimepath before helptags can be generated.
+packloadall
+" Load all of the helptags now, after plugins have been loaded.
+" All messages and errors will be ignored.
+silent! helptags ALL
+
+"------------------------------------------------------------------------------
+" Cheatsheet
+"------------------------------------------------------------------------------
+" Buffers
+" :buffers       # List them
+" ZZ             # Save current
+" :bf            # Go to first file.
+" :bl            # Go to last file
+" :bn            # Go to next file.
+" :bp            # Go to previous file.
+" :b number      # Go to n'th file (E.g :b 2)
+" :bw            # Close current file.
+" :e file3.txt   # Open new file
