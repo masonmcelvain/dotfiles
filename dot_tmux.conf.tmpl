@@ -63,9 +63,11 @@ set -g @plugin 'tmux-plugins/tmux-yank'
 set -g @plugin 'jimeh/tmux-themepack'
 set -g @themepack 'basic'
 
+{{ if eq .chezmoi.hostname "mason-xps" -}}
 # plugin commands
 set -g @continuum-boot 'on'
 set -g @continuum-restore 'on'
+{{- end }}
 
 # Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
 run '~/.tmux/plugins/tpm/tpm'
