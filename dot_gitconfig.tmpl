@@ -31,7 +31,3 @@
 	rebase = false
 [push]
 	autoSetupRemote = true
-{{- if eq .chezmoi.hostname "mason-xps" }}
-[includeIf "gitdir:~/code/work/"]
-   path = "./.gitconfig.work"
-{{- end }}
