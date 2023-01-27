@@ -1,0 +1,150 @@
+" Get the defaults that most users want.
+source $VIMRUNTIME/defaults.vim
+
+if has("vms")
+   set nobackup		" do not keep a backup file, use versions instead
+else
+   set backup		" keep a backup file (restore to previous version)
+   if has('persistent_undo')
+      set undofile	" keep an undo file (undo changes after closing)
+   endif
+endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Mason's edits
+
+set nocompatible         " No compatibility with vi.
+filetype on              " Recognize syntax by file extension.
+filetype indent on       " Check for indent file.
+filetype plugin on       " Allow plugins to be loaded by file type.
+syntax on                " Syntax highlighting.
+syntax enable
+let mapleader = " "      " map leader to Space
+
+set autowrite             " Write before executing the 'make' command.
+set background=dark       " Background light, so foreground not bold.
+set backspace=2           " Allow <BS> to go past last insert.
+set expandtab             " Expand tabs with spaces.
+set nofoldenable          " Disable folds; toggle with zi.
+set gdefault              " Assume :s uses /g.
+set ignorecase            " Ignore case in regular expressions
+set incsearch             " Immediately highlight search matches.
+set modeline              " Check for a modeline.
+set noerrorbells          " No beeps on errors.
+set nohls                 " Don't highlight all regex matches.
+set nowrap                " Don't soft wrap.
+set number                " Display line numbers.
+set ruler                 " Display row, column and % of document.
+set scrolloff=6           " Keep min of 6 lines above/below cursor.
+set shiftwidth=3          " >> and << shift 3 spaces.
+set showcmd               " Show partial commands in the status line.
+set showmatch             " Show matching () {} etc..
+set showmode              " Show current mode.
+set smartcase             " Searches are case-sensitive if caps used.
+set softtabstop=3         " See spaces as tabs.
+set tabstop=3             " <Tab> move three characters.
+set textwidth=0           " Hard wrap at 0 characters (ie, don't wrap).
+set timeout               " Turn on timeouts for remappings
+set timeoutlen=500        " ms to wait for remapped commands
+set virtualedit=block     " Allow the cursor to go where there's no char.
+set wildmode=longest,list " Tab completion works like bash.
+
+" Make the backup dir if it doesn't exist
+if !isdirectory($HOME . "/.vim/.backup")
+   call mkdir($HOME . "/./vim/.backup", "p")
+endif
+set backupdir=~/.vim/.backup//,.
+set directory=~/.vim/.backup//,.
+set undodir=~/.vim/.backup//,.
+set colorcolumn=80,100,120
+
+" Don't wrap long lines in git commit editor
+au FileType gitcommit setlocal textwidth=0
+" Turn on ruler in git commits
+au FileType gitcommit setlocal colorcolumn=80
+au FileType gitcommit 1    " Always start on the first line
+
+" Tell vim what makes a markdown file
+au BufRead,BufNewFile *.md,*.mdx set filetype=markdown
+" Soft wrap markdown files
+au FileType markdown set wrap linebreak
+
+" Reread configuration of Vim if .vimrc is saved {{{
+augroup VimConfig
+au!
+autocmd BufWritePost ~/.vimrc       so ~/.vimrc
+autocmd BufWritePost _vimrc         so ~/_vimrc
+autocmd BufWritePost vimrc          so ~/.vimrc
+augroup END
+" }}}
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Keybindings
+
+" Stupid shift mistakes.
+:command W w
+:command Wq wq
+:command Q q
+
+" Make C-s write the buffer and return to insert mode when applicable
+inoremap <C-s> <C-O>:w<CR0
+nnoremap <C-s> :w<CR>
+
+" Create simple toggles for line numbers, paste mode, and word wrap.
+set pastetoggle=<leader>p
+execute "set <M-N>=\eN"
+nnoremap <M-N> :set invnumber<CR>
+execute "set <M-W>=\eW"
+nnoremap <M-W> :set invwrap<CR>
+
+" Map j+j to escape in insert mode
+inoremap jj <Esc>
+inoremap kk <Esc>
+
+" Ruler color (see `:help ctermbg` for color definitions)
+highlight ColorColumn ctermbg=8
+
+" Insert a char and returns to normal mode with 'm'
+nnoremap m i <ESC>r
+
+" Select all
+nnoremap <C-a> ggVG
+inoremap <C-a> <Esc>ggVG
+
+" Quickly insert an empty new line without entering insert mode
+nnoremap <Leader>o o<Esc>
+nnoremap <Leader>O O<Esc>
+
+" Echo & copy relative path
+function EchoAndCopy(str)
+   echom a:str
+   silent call system("wl-copy " . shellescape(a:str))
+endfunction
+execute "set <M-R>=\eR"
+nnoremap <M-R> :call EchoAndCopy(fnamemodify(expand("%"), ":~:."))<CR>
+
+" Copy/paste with system clipboard
+" copy: "+y
+xnoremap <C-Y> "+y
+
+" Make paste use register 0 (for consecutive pastes after yank)
+" xnoremap <Leader>p "0p
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Addons
+
+execute pathogen#infect()
+
+" Enable `fzf`
+source /usr/share/doc/fzf/examples/fzf.vim
+" Fun fzf in vim with `:FZF`
+" https://github.com/junegunn/fzf/blob/master/README-VIM.md
+set rtp+=/usr/bin/fzf
+
+" Trailing spaces
+let g:strip_whitespace_on_save = 1
+let g:better_whitespace_filetypes_blacklist=['diff', 'git', 'gitcommit', 'unite', 'qf', 'help', 'fugitive']
+" Shortcut for deleting trailing whitespace (Alt + S)
+" https://vi.stackexchange.com/a/2363
+execute "set <M-S>=\eS"
+nnoremap <M-S> :StripWhitespace<CR>

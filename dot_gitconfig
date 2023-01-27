@@ -1,0 +1,35 @@
+[alias]
+	co    = checkout
+	ci    = commit
+	cinit = commit --allow-empty -m 'initial commit'
+   d     = diff
+   ds    = diff --staged
+   dh    = diff HEAD^ HEAD
+	st    = status
+	br    = branch
+   rs    = restore
+   rsa   = restore '*'
+   rss   = restore '*' --staged
+	sl    = stash list
+	su    = stash -u
+	sp    = stash pop
+[branch]
+	autosetupmerge = true
+	autosetuprebase = always
+[user]
+	signingkey = B9D41C44B17973D6
+	name = Mason McElvain
+	email = 52104630+masonmcelvain@users.noreply.github.com
+   useConfigOnly = true
+[init]
+	defaultBranch = main
+[commit]
+	gpgsign = true
+[core]
+	editor = vim
+[pull]
+	rebase = false
+[push]
+	autoSetupRemote = true
+[includeIf "gitdir:~/code/work/"]
+   path = "./.gitconfig.work"

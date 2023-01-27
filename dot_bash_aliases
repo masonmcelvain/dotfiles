@@ -1,0 +1,87 @@
+# Bash aliases defined by Mason
+
+alias xls="/usr/bin/ls"
+alias ls="exa"
+
+# alacritty compatibility with ssh
+# https://github.com/alacritty/alacritty/issues/3962#issuecomment-1006832313
+alias ssh='TERM=xterm-256color ssh'
+
+alias resource="source ~/.bashrc"
+
+alias update="
+   sudo apt update
+   sudo apt upgrade
+   sudo snap refresh
+   sudo flatpak update
+   sudo apt autoremove"
+
+alias work="ssh cominor"
+
+# TMUX
+t() {
+   if [ $# -gt 0 ] && [ "$1" == "new" ] ; then
+      shift
+      command tmux new-session -s "$@"
+   elif [ $# -gt 0 ] && [ "$1" == "kill" ] ; then
+      shift
+      command tmux kill-session -t "$@"
+   elif [ $# -gt 0 ] && [ "$1" == "rename" ] ; then
+      shift
+      command tmux rename-session -t "$@"
+   elif [ $# -eq 2 ] && [ "$1" == "a" ] ; then
+      shift
+      command tmux attach-session -t "$@"
+   else
+      command tmux "$@"
+   fi
+}
+
+alias git="git "
+alias graph="log --all --decorate --oneline --graph"
+alias gg="git grep -I --line-number --color=always"
+
+alias malware-scan="sudo clamscan --max-filesize=3999M --max-scansize=3999M --exclude-dir=/sys/* -i -r /"
+alias which-clam="ps ax | grep [c]lamd"
+
+# Show timestamp next to commands in `history`
+# https://www.linuxuprising.com/2019/07/bash-history-how-to-show-timestamp-when.html
+export HISTTIMEFORMAT="%F %T "
+
+# Use vim for `fc`
+export FCEDIT=vim
+
+alias python="python3"
+alias py="python3"
+
+# https://github.com/nvbn/thefuck
+eval $(thefuck --alias)
+
+# Enable fzf for bash
+source /usr/share/doc/fzf/examples/key-bindings.bash
+export FZF_DEFAULT_OPTS='-m --height 40% --layout=reverse --border'
+if type rg &> /dev/null; then
+   export FZF_DEFAULT_COMMAND='rg --files'
+fi
+
+chr() {
+  [ "$1" -lt 256 ] || return 1
+  printf "\\$(printf '%03o' "$1")"
+}
+ord() {
+  LC_CTYPE=C printf '%d' "'$1"
+}
+
+# Graphical log ofing times to a host
+function pinglog() {
+      domain="$1"
+         ping -4 -i 1 -W 4 -O "$domain" |
+            awk 'BEGIN { FS="="  } {
+            printf "%-13s", ($4 ~ /[0-9.]+/ ? $4 : "fail: " $0);
+               size=log(50+$4)/log(1.04)-log(50)/log(1.04);
+                  for(c=0;c<size;c++)
+                           printf "=";
+                              printf "\n";
+   fflush()
+   }'
+}

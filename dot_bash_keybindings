@@ -1,0 +1,9 @@
+# Custom keybindings for bash
+
+_NEWLINE=$'\n'
+
+_FZF_OPEN_IN_VIM='vim $(fzf)'
+# CTRL-E - Open the selected file path in vim
+bind -m emacs-standard -x "\"\C-e\": $_FZF_OPEN_IN_VIM$_NEWLINE"
+bind -m vi-command -x "\"\C-e\": $_FZF_OPEN_IN_VIM$_NEWLINE"
+bind -m vi-insert -x "\"\C-e\": $_FZF_OPEN_IN_VIM$_NEWLINE"
