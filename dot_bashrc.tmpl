@@ -58,6 +58,8 @@ if [ -f /etc/bashrc  ]; then
       . /etc/bashrc
 fi
 
+export PATH="$HOME/bin:$PATH"
+
 # Tell SSH how to access gpg-agent
 # https://opensource.com/article/19/4/gpg-subkeys-ssh
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
