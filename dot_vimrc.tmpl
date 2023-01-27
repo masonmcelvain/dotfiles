@@ -69,14 +69,13 @@ au BufRead,BufNewFile *.md,*.mdx set filetype=markdown
 " Soft wrap markdown files
 au FileType markdown set wrap linebreak
 
-" Reread configuration of Vim if .vimrc is saved {{{
+" Reread configuration of Vim if .vimrc is saved
 augroup VimConfig
 au!
 autocmd BufWritePost ~/.vimrc       so ~/.vimrc
 autocmd BufWritePost _vimrc         so ~/_vimrc
 autocmd BufWritePost vimrc          so ~/.vimrc
 augroup END
-" }}}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Keybindings
@@ -123,9 +122,11 @@ endfunction
 execute "set <M-R>=\eR"
 nnoremap <M-R> :call EchoAndCopy(fnamemodify(expand("%"), ":~:."))<CR>
 
+{{ if eq .chezmoi.hostname "mason-xps" -}}
 " Copy/paste with system clipboard
 " copy: "+y
 xnoremap <C-Y> "+y
+{{- end }}
 
 " Make paste use register 0 (for consecutive pastes after yank)
 " xnoremap <Leader>p "0p
