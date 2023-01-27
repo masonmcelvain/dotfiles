@@ -40,13 +40,6 @@ export FCEDIT=vim
 alias python="python3"
 alias py="python3"
 
-# Enable fzf for bash
-source /usr/share/doc/fzf/examples/key-bindings.bash
-export FZF_DEFAULT_OPTS='-m --height 40% --layout=reverse --border'
-if type rg &> /dev/null; then
-   export FZF_DEFAULT_COMMAND='rg --files'
-fi
-
 chr() {
   [ "$1" -lt 256 ] || return 1
   printf "\\$(printf '%03o' "$1")"
@@ -89,6 +82,13 @@ eval $(thefuck --alias)
 
 alias malware-scan="sudo clamscan --max-filesize=3999M --max-scansize=3999M --exclude-dir=/sys/* -i -r /"
 alias which-clam="ps ax | grep [c]lamd"
+
+# Enable fzf for bash
+source /usr/share/doc/fzf/examples/key-bindings.bash
+export FZF_DEFAULT_OPTS='-m --height 40% --layout=reverse --border'
+if type rg &> /dev/null; then
+   export FZF_DEFAULT_COMMAND='rg --files'
+fi
 #------------------------------------------------------------------------------
 {{- end }}
 
