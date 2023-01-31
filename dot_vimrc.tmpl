@@ -42,15 +42,15 @@ set timeout               " Turn on timeouts for remappings
 set timeoutlen=500        " ms to wait for remapped commands
 set virtualedit=block     " Allow the cursor to go where there's no char.
 set wildmode=longest,list " Tab completion works like bash.
+set colorcolumn=80,100,120
 
 " Make the backup dir if it doesn't exist
 if !isdirectory($HOME . "/.vim/.backup")
-   call mkdir($HOME . "/./vim/.backup", "p")
+   call mkdir($HOME . "/.vim/.backup", "p")
 endif
 set backupdir=~/.vim/.backup//,.
 set directory=~/.vim/.backup//,.
 set undodir=~/.vim/.backup//,.
-set colorcolumn=80,100,120
 
 " Don't wrap long lines in git commit editor
 au FileType gitcommit setlocal textwidth=0
