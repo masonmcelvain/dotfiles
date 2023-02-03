@@ -126,6 +126,10 @@ xnoremap <C-Y> "+y
 " Make paste use register 0 (for consecutive pastes after yank)
 " xnoremap <C-p> "0p
 
+" Search for highlighted text with `\\`
+" https://vim.fandom.com/wiki/Search_for_visually_selected_text
+vnoremap // y/\V<C-R>=escape(@",'/\')<CR><CR>
+
 "------------------------------------------------------------------------------
 " Addons
 "------------------------------------------------------------------------------
