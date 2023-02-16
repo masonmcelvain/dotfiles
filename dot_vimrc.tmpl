@@ -57,6 +57,7 @@ au FileType gitcommit setlocal textwidth=0
 " Turn on ruler in git commits
 au FileType gitcommit setlocal colorcolumn=80
 au FileType gitcommit 1    " Always start on the first line
+au FileType gitcommit set wrap linebreak
 
 " Tell vim what makes a markdown file
 au BufRead,BufNewFile *.md,*.mdx set filetype=markdown
