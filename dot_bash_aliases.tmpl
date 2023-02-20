@@ -98,8 +98,9 @@ fi
 #------------------------------------------------------------------------------
 alias code="cd /home/mmcelvain/Code"
 alias mycli="mycli -u root -h db.cominor.com"
-alias paslmup="psalm --update-baseline --no-cache"
-alias psalmset="psalm --set-baseline=psalm-baseline.xml --no-cache"
+alias psalm="psalm --no-cache"
+alias paslmup="psalm --update-baseline"
+alias psalmset="psalm --set-baseline=psalm-baseline.xml"
 alias list-prime='list-machines | rg worker-prime | rg --color=never -o "ec2-\S*"'
 
 # Enable fzf for bash
