@@ -86,11 +86,9 @@ inoremap <C-s> <C-O>:w<CR0
 nnoremap <C-s> :w<CR>
 
 " Create simple toggles for line numbers, paste mode, and word wrap.
-set pastetoggle=<leader>p
-execute "set <M-N>=\eN"
-nnoremap <M-N> :set invnumber<CR>
-execute "set <M-W>=\eW"
-nnoremap <M-W> :set invwrap<CR>
+nnoremap <leader>p :set invpaste<CR>
+nnoremap <leader>n :set invnumber<CR>
+nnoremap <leader>w :set invwrap<CR>
 
 " Map j+j to escape in insert mode
 inoremap jj <Esc>
