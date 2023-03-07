@@ -62,6 +62,11 @@ function pinglog() {
    }'
 }
 
+export FZF_DEFAULT_OPTS='-m --height 40% --layout=reverse --border'
+if type rg &> /dev/null; then
+   export FZF_DEFAULT_COMMAND='rg --files'
+fi
+
 {{ if eq .chezmoi.hostname "mason-xps" -}}
 #------------------------------------------------------------------------------
 # Local
@@ -85,10 +90,6 @@ alias which-clam="ps ax | grep [c]lamd"
 
 # Enable fzf for bash
 source /usr/share/doc/fzf/examples/key-bindings.bash
-export FZF_DEFAULT_OPTS='-m --height 40% --layout=reverse --border'
-if type rg &> /dev/null; then
-   export FZF_DEFAULT_COMMAND='rg --files'
-fi
 #------------------------------------------------------------------------------
 {{- end }}
 
