@@ -1,2 +1,10 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
 # Inserts a blank line between shell prompts
 add_newline = false
+
+# https://starship.rs/config/#time
+[time]
+disabled = false
+format = '[$time]($style) '
