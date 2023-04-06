@@ -4,6 +4,7 @@
 # Respawn pane with <prefix> `
 # Resize pane Alt+Shift+HJKL
 # Move window <prefix> < or >
+# https://github.com/tmux-plugins/tpm
 
 # Config
 #------------------------------------------------------------------------------
@@ -61,7 +62,7 @@ set -g @plugin 'tmux-plugins/tmux-resurrect'
 set -g @plugin 'tmux-plugins/tmux-continuum'
 set -g @plugin 'tmux-plugins/tmux-yank'
 set -g @plugin 'jimeh/tmux-themepack'
-set -g @themepack 'basic'
+set -g @themepack 'powerline/default/cyan'
 
 {{ if eq .chezmoi.hostname "mason-xps" -}}
 # plugin commands
