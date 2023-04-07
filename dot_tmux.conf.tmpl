@@ -68,7 +68,7 @@ set -g @dracula-show-left-icon session
 set -g @dracula-cpu-usage-label "cpu"
 set -g @dracula-refresh-rate 15
 {{- if eq .chezmoi.hostname "mason-xps" }}
-set -g @dracula-plugins "cpu-usage"
+set -g @dracula-plugins "cpu-usage spotify-tui"
 {{- else if eq .chezmoi.hostname "cominor" }}
 set -g @dracula-plugins "ram-usage"
 set -g status-justify centre
