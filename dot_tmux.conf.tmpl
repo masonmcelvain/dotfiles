@@ -61,8 +61,18 @@ set -g @plugin 'tmux-plugins/tmux-sensible'
 set -g @plugin 'tmux-plugins/tmux-resurrect'
 set -g @plugin 'tmux-plugins/tmux-continuum'
 set -g @plugin 'tmux-plugins/tmux-yank'
-set -g @plugin 'jimeh/tmux-themepack'
-set -g @themepack 'powerline/default/cyan'
+# https://draculatheme.com/tmux
+set -g @plugin 'dracula/tmux'
+set -g @dracula-show-powerline true
+set -g @dracula-show-left-icon session
+set -g @dracula-cpu-usage-label "cpu"
+set -g @dracula-refresh-rate 15
+{{- if eq .chezmoi.hostname "mason-xps" }}
+set -g @dracula-plugins "cpu-usage"
+{{- else if eq .chezmoi.hostname "cominor" }}
+set -g @dracula-plugins "ram-usage"
+set -g status-justify centre
+{{- end }}
 
 {{ if eq .chezmoi.hostname "mason-xps" -}}
 # plugin commands
