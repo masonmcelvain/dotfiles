@@ -83,6 +83,13 @@ alias update="
 
 alias work="ssh cominor"
 
+# vscode cominor connection
+c() {
+   user=mmcelvain
+   target="${1:-Code}"
+   code --folder-uri vscode-remote://ssh-remote+${user}@cominor.com/mnt/ebs/home/${user}/${target}/
+}
+
 alias gg="git grep -I --line-number --color=always"
 
 # https://github.com/nvbn/thefuck
