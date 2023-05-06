@@ -96,6 +96,9 @@ fi
 
 export EDITOR='vim'
 export GPG_TTY=$(tty)
+if type bat &> /dev/null; then
+   export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+fi
 
 eval "$(zoxide init bash)"
 
