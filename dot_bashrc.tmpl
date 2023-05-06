@@ -98,6 +98,9 @@ export EDITOR='vim'
 export GPG_TTY=$(tty)
 if type bat &> /dev/null; then
    export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+{{ if eq .chezmoi.hostname "cominor" -}}
+   export MANROFFOPT="-c"
+{{- end }}
 fi
 
 eval "$(zoxide init bash)"
