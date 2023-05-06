@@ -12,6 +12,10 @@ alias pn=pnpm
 batlog() {
    tail -f "$@" | bat --paging=never -l log
 }
+alias bathelp='bat --plain --language=help'
+help() {
+   "$@" --help 2>&1 | bathelp
+}
 
 # alacritty compatibility with ssh
 # https://github.com/alacritty/alacritty/issues/3962#issuecomment-1006832313
