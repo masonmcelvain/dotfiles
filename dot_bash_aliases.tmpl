@@ -10,7 +10,7 @@ alias g=git
 alias pn=pnpm
 
 batlog() {
-   tail -f "$1" | bat --paging=never -l log
+   tail -f "$@" | bat --paging=never -l log
 }
 
 # alacritty compatibility with ssh
