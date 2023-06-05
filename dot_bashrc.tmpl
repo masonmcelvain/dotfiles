@@ -58,7 +58,6 @@ if [ -f /etc/bashrc  ]; then
       . /etc/bashrc
 fi
 
-export PATH="$HOME/bin:$PATH"
 # https://github.com/twpayne/chezmoi/issues/1332#issuecomment-927367673
 export LESS=-FRX
 
@@ -83,6 +82,8 @@ export SDKMAN_DIR="$HOME/.sdkman"
 . "$HOME/.cargo/env"
 #------------------------------------------------------------------------------
 {{- end }}
+
+export PATH="$HOME/bin:$PATH"
 
 # If is interactive terminal and file exists
 # https://www.gnu.org/software/bash/manual/bash.html#Is-this-Shell-Interactive_003f
