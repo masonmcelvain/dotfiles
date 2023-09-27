@@ -70,6 +70,7 @@ export LESS=-FRX
 # Tell SSH how to access gpg-agent
 # https://opensource.com/article/19/4/gpg-subkeys-ssh
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+export GPG_TTY=$(tty)
 
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
@@ -95,7 +96,6 @@ if [ -f ~/.bash_aliases ]; then
 fi
 
 export EDITOR='vim'
-export GPG_TTY=$(tty)
 if type bat &> /dev/null; then
    export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 {{ if eq .chezmoi.hostname "cominor" -}}
