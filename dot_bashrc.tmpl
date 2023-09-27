@@ -60,11 +60,6 @@ fi
 
 # https://github.com/twpayne/chezmoi/issues/1332#issuecomment-927367673
 export LESS=-FRX
-
-# Tell SSH how to access gpg-agent
-# https://opensource.com/article/19/4/gpg-subkeys-ssh
-export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-gpgconf --launch gpg-agent
 #------------------------------------------------------------------------------
 {{- end }}
 
@@ -72,6 +67,10 @@ gpgconf --launch gpg-agent
 #------------------------------------------------------------------------------
 # Local
 #------------------------------------------------------------------------------
+# Tell SSH how to access gpg-agent
+# https://opensource.com/article/19/4/gpg-subkeys-ssh
+export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
