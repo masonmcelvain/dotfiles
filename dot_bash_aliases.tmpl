@@ -130,8 +130,10 @@ alias psalm="psalm --no-cache"
 alias paslmup="psalm --update-baseline"
 alias psalmset="psalm --set-baseline=psalm-baseline.xml"
 alias list-prime='list-machines | rg worker-prime | rg --color=never -o "ec2-\S*"'
-xbug() { XDEBUG_SESSION=1 "$@" }
 alias iphp="psysh ~/Code/Exec/essentials.php"
+xbug() {
+   XDEBUG_SESSION=1 "$@"
+}
 
 # Enable fzf for bash
 if [[ ! (-z "$PS1")  ]] && [ -f ~/.fzf-key-bindings.bash  ]; then
