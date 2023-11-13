@@ -4,6 +4,10 @@
 # Inserts a blank line between shell prompts
 add_newline = false
 
+# https://starship.rs/config/#hostname
+[hostname]
+format = '[$hostname]($style):'
+
 # https://starship.rs/config/#time
 [time]
 disabled = false
