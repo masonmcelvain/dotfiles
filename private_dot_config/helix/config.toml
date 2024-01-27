@@ -1,0 +1,6 @@
+[editor]
+middle-click-paste = false
+
+[keys.insert]
+j = { j = "normal_mode" }
+k = { k = "normal_mode" }
