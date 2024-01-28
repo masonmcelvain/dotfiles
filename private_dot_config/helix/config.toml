@@ -1,3 +1,5 @@
+theme = "dracula"
+
 [editor]
 middle-click-paste = false
 

@@ -99,7 +99,11 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-export EDITOR='vim'
+if type hx &> /dev/null; then
+   export EDITOR='hx'
+else
+   export EDITOR='vim'
+fi
 if type bat &> /dev/null; then
    export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 {{ if eq .chezmoi.hostname "cominor" -}}
