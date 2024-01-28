@@ -4,5 +4,6 @@
     "language_server_psalm.enabled": true,
     "php_code_sniffer.enabled": false,
     "phpunit.enabled": true,
-    "prophecy.enabled": true
+    "prophecy.enabled": true,
+    "composer.class_maps_only": false
 }
