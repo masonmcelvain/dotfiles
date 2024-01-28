@@ -2,6 +2,8 @@ theme = "dracula"
 
 [editor]
 middle-click-paste = false
+# https://github.com/helix-editor/helix/issues/1271
+true-color = true
 
 [keys.insert]
 j = { j = "normal_mode" }
