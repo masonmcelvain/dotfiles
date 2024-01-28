@@ -5,3 +5,8 @@ language-servers = [ "phpactor" ]
 [language-server.phpactor]
 command = "phpactor"
 args = [ "language-server" ]
+
+# [language-server.intelephense]
+# command = "intelephense"
+# args = [ "--stdio" ]
+# config = { intelephense = { environment = { shortOpenTag = true } } }
