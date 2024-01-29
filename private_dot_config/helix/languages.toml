@@ -10,3 +10,24 @@ args = [ "language-server" ]
 # command = "intelephense"
 # args = [ "--stdio" ]
 # config = { intelephense = { environment = { shortOpenTag = true } } }
+
+# https://github.com/helix-editor/helix/wiki/External-formatter-configuration#prettier
+[[language]]
+name = "javascript"
+formatter = { command = 'pnpm', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
+auto-format = true
+
+[[language]]
+name = "jsx"
+formatter = { command = 'pnpm', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
+auto-format = true
+
+[[language]]
+name = "typescript"
+formatter = { command = 'pnpm', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
+auto-format = true
+
+[[language]]
+name = "tsx"
+formatter = { command = 'pnpm', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
+auto-format = true
