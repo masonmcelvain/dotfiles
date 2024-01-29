@@ -1,5 +1,9 @@
 # Bash aliases defined by Mason
 
+if type eza &> /dev/null; then
+   alias xls='/usr/bin/ls'
+   alias ls='eza'
+fi
 alias ll='ls -alF'
 alias la='ls -a'
 alias resource="source ~/.bashrc"
