@@ -4,6 +4,8 @@ theme = "dracula"
 middle-click-paste = false
 # https://github.com/helix-editor/helix/issues/1271
 true-color = true
+[editor.soft-wrap]
+enable = true
 
 [keys.insert]
 j = { j = "normal_mode" }
