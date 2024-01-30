@@ -2,6 +2,44 @@
 name = "php"
 language-servers = [ "phpactor" ]
 
+# https://github.com/helix-editor/helix/wiki/External-formatter-configuration#prettier
+[[language]]
+name = "javascript"
+language-servers = ["typescript-language-server", "eslint"]
+formatter = { command = 'pnpm', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
+auto-format = true
+
+[[language]]
+name = "jsx"
+language-servers = ["typescript-language-server", "eslint"]
+formatter = { command = 'pnpm', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
+auto-format = true
+
+[[language]]
+name = "typescript"
+language-servers = ["typescript-language-server", "eslint"]
+formatter = { command = 'pnpm', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
+auto-format = true
+
+[[language]]
+name = "tsx"
+language-servers = ["typescript-language-server", "eslint"]
+formatter = { command = 'pnpm', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
+auto-format = true
+
+[language-server.eslint]
+args = ["--stdio"]
+command = "vscode-eslint-language-server"
+
+# https://github.com/helix-editor/helix/issues/3231
+[language-server.eslint.config]
+validate = "on"
+experimental = { useFlatConfig = false }
+rulesCustomizations = []
+run = "onType"
+problems = { shortenToSingleLine = false }
+nodePath = ""
+
 [language-server.phpactor]
 command = "phpactor"
 args = [ "language-server" ]
@@ -10,24 +48,3 @@ args = [ "language-server" ]
 # command = "intelephense"
 # args = [ "--stdio" ]
 # config = { intelephense = { environment = { shortOpenTag = true } } }
-
-# https://github.com/helix-editor/helix/wiki/External-formatter-configuration#prettier
-[[language]]
-name = "javascript"
-formatter = { command = 'pnpm', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
-auto-format = true
-
-[[language]]
-name = "jsx"
-formatter = { command = 'pnpm', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
-auto-format = true
-
-[[language]]
-name = "typescript"
-formatter = { command = 'pnpm', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
-auto-format = true
-
-[[language]]
-name = "tsx"
-formatter = { command = 'pnpm', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
-auto-format = true
