@@ -4,6 +4,18 @@ language-servers = [ "phpactor" ]
 
 # https://github.com/helix-editor/helix/wiki/External-formatter-configuration#prettier
 [[language]]
+name = "html"
+formatter = { command = 'pnpm', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
+
+[[language]]
+name = "json"
+formatter = { command = 'pnpm', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
+
+[[language]]
+name = "css"
+formatter = { command = 'pnpm', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
+
+[[language]]
 name = "javascript"
 language-servers = ["typescript-language-server", "eslint"]
 formatter = { command = 'pnpm', args = ["prettier", "--config", ".prettierrc", "--parser", "typescript"] }
