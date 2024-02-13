@@ -71,20 +71,6 @@ ord() {
   LC_CTYPE=C printf '%d' "'$1"
 }
 
-# Graphical log ofing times to a host
-function pinglog() {
-   domain="$1"
-   ping -4 -i 1 -W 4 -O "$domain" |
-   awk 'BEGIN { FS="="  } {
-      printf "%-13s", ($4 ~ /[0-9.]+/ ? $4 : "fail: " $0);
-      size=log(50+$4)/log(1.04)-log(50)/log(1.04);
-      for(c=0;c<size;c++)
-      printf "=";
-      printf "\n";
-      fflush()
-   }'
-}
-
 export FZF_DEFAULT_OPTS='-m --height 40% --layout=reverse --border --ansi'
 if type fd &> /dev/null; then
 {{ if eq .chezmoi.hostname "mason-xps" }}
