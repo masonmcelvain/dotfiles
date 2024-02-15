@@ -1,6 +1,7 @@
 [[language]]
 name = "php"
 language-servers = ["phpactor"]
+auto-format = false
 
 # https://github.com/helix-editor/helix/wiki/External-formatter-configuration#prettier
 [[language]]
@@ -13,6 +14,7 @@ formatter = { command = 'npx', args = [
   "--parser",
   "typescript",
 ] }
+auto-format = false
 
 [[language]]
 name = "json"
@@ -23,6 +25,7 @@ formatter = { command = 'npx', args = [
   "--parser",
   "typescript",
 ] }
+auto-format = false
 
 [[language]]
 name = "css"
@@ -34,6 +37,7 @@ formatter = { command = 'npx', args = [
   "--parser",
   "typescript",
 ] }
+auto-format = false
 
 [[language]]
 name = "javascript"
@@ -45,7 +49,7 @@ formatter = { command = 'npx', args = [
   "--parser",
   "typescript",
 ] }
-auto-format = true
+auto-format = false
 
 [[language]]
 name = "jsx"
@@ -57,7 +61,7 @@ formatter = { command = 'npx', args = [
   "--parser",
   "typescript",
 ] }
-auto-format = true
+auto-format = false
 
 [[language]]
 name = "typescript"
@@ -69,7 +73,7 @@ formatter = { command = 'npx', args = [
   "--parser",
   "typescript",
 ] }
-auto-format = true
+auto-format = false
 
 [[language]]
 name = "tsx"
@@ -81,11 +85,12 @@ formatter = { command = 'npx', args = [
   "--parser",
   "typescript",
 ] }
-auto-format = true
+auto-format = false
 
 [[language]]
 name = "toml"
 formatter = { command = "taplo", args = ["fmt", "-"] }
+auto-format = false
 
 [language-server.eslint]
 args = ["--stdio"]
