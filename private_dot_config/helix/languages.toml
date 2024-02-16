@@ -2,6 +2,7 @@
 name = "php"
 language-servers = ["phpactor"]
 auto-format = false
+indent = { tab-width = 3, unit = "   " }
 
 # https://github.com/helix-editor/helix/wiki/External-formatter-configuration#prettier
 [[language]]
