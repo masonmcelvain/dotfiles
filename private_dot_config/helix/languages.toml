@@ -4,6 +4,11 @@ language-servers = ["phpactor"]
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
 
+[[language]]
+name = "sql"
+auto-format = false
+indent = { tab-width = 3, unit = "   " }
+
 # https://github.com/helix-editor/helix/wiki/External-formatter-configuration#prettier
 [[language]]
 name = "html"
