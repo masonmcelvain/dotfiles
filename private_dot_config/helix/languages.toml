@@ -1,6 +1,6 @@
 [[language]]
 name = "php"
-language-servers = ["psalm", "intelephense"]
+language-servers = ["psalm", "phpactor"]
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
 
