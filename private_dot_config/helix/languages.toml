@@ -1,6 +1,6 @@
 [[language]]
 name = "php"
-language-servers = ["phpactor"]
+language-servers = ["psalm", "phpactor"]
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
 
@@ -114,6 +114,10 @@ nodePath = ""
 [language-server.phpactor]
 command = "phpactor"
 args = ["language-server"]
+
+[language-server.psalm]
+command = "vendor/bin/psalm-language-server"
+timeout = 120
 
 # [language-server.intelephense]
 # command = "intelephense"
