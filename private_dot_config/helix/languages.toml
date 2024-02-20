@@ -1,6 +1,6 @@
 [[language]]
 name = "php"
-language-servers = ["psalm", "phpactor"]
+language-servers = ["psalm", "intelephense"]
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
 
@@ -111,6 +111,22 @@ run = "onType"
 problems = { shortenToSingleLine = false }
 nodePath = ""
 
+[language-server.intelephense]
+command = "intelephense"
+args = ["--stdio"]
+
+# https://github.com/bmewburn/intelephense-docs/blob/master/installation.md
+[language-server.intelephense.config.intelephense]
+environment = { shortOpenTag = true }
+
+[language-server.intelephense.config.intelephense.diagnostics]
+implementationErrors = false
+typeErrors = false
+undefinedFunctions = false
+undefinedMethods = false
+undefinedTypes = false
+undefinedVariables = false
+
 [language-server.phpactor]
 command = "phpactor"
 args = ["language-server"]
@@ -118,11 +134,6 @@ args = ["language-server"]
 [language-server.psalm]
 command = "vendor/bin/psalm-language-server"
 timeout = 120
-
-# [language-server.intelephense]
-# command = "intelephense"
-# args = [ "--stdio" ]
-# config = { intelephense = { environment = { shortOpenTag = true } } }
 
 [language-server.rust-analyzer.config.check]
 command = "clippy"
