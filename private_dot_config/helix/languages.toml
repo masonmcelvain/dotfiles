@@ -56,6 +56,7 @@ formatter = { command = 'npx', args = [
   "typescript",
 ] }
 auto-format = false
+indent = { tab-width = 3, unit = "   " }
 
 [[language]]
 name = "jsx"
@@ -68,6 +69,7 @@ formatter = { command = 'npx', args = [
   "typescript",
 ] }
 auto-format = false
+indent = { tab-width = 3, unit = "   " }
 
 [[language]]
 name = "typescript"
@@ -80,6 +82,7 @@ formatter = { command = 'npx', args = [
   "typescript",
 ] }
 auto-format = false
+indent = { tab-width = 3, unit = "   " }
 
 [[language]]
 name = "tsx"
@@ -92,6 +95,7 @@ formatter = { command = 'npx', args = [
   "typescript",
 ] }
 auto-format = false
+indent = { tab-width = 3, unit = "   " }
 
 [[language]]
 name = "toml"
