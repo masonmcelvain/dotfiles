@@ -103,8 +103,8 @@ formatter = { command = "taplo", args = ["fmt", "-"] }
 auto-format = false
 
 [language-server.eslint]
-args = ["--stdio"]
 command = "vscode-eslint-language-server"
+args = ["--stdio"]
 
 # https://github.com/helix-editor/helix/issues/3231
 [language-server.eslint.config]
