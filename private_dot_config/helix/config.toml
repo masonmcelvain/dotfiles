@@ -6,7 +6,3 @@ middle-click-paste = false
 true-color = true
 [editor.soft-wrap]
 enable = true
-
-[keys.insert]
-j = { j = "normal_mode" }
-k = { k = "normal_mode" }
