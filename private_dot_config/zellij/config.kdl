@@ -179,9 +179,9 @@ keybinds {
     shared_except "move" "locked" {
         bind "Ctrl h" { SwitchToMode "Move"; }
     }
-    shared_except "tmux" "locked" {
-        bind "Ctrl a" { SwitchToMode "Tmux"; }
-    }
+    // shared_except "tmux" "locked" {
+    //     bind "Ctrl a" { SwitchToMode "Tmux"; }
+    // }
 }
 
 plugins {
