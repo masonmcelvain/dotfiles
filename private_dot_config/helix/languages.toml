@@ -72,6 +72,16 @@ auto-format = false
 indent = { tab-width = 3, unit = "   " }
 
 [[language]]
+name = "liquid"
+language-id = "html"
+scope = "text.html.basic"
+roots = [".theme-check.yml"]
+file-types = ["liquid"]
+language-servers = ["liquid"]
+auto-format = false
+indent = { tab-width = 2, unit = "  " }
+
+[[language]]
 name = "typescript"
 language-servers = ["typescript-language-server", "eslint"]
 formatter = { command = 'npx', args = [
@@ -118,6 +128,11 @@ nodePath = ""
 [language-server.intelephense]
 command = "intelephense"
 args = ["--stdio"]
+
+[language-server.liquid]
+command = "shopify"
+args = ["theme", "language-server"]
+timeout = 5
 
 # https://github.com/bmewburn/intelephense-docs/blob/master/installation.md
 [language-server.intelephense.config.intelephense]
