@@ -84,6 +84,18 @@ export SDKMAN_DIR="$HOME/.sdkman"
 
 export FLYCTL_INSTALL="/home/mason/.fly"
 export PATH="$FLYCTL_INSTALL/bin:$PATH"
+
+alacritty_theme() {
+	ln -sf $HOME/.config/alacritty/$1.toml $HOME/.config/alacritty/theme.toml
+}
+COLOR_SCHEME=$(gsettings get org.gnome.desktop.interface color-scheme)
+if [ "$COLOR_SCHEME" = "'default'" ]; then
+	alacritty_theme "everforest_light"
+else
+	alacritty_theme "dracula"
+fi
+
+
 #------------------------------------------------------------------------------
 {{- end }}
 
