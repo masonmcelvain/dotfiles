@@ -1,4 +1,5 @@
-theme = "dracula"
+theme = "everforest_light"
+# theme = "dracula"
 
 [editor]
 middle-click-paste = false
