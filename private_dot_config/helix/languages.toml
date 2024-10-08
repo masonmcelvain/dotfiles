@@ -1,6 +1,6 @@
 [[language]]
 name = "php"
-language-servers = ["psalm", "phpactor"]
+language-servers = ["psalm", "intelephense"]
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
 
@@ -125,19 +125,19 @@ run = "onType"
 problems = { shortenToSingleLine = false }
 nodePath = ""
 
-[language-server.intelephense]
-command = "intelephense"
-args = ["--stdio"]
-
 [language-server.liquid]
 command = "shopify"
 args = ["theme", "language-server"]
 timeout = 5
 
+[language-server.intelephense]
+command = "intelephense"
+args = ["--stdio"]
+[language-server.intelephense.config]
+licenceKey = "/home/mmcelvain/intelephense/licence.txt"
 # https://github.com/bmewburn/intelephense-docs/blob/master/installation.md
 [language-server.intelephense.config.intelephense]
 environment = { shortOpenTag = true }
-
 [language-server.intelephense.config.intelephense.diagnostics]
 implementationErrors = false
 typeErrors = false
@@ -145,10 +145,6 @@ undefinedFunctions = false
 undefinedMethods = false
 undefinedTypes = false
 undefinedVariables = false
-
-[language-server.phpactor]
-command = "phpactor"
-args = ["language-server"]
 
 [language-server.psalm]
 command = "vendor/bin/psalm-language-server"
