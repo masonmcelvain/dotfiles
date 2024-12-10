@@ -13,47 +13,35 @@ indent = { tab-width = 3, unit = "   " }
 [[language]]
 name = "html"
 language-servers = ["vscode-html-language-server", "tailwindcss-ls"]
-formatter = { command = 'npx', args = [
-  "prettier",
-  "--config",
-  ".prettierrc",
-  "--parser",
-  "typescript",
+formatter = { command = 'bash', args = [
+  "-c",
+  "pnpm run --silent biome --stdin-file-path=file.html || npx prettier --config .prettierrc --parser typescript",
 ] }
 auto-format = false
 
 [[language]]
 name = "json"
-formatter = { command = 'npx', args = [
-  "prettier",
-  "--config",
-  ".prettierrc",
-  "--parser",
-  "typescript",
+formatter = { command = 'bash', args = [
+  "-c",
+  "pnpm run --silent biome --stdin-file-path=file.json || npx prettier --config .prettierrc --parser typescript",
 ] }
 auto-format = false
 
 [[language]]
 name = "css"
 language-servers = ["vscode-css-language-server", "tailwindcss-ls"]
-formatter = { command = 'npx', args = [
-  "prettier",
-  "--config",
-  ".prettierrc",
-  "--parser",
-  "typescript",
+formatter = { command = 'bash', args = [
+  "-c",
+  "pnpm run --silent biome --stdin-file-path=file.css || npx prettier --config .prettierrc --parser typescript",
 ] }
 auto-format = false
 
 [[language]]
 name = "javascript"
 language-servers = ["typescript-language-server", "eslint"]
-formatter = { command = 'npx', args = [
-  "prettier",
-  "--config",
-  ".prettierrc",
-  "--parser",
-  "typescript",
+formatter = { command = 'bash', args = [
+  "-c",
+  "pnpm run --silent biome --stdin-file-path=file.js || npx prettier --config .prettierrc --parser typescript",
 ] }
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
@@ -61,12 +49,9 @@ indent = { tab-width = 3, unit = "   " }
 [[language]]
 name = "jsx"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
-formatter = { command = 'npx', args = [
-  "prettier",
-  "--config",
-  ".prettierrc",
-  "--parser",
-  "typescript",
+formatter = { command = 'bash', args = [
+  "-c",
+  "pnpm run --silent biome --stdin-file-path=file.jsx || npx prettier --config .prettierrc --parser typescript",
 ] }
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
@@ -84,12 +69,9 @@ indent = { tab-width = 2, unit = "  " }
 [[language]]
 name = "typescript"
 language-servers = ["typescript-language-server", "eslint"]
-formatter = { command = 'npx', args = [
-  "prettier",
-  "--config",
-  ".prettierrc",
-  "--parser",
-  "typescript",
+formatter = { command = 'bash', args = [
+  "-c",
+  "pnpm run --silent biome --stdin-file-path=file.ts || npx prettier --config .prettierrc --parser typescript",
 ] }
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
@@ -97,12 +79,9 @@ indent = { tab-width = 3, unit = "   " }
 [[language]]
 name = "tsx"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
-formatter = { command = 'npx', args = [
-  "prettier",
-  "--config",
-  ".prettierrc",
-  "--parser",
-  "typescript",
+formatter = { command = 'bash', args = [
+  "-c",
+  "pnpm run --silent biome --stdin-file-path=file.tsx || npx prettier --config .prettierrc --parser typescript",
 ] }
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
