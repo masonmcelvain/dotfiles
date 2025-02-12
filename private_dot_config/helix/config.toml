@@ -15,3 +15,4 @@ cursor-line = "error"
 # other-lines = "error"
 [editor.soft-wrap]
 enable = true
+wrap-indicator = ""
