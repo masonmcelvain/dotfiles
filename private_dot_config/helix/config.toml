@@ -16,3 +16,5 @@ cursor-line = "error"
 [editor.soft-wrap]
 enable = true
 wrap-indicator = ""
+[editor.statusline]
+right = ["diagnostics", "selections", "primary-selection-length", "register", "position", "file-encoding"]
