@@ -1,3 +1,4 @@
+[general]
 import = ["/home/mason/.config/alacritty/theme.toml"]
 
 [[keyboard.bindings]]
