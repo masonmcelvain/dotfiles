@@ -2,6 +2,7 @@ theme = "everforest_light"
 # theme = "dracula"
 
 [editor]
+bufferline = "multiple"
 middle-click-paste = false
 # https://github.com/helix-editor/helix/issues/1271
 true-color = true
