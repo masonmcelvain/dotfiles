@@ -199,7 +199,9 @@ plugins {
 //   - detach (Default)
 //   - quit
 //
+{{- if eq .chezmoi.hostname "cominor" -}}
 on_force_close "quit"
+{{- end }}
 
 //  Send a request for a simplified ui (without arrow fonts) to plugins
 //  Options:
