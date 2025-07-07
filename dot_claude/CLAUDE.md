@@ -3,11 +3,9 @@
 ## General
 
 - Prefer `rg` over `grep`
-
-## Use the `gh` cli for context
-
-- View issues and pull requests to understand the intent of changes
-- View GitHub action workflows to debug test/lint/typecheck failures
+- Use the GitHub CLI (`gh`) for all GitHub-related tasks.
+  - View issues and pull requests
+  - Debug GitHub Actions failures
 
 ## Commit guidelines
 
