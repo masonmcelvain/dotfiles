@@ -12,6 +12,7 @@ alias g=git
 alias pn=pnpm
 
 alias codex="export $(cat  ~/.codex.env | xargs) && ~/code/local/codex/codex-cli/scripts/run_in_container.sh"
+alias claude="$HOME/.claude/local/claude"
 
 batlog() {
    tail -f "$@" | bat --paging=never -l log
