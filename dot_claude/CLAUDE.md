@@ -2,10 +2,12 @@
 
 ## General
 
-- Use `rg`, don't use `grep`
-- Use the GitHub CLI (`gh`) for all GitHub-related tasks.
+- Use `rg` when possible, don't use `grep` unless `rg` is unavailable
+- Use the GitHub CLI (`gh`) for all GitHub-related tasks when possible
   - View issues and pull requests
   - Debug GitHub Actions failures
+- Be sure to typecheck when you’re done making a series of code changes
+- Prefer running single tests, and not the whole test suite, for performance
 
 ## Commit guidelines
 
