@@ -104,6 +104,14 @@ run = "onType"
 problems = { shortenToSingleLine = false }
 nodePath = ""
 
+[language-server.tailwindcss-ls]
+command = "tailwindcss-language-server"
+args = ["--stdio"]
+[language-server.tailwindcss-ls.config.tailwindCSS]
+classFunctions = ["tw", "clsx", "cn", "tw\\.[a-z-]+"]
+[language-server.tailwindcss-ls.config.tailwindCSS.experimental.configFile]
+"packages/shared/ui/src/styles/globals.css" = ["apps/nextjs/**", "packages/shared/ui/**"]
+
 [language-server.liquid]
 command = "shopify"
 args = ["theme", "language-server"]
