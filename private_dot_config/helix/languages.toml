@@ -38,7 +38,7 @@ auto-format = false
 
 [[language]]
 name = "javascript"
-language-servers = ["typescript-language-server", "eslint"]
+language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
 formatter = { command = 'bash', args = [
   "-c",
   "pnpm run --silent biome --stdin-file-path=file.js || npx prettier --config .prettierrc --parser typescript",
@@ -68,7 +68,7 @@ indent = { tab-width = 2, unit = "  " }
 
 [[language]]
 name = "typescript"
-language-servers = ["typescript-language-server", "eslint"]
+language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
 formatter = { command = 'bash', args = [
   "-c",
   "pnpm run --silent biome --stdin-file-path=file.ts || npx prettier --config .prettierrc --parser typescript",
