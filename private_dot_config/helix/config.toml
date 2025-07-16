@@ -21,5 +21,10 @@ wrap-indicator = ""
 right = ["diagnostics", "selections", "primary-selection-length", "register", "position", "file-encoding"]
 
 # create a new minor mode bound to `+`
-[keys.normal."+"]
-p = "copy_between_registers"
+# [keys.normal."+"]
+# p = "copy_between_registers"
+
+# create a new minor mode bound to `G`
+[keys.normal.G]
+b = ":echo %sh{git blame -L %{cursor_line},+1 %{buffer_name}}"
+o = ":sh gh browse %{buffer_name}:%{cursor_line}"
