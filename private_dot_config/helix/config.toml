@@ -19,3 +19,7 @@ enable = true
 wrap-indicator = ""
 [editor.statusline]
 right = ["diagnostics", "selections", "primary-selection-length", "register", "position", "file-encoding"]
+
+# create a new minor mode bound to `+`
+[keys.normal."+"]
+p = "copy_between_registers"
