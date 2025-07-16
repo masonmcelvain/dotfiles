@@ -15,6 +15,7 @@
          "WebFetch(domain:cominor.com)",
          "WebFetch(domain:ifixit.com)",
          "WebFetch(domain:github.com)",
+         "WebFetch(domain:shopify.dev)",
          "mcp__puppeteer__puppeteer_navigate",
          "mcp__puppeteer__puppeteer_screenshot",
          "mcp__puppeteer__puppeteer_click",
