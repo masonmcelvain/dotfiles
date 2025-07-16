@@ -111,6 +111,7 @@ args = ["--stdio"]
 classFunctions = ["tw", "clsx", "cn", "tw\\.[a-z-]+"]
 [language-server.tailwindcss-ls.config.tailwindCSS.experimental.configFile]
 "packages/shared/ui/src/styles/globals.css" = ["apps/nextjs/**", "packages/shared/ui/**"]
+"carpenter-frontend/Shared/tailwind.css" = "carpenter-frontend/Shared/**"
 
 [language-server.liquid]
 command = "shopify"
