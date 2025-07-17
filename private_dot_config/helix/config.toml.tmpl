@@ -24,8 +24,8 @@ right = ["diagnostics", "selections", "primary-selection-length", "register", "p
 [keys.normal."+"]
 P = "copy_between_registers"
 
-# create a new minor mode bound to `G`
-[keys.normal.G]
+# create a new minor mode bound to `M`
+[keys.normal.M]
 b = ":sh git log -L %{selection_line_start},%{selection_line_start}:%{buffer_name} --no-patch -20"
 B = ":sh git log -L %{selection_line_start},%{selection_line_start}:%{buffer_name} -5"
 {{ if eq .chezmoi.hostname "cominor" -}}
