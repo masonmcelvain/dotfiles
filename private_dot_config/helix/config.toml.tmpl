@@ -26,7 +26,8 @@ P = "copy_between_registers"
 
 # create a new minor mode bound to `G`
 [keys.normal.G]
-b = ":echo %sh{git log -L %{selection_line_start},%{selection_line_start}:%{buffer_name} --oneline --pretty=format:\"%%h (%%an %%ad) %%s\" --date=short | head -1}"
+b = ":sh git log -L %{selection_line_start},%{selection_line_start}:%{buffer_name} --no-patch -20"
+B = ":sh git log -L %{selection_line_start},%{selection_line_start}:%{buffer_name} -5"
 {{ if eq .chezmoi.hostname "cominor" -}}
 o = ":echo %sh{gh browse -n %{buffer_name}:%{selection_line_start}-%{selection_line_end}}"
 {{- else if eq .chezmoi.hostname "mason-xps" }}
