@@ -15,7 +15,7 @@ name = "html"
 language-servers = ["vscode-html-language-server", "tailwindcss-ls"]
 formatter = { command = 'bash', args = [
   "-c",
-  "pnpm run --silent biome --stdin-file-path=file.html || npx prettier --config .prettierrc --parser typescript",
+  "pnpm exec biome format --no-errors-on-unmatched --stdin-file-path=buffer.html",
 ] }
 auto-format = false
 
@@ -23,7 +23,7 @@ auto-format = false
 name = "json"
 formatter = { command = 'bash', args = [
   "-c",
-  "pnpm run --silent biome --stdin-file-path=file.json || npx prettier --config .prettierrc --parser typescript",
+  "pnpm exec biome format --no-errors-on-unmatched --stdin-file-path=buffer.json",
 ] }
 auto-format = false
 
@@ -32,7 +32,7 @@ name = "css"
 language-servers = ["vscode-css-language-server", "tailwindcss-ls"]
 formatter = { command = 'bash', args = [
   "-c",
-  "pnpm run --silent biome --stdin-file-path=file.css || npx prettier --config .prettierrc --parser typescript",
+  "pnpm exec biome format --no-errors-on-unmatched --stdin-file-path=buffer.css",
 ] }
 auto-format = false
 
@@ -41,7 +41,7 @@ name = "javascript"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
 formatter = { command = 'bash', args = [
   "-c",
-  "pnpm run --silent biome --stdin-file-path=file.js || npx prettier --config .prettierrc --parser typescript",
+  "pnpm exec biome format --no-errors-on-unmatched --stdin-file-path=buffer.js",
 ] }
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
@@ -51,7 +51,7 @@ name = "jsx"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
 formatter = { command = 'bash', args = [
   "-c",
-  "pnpm run --silent biome --stdin-file-path=file.jsx || npx prettier --config .prettierrc --parser typescript",
+  "pnpm exec biome format --no-errors-on-unmatched --stdin-file-path=buffer.jsx",
 ] }
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
@@ -71,7 +71,7 @@ name = "typescript"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
 formatter = { command = 'bash', args = [
   "-c",
-  "pnpm run --silent biome --stdin-file-path=file.ts || npx prettier --config .prettierrc --parser typescript",
+  "pnpm exec biome format --no-errors-on-unmatched --stdin-file-path=buffer.ts",
 ] }
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
@@ -81,7 +81,7 @@ name = "tsx"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
 formatter = { command = 'bash', args = [
   "-c",
-  "pnpm run --silent biome --stdin-file-path=file.tsx || npx prettier --config .prettierrc --parser typescript",
+  "pnpm exec biome format --no-errors-on-unmatched --stdin-file-path=buffer.tsx",
 ] }
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
