@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Helix
+Exec=/home/mason/.cargo/bin/alacritty --command /home/mason/bin/hx %U
+Terminal=false
+Type=Application
+Icon=/home/mason/.local/share/icons/svg/helix.svg
+Categories=Utility;
