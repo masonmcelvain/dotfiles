@@ -26,10 +26,10 @@ P = "copy_between_registers"
 
 # create a new minor mode bound to `M`
 [keys.normal.M]
-b = ":sh git log -L %{selection_line_start},%{selection_line_start}:%{buffer_name} --no-patch -20"
-"B" = [":insert-output git log -L %{selection_line_start},%{selection_line_start}:%{buffer_name} -10", "delete_selection", "undo", "undo", ":hnew", "paste_before", "goto_file_start", ":set-language diff"]
+b = ":sh git log -L '%{selection_line_start},%{selection_line_start}:%{buffer_name}' --no-patch -20"
+"B" = [":insert-output git log -L '%{selection_line_start},%{selection_line_start}:%{buffer_name}' -10", "delete_selection", "undo", "undo", ":hnew", "paste_before", "goto_file_start", ":set-language diff"]
 {{ if eq .chezmoi.hostname "cominor" -}}
-o = ":echo %sh{gh browse -n %{buffer_name}:%{selection_line_start}-%{selection_line_end}}"
+o = ":echo %sh{gh browse -n '%{buffer_name}:%{selection_line_start}-%{selection_line_end}'}"
 {{- else if eq .chezmoi.hostname "mason-xps" }}
-o = ":sh gh browse %{buffer_name}:%{selection_line_start}-%{selection_line_end} > /dev/null"
+o = ":sh gh browse '%{buffer_name}:%{selection_line_start}-%{selection_line_end}' > /dev/null"
 {{- end }}
