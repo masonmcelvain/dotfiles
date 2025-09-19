@@ -16,12 +16,10 @@ alias claude="$HOME/.claude/local/claude"
 
 alias sss='ss -tlpn'
 
-batlog() {
-   tail -f "$@" | bat --paging=never -l log
-}
-alias bathelp='bat --plain --language=help'
-help() {
-   "$@" --help 2>&1 | bathelp
+btail() {
+    local file="$1"
+    shift
+    tail -f "$file" | bat --decorations=never -P "$@"
 }
 
 # alacritty compatibility with ssh
