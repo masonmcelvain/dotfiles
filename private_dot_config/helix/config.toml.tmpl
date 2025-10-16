@@ -30,6 +30,7 @@ P = "copy_between_registers"
 [keys.normal.M]
 b = ":sh git log -L '%{selection_line_start},%{selection_line_start}:%{buffer_name}' --no-patch -20"
 "B" = [":insert-output git log -L '%{selection_line_start},%{selection_line_start}:%{buffer_name}' -10", "delete_selection", "undo", "undo", ":hnew", "paste_before", "goto_file_start", ":set-language diff"]
+"D" = [":insert-output git diff -- '%{buffer_name}'", "delete_selection", "undo", "undo", ":hnew", "paste_before", "goto_file_start", ":set-language diff"]
 {{ if eq .chezmoi.hostname "cominor" -}}
 o = ":echo %sh{gh browse -n '%{buffer_name}:%{selection_line_start}-%{selection_line_end}'}"
 {{- else if eq .chezmoi.hostname "mason-xps" }}
