@@ -18,9 +18,7 @@ alias hxg='hx $(git diff --name-only)'
 alias sss='ss -tlpn'
 
 btail() {
-    local file="$1"
-    shift
-    tail -f "$file" | bat --decorations=never -P "$@"
+    tail -f "$@" | bat --paging=never -l log
 }
 
 # alacritty compatibility with ssh
