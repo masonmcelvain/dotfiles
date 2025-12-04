@@ -277,8 +277,11 @@ pane_frames false
 // Choose the theme that is specified in the themes section.
 // Default: default
 
+{{ if eq .chezmoi.hostname "mason-xps" -}}
 theme "pencil-light"
-// theme "dracula"
+{{ else }}
+theme "tokyo-night"
+{{- end }}
 
 // The name of the default layout to load on startup
 // Default: "default"
