@@ -25,6 +25,8 @@ save_to_clipboard = true
 
 [window]
 dynamic_padding = true
+dynamic_title = false
+title = ""
 
 [window.dimensions]
 columns = 80
