@@ -24,32 +24,6 @@ btail() {
 # https://github.com/alacritty/alacritty/issues/3962#issuecomment-1006832313
 alias ssh='TERM=xterm-256color ssh'
 
-# TMUX
-ta() {
-   if [ $# -gt 0 ] ; then
-      tmux attach -t $1
-   else
-      tmux attach
-   fi
-}
-t() {
-   if [ $# -gt 0 ] && [ "$1" == "new" ] ; then
-      shift
-      command tmux new-session -s "$@"
-   elif [ $# -gt 0 ] && [ "$1" == "kill" ] ; then
-      shift
-      command tmux kill-session -t "$@"
-   elif [ $# -gt 0 ] && [ "$1" == "rename" ] ; then
-      shift
-      command tmux rename-session -t "$@"
-   elif [ $# -eq 2 ] && [ "$1" == "a" ] ; then
-      shift
-      command tmux attach-session -t "$@"
-   else
-      command tmux "$@"
-   fi
-}
-
 # Zellij
 alias zj="zellij"
 alias zjn="zellij --layout ~/.config/zellij/layout.kdl"
@@ -98,17 +72,7 @@ alias update="
    sudo snap refresh
    sudo flatpak update --assumeyes
    sudo apt autoremove"
-
 alias work="ssh -A cominor"
-alias fix-chrome="rm -rf ~/.config/google-chrome/Default/GPUCache"
-
-# vscode cominor connection
-c() {
-   user=mmcelvain
-   target="${1:-Code}"
-   code --folder-uri vscode-remote://ssh-remote+${user}@cominor.com/mnt/ebs/home/${user}/${target}/
-}
-
 alias gg="git grep -I --line-number --color=always"
 
 alias malware-scan="sudo clamscan --max-filesize=3999M --max-scansize=3999M --exclude-dir=/sys/* -i -r /"
