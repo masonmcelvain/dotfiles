@@ -2,12 +2,12 @@
 
 ## General
 
-- Use `rg` when possible, don't use `grep` unless `rg` is unavailable
 - Use the GitHub CLI (`gh`) for all GitHub-related tasks when possible
   - View issues and pull requests
   - Debug GitHub Actions failures
-- Be sure to typecheck when you’re done making a series of code changes
-- Prefer running single tests, and not the whole test suite, for performance
+- Be sure to typecheck and lint when you’re done making a series of code changes
+
+When importing types in React, prefer `import { type TypeName } from React;` over using `React.TypeName` in the code.
 
 ## Commit guidelines
 
@@ -23,6 +23,7 @@ Use conventional commit messages following this pattern:
 - Use a concise scope when appropriate, but it is not always necessary.
 - Use the imperative tense, not the passive tense. For example, "add Polish language" instead of "adds Polish language".
 - Be brief and use complete sentences in commit bodies.
+- The first line must be 80 characters or less
 
 **Example commit with scope**:
 
@@ -38,12 +39,7 @@ fix: mobile dropdown flickering
 Prevent the mobile product option dropdown from flickering when first opened.
 ```
 
-Use the current git status, diff, branch name, and/or recent commit messages when drafting new commit messages.
-
-- Current git status: !`git status`
-- Current git diff: !`git diff`
-- Current branch: !`git branch --show-current`
-- Recent commits: !`git log --oneline -10`
+After commiting, repeat the result of `git log -1` back to me with your words.
 
 ## Pull request guidelines
 
