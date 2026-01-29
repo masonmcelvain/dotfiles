@@ -39,23 +39,19 @@ fix: mobile dropdown flickering
 Prevent the mobile product option dropdown from flickering when first opened.
 ```
 
-After commiting, repeat the result of `git log -1` back to me with your words.
-
 ## Pull request guidelines
 
 When writing pull requests, follow these guidelines:
 
-- Title should be in title case, without conventional commit type prefix
+- Title should be in 'Title case with Pronouns capitalized', without conventional commit type prefix
 - QA section should use bullet points
-- If the PR closes an issue, you should write it at the top of PR body (`Closes #1234`)
-- If a PR is related to an issue but does not resolve it completely, then add at the top "Connects #1234"
+- If the PR closes an issue, you should write it at the top of PR body (`Close #1234`)
+- If a PR is related to an issue but does not resolve it completely, then add at the top "Connect #1234"
 
 **Example PR template**:
 
 ```
-Closes #1234
-
-## Summary
+Close #1234
 
 Brief description of the changes and their purpose.
 
