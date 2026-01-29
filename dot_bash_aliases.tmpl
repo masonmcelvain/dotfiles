@@ -14,9 +14,8 @@ alias pn=pnpm
 alias claude="$HOME/.claude/local/claude"
 
 alias hxg='hx $(git diff --name-only)'
-{{ if eq .chezmoi.hostname "mason-xps" }}
+alias tp='hx-theme.sh papercolor-light $(mktemp --suffix=.md)'
 alias np='hx-theme.sh papercolor-light ~/notepad.md'
-{{- end }}
 alias sss='ss -tlpn'
 
 btail() {
