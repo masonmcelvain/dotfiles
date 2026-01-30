@@ -121,15 +121,18 @@ if type bat &> /dev/null; then
    export MANROFFOPT="-c"
 fi
 
+# fnm - before zoxide for --use-on-cd
+FNM_PATH="$HOME/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="$FNM_PATH:$PATH"
+  eval "$(fnm env --use-on-cd --shell bash)"
+fi
+
 eval "$(zoxide init bash)"
 
 # https://starship.rs/
 eval "$(starship init bash)"
 export LC_ALL="en_US.UTF-8"
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # corepack https://github.com/nodejs/corepack/issues/485
 export COREPACK_ENABLE_AUTO_PIN=0
