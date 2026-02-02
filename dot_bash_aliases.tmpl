@@ -12,7 +12,7 @@ alias g=git
 alias pn=pnpm
 
 alias hxg='hx $(git diff --name-only)'
-alias tp='hx-theme.sh papercolor-light $(mktemp --suffix=.md)'
+alias tp='mkdir -p ~/.hx-scratch && hx-theme.sh papercolor-light ~/.hx-scratch/$(date +%Y-%m-%d_%H%M%S).md'
 alias np='hx-theme.sh papercolor-light ~/notepad.md'
 alias sss='ss -tlpn'
 
