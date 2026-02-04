@@ -11,6 +11,9 @@ alias resource="source ~/.bashrc"
 alias g=git
 alias pn=pnpm
 
+{{ if eq .chezmoi.hostname "cominor" -}}
+alias hx='cd -P . && hx'
+{{- end }}
 alias hxg='hx $(git diff --name-only)'
 alias tp='mkdir -p ~/.hx-scratch && hx-theme.sh papercolor-light ~/.hx-scratch/$(date +%Y-%m-%d_%H%M%S).md'
 alias np='hx-theme.sh papercolor-light ~/notepad.md'
