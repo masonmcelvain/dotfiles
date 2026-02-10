@@ -1,4 +1,6 @@
 # unignore in file picker and global search
+!.agents/
+!.claude/
 !.env*
 !.github/
 !.gitignore
