@@ -12,3 +12,7 @@ format = '[$hostname]($style):'
 [time]
 disabled = false
 format = '[$time]($style) '
+
+# https://starship.rs/config/#google-cloud-gcloud
+[gcloud]
+format = ''
