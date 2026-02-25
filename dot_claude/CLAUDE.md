@@ -3,8 +3,6 @@
 ## General
 
 - Use the GitHub CLI (`gh`) for all GitHub-related tasks when possible
-  - View issues and pull requests
-  - Debug GitHub Actions failures
 - Be sure to typecheck and lint when you’re done making a series of code changes
 
 When importing types in React, prefer `import { type TypeName } from React;` over using `React.TypeName` in the code.
@@ -23,7 +21,7 @@ Use conventional commit messages following this pattern:
 - Use a concise scope when appropriate, but it is not always necessary.
 - Use the imperative tense, not the passive tense. For example, "add Polish language" instead of "adds Polish language".
 - Be brief and use complete sentences in commit bodies.
-- The first line must be 80 characters or less
+- The first line must be 50 characters or less
 
 **Example commit with scope**:
 
@@ -44,20 +42,13 @@ Prevent the mobile product option dropdown from flickering when first opened.
 When writing pull requests, follow these guidelines:
 
 - Title should be in 'Title case with Pronouns capitalized', without conventional commit type prefix
-- QA section should use bullet points
-- If the PR closes an issue, you should write it at the top of PR body (`Close #1234`)
-- If a PR is related to an issue but does not resolve it completely, then add at the top "Connect #1234"
+- If the PR closes an issue, you should write it at the top of PR body (`- close #1234`)
+- If a PR is related to an issue but does not resolve it completely, then add at the top "- connect #1234"
 
 **Example PR template**:
 
 ```
-Close #1234
+- close #1234
 
 Brief description of the changes and their purpose.
-
-## QA
-
-- Verify feature works as expected
-- Test different scenarios
-- Check for any potential side effects
 ```
