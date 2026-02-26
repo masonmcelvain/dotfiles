@@ -1,5 +1,5 @@
 ---
-description: Run a local code review loop
+description: Run a local code review cycle
 ---
 
 I want to do a local review cycle. Here's the process:
