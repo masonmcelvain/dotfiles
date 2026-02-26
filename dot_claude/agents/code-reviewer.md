@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Reviews uncommitted or recently committed code changes for quality, bugs, security, and style issues before pushing
+description: Reviews uncommitted or recently committed code changes for quality, bugs, security, and style issues
 tools:
   - Read
   - Glob

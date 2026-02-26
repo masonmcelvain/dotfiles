@@ -1,8 +1,8 @@
 ---
-description: Run a local code review loop before pushing to remote
+description: Run a local code review loop
 ---
 
-Before I push this branch, I want to do a local review cycle. Here's the process:
+I want to do a local review cycle. Here's the process:
 
 1. Use the code-reviewer agent to review all commits on this branch that aren't on main (or the base branch if I specify one: $ARGUMENTS).
 2. Show me the reviewer's findings.
@@ -12,6 +12,4 @@ Before I push this branch, I want to do a local review cycle. Here's the process
    - If you disagree, explain why.
 4. After addressing feedback, run the code-reviewer agent again to verify.
 5. Repeat until the reviewer returns APPROVE or until I tell you to stop.
-6. When approved, show me a final summary and ask if I want to push.
-
-Important: don't push automatically. Always ask me first.
+6. When approved, show me a final summary.
