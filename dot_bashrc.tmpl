@@ -163,3 +163,8 @@ esac
 # wasmtime
 export WASMTIME_HOME="$HOME/.wasmtime"
 export PATH="$WASMTIME_HOME/bin:$PATH"
+
+{{ if eq .chezmoi.hostname "cominor" -}}
+# https://github.com/direnv/direnv
+eval "$(direnv hook bash)"
+{{- end }}
