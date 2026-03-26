@@ -13,7 +13,8 @@ keybinds {
         // bind "Alt c" { Copy; }
     }
     locked {
-        bind "Ctrl g" { SwitchToMode "Normal"; }
+        bind "Ctrl e" { SwitchToMode "Normal"; }
+        unbind "Ctrl g"
     }
     resize {
         bind "Ctrl n" { SwitchToMode "Normal"; }
@@ -154,7 +155,8 @@ keybinds {
         bind "x" { CloseFocus; SwitchToMode "Normal"; }
     }
     shared_except "locked" {
-        bind "Ctrl g" { SwitchToMode "Locked"; }
+        bind "Ctrl e" { SwitchToMode "Locked"; }
+        unbind "Ctrl g"
         // bind "Ctrl q" { Quit; }
         unbind "Ctrl q" // too easy to fat finger and kill zellij
         bind "Alt n" { NewPane; }
