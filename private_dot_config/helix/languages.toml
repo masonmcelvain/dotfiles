@@ -14,31 +14,31 @@ indent = { tab-width = 3, unit = "   " }
 name = "html"
 language-servers = ["vscode-html-language-server", "tailwindcss-ls"]
 formatter = { command = 'hx-fmt', args = ["html"] }
-auto-format = false
+auto-format = true
 
 [[language]]
 name = "json"
 formatter = { command = 'hx-fmt', args = ["json"] }
-auto-format = false
+auto-format = true
 
 [[language]]
 name = "css"
 language-servers = ["vscode-css-language-server", "tailwindcss-ls"]
 formatter = { command = 'hx-fmt', args = ["css"] }
-auto-format = false
+auto-format = true
 
 [[language]]
 name = "javascript"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
 formatter = { command = 'hx-fmt', args = ["js"] }
-auto-format = false
+auto-format = true
 indent = { tab-width = 3, unit = "   " }
 
 [[language]]
 name = "jsx"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
 formatter = { command = 'hx-fmt', args = ["jsx"] }
-auto-format = false
+auto-format = true
 indent = { tab-width = 3, unit = "   " }
 
 [[language]]
@@ -55,14 +55,14 @@ indent = { tab-width = 2, unit = "  " }
 name = "typescript"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
 formatter = { command = 'hx-fmt', args = ["ts"] }
-auto-format = false
+auto-format = true
 indent = { tab-width = 3, unit = "   " }
 
 [[language]]
 name = "tsx"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
 formatter = { command = 'hx-fmt', args = ["tsx"] }
-auto-format = false
+auto-format = true
 indent = { tab-width = 3, unit = "   " }
 
 [[language]]
