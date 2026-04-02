@@ -13,46 +13,31 @@ indent = { tab-width = 3, unit = "   " }
 [[language]]
 name = "html"
 language-servers = ["vscode-html-language-server", "tailwindcss-ls"]
-formatter = { command = 'bash', args = [
-  "-c",
-  "pnpm exec biome format --no-errors-on-unmatched --stdin-file-path=buffer.html",
-] }
+formatter = { command = 'hx-fmt', args = ["html"] }
 auto-format = false
 
 [[language]]
 name = "json"
-formatter = { command = 'bash', args = [
-  "-c",
-  "pnpm exec biome format --no-errors-on-unmatched --stdin-file-path=buffer.json",
-] }
+formatter = { command = 'hx-fmt', args = ["json"] }
 auto-format = false
 
 [[language]]
 name = "css"
 language-servers = ["vscode-css-language-server", "tailwindcss-ls"]
-formatter = { command = 'bash', args = [
-  "-c",
-  "pnpm exec biome format --no-errors-on-unmatched --stdin-file-path=buffer.css",
-] }
+formatter = { command = 'hx-fmt', args = ["css"] }
 auto-format = false
 
 [[language]]
 name = "javascript"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
-formatter = { command = 'bash', args = [
-  "-c",
-  "pnpm exec biome format --no-errors-on-unmatched --stdin-file-path=buffer.js",
-] }
+formatter = { command = 'hx-fmt', args = ["js"] }
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
 
 [[language]]
 name = "jsx"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
-formatter = { command = 'bash', args = [
-  "-c",
-  "pnpm exec biome format --no-errors-on-unmatched --stdin-file-path=buffer.jsx",
-] }
+formatter = { command = 'hx-fmt', args = ["jsx"] }
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
 
@@ -69,20 +54,14 @@ indent = { tab-width = 2, unit = "  " }
 [[language]]
 name = "typescript"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
-formatter = { command = 'bash', args = [
-  "-c",
-  "pnpm exec biome format --no-errors-on-unmatched --stdin-file-path=buffer.ts",
-] }
+formatter = { command = 'hx-fmt', args = ["ts"] }
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
 
 [[language]]
 name = "tsx"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
-formatter = { command = 'bash', args = [
-  "-c",
-  "pnpm exec biome format --no-errors-on-unmatched --stdin-file-path=buffer.tsx",
-] }
+formatter = { command = 'hx-fmt', args = ["tsx"] }
 auto-format = false
 indent = { tab-width = 3, unit = "   " }
 

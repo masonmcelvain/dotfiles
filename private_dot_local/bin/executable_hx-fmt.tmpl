@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Helix formatter: uses biome or prettier based on project config.
+# Usage: hx-fmt <ext>
+# Reads stdin, writes formatted output to stdout.
+
+ext="${1:?Usage: hx-fmt <ext>}"
+
+{{ if eq .chezmoi.hostname "cominor" -}}
+# cominor: pnpm is behind a nave-based wrapper
+pnpm() { "$HOME/Code/Exec/pnpm-wrapper" "$@"; }
+{{ end -}}
+
+# Walk up from cwd to find a formatter config file.
+has_prettier_config() {
+  for f in .prettierrc .prettierrc.{json,yml,yaml,json5,js,cjs,mjs,toml} \
+           prettier.config.{js,cjs,mjs}; do
+    [ -f "$1/$f" ] && return 0
+  done
+  return 1
+}
+
+dir="$PWD"
+while [ "$dir" != "/" ]; do
+  if [ -f "$dir/biome.json" ] || [ -f "$dir/biome.jsonc" ]; then
+    cd "$dir"
+    pnpm exec biome format --no-errors-on-unmatched --stdin-file-path="buffer.$ext"
+    exit $?
+  fi
+  if has_prettier_config "$dir"; then
+    cd "$dir"
+    pnpm exec prettier --stdin-filepath="buffer.$ext"
+    exit $?
+  fi
+  dir="$(dirname "$dir")"
+done
+
+# No formatter found, pass through unchanged
+cat
