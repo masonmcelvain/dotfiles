@@ -90,8 +90,7 @@ source /usr/share/doc/fzf/examples/key-bindings.bash
 #------------------------------------------------------------------------------
 # Cominor
 #------------------------------------------------------------------------------
-alias code="cd /home/mmcelvain/Code"
-alias mycli="mycli -u root -h db.cominor.com"
+alias code="cd $HOME/Code"
 alias psalm="psalm --no-cache"
 alias psalmup="psalm --update-baseline"
 alias psalmset="psalm --set-baseline=psalm-baseline.xml"
@@ -106,7 +105,7 @@ lmg () {
 
 # Enable fzf for bash
 if [[ ! (-z "$PS1")  ]] && [ -f ~/.fzf-key-bindings.bash  ]; then
-   source /home/mmcelvain/.fzf-key-bindings.bash
+   source "$HOME/.fzf-key-bindings.bash"
 fi
 #------------------------------------------------------------------------------
 {{- end }}

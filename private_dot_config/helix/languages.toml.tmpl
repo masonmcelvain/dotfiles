@@ -101,7 +101,7 @@ timeout = 5
 command = "intelephense"
 args = ["--stdio"]
 [language-server.intelephense.config]
-licenceKey = "/home/mmcelvain/intelephense/licence.txt"
+licenceKey = "{{ .chezmoi.homeDir }}/intelephense/licence.txt"
 # https://github.com/bmewburn/intelephense-docs/blob/master/installation.md
 [language-server.intelephense.config.intelephense]
 environment = { shortOpenTag = true }
