@@ -37,9 +37,7 @@ trace() {
     local log_args=(-L "$ls,$le:$f")
     [ -n "$until" ] && log_args+=("$until")
 
-    git log "${log_args[@]}" --no-patch \
-        --pretty=format:'%h %ad %an: %s' --date=short 2>/dev/null || return 0
-    echo
+    git log "${log_args[@]}" --no-patch -20 2>/dev/null || return 0
 
     # Capture the oldest commit's sha, file path at that commit, and +line
     # range. We walk the patch output and let awk's END block keep only the
