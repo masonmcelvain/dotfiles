@@ -88,11 +88,15 @@ export PATH="$FLYCTL_INSTALL/bin:$PATH"
 alacritty_theme() {
 	ln -sf $HOME/.config/alacritty/$1.toml $HOME/.config/alacritty/theme.toml
 }
+sync_theme() {
+	alacritty_theme "everforest_$1"
+	[ -n "$ZELLIJ" ] && zellij action "set-$1-theme" >/dev/null 2>&1
+}
 COLOR_SCHEME=$(gsettings get org.gnome.desktop.interface color-scheme)
 if [ "$COLOR_SCHEME" = "'default'" ]; then
-	alacritty_theme "everforest_light"
+	sync_theme light
 else
-	alacritty_theme "dracula"
+	sync_theme dark
 fi
 
 #------------------------------------------------------------------------------
