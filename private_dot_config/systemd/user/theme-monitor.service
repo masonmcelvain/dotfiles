@@ -1,0 +1,14 @@
+[Unit]
+Description=Sync alacritty + zellij themes with GNOME color-scheme
+After=graphical-session.target
+PartOf=graphical-session.target
+ConditionHost=mason-xps
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/theme-monitor.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
