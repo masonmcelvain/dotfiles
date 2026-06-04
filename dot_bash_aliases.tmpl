@@ -71,10 +71,10 @@ fi
 #------------------------------------------------------------------------------
 alias update="
    sudo apt update
-   sudo apt upgrade
+   sudo apt upgrade --yes
    sudo snap refresh
    sudo flatpak update --assumeyes
-   sudo apt autoremove"
+   sudo apt autoremove --yes"
 alias work="ssh -A cominor"
 alias gg="git grep -I --line-number --color=always"
 
