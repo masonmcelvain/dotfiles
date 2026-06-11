@@ -5,10 +5,13 @@
 
 ext="${1:?Usage: hx-fmt <ext>}"
 
-{{ if eq .chezmoi.hostname "cominor" -}}
-# cominor: pnpm is behind a nave-based wrapper
-pnpm() { "$HOME/Code/Exec/pnpm-wrapper" "$@"; }
-{{ end -}}
+# Buffer stdin so we can fall back to it verbatim on any failure.
+tmp="$(mktemp -d)" || { cat; exit 0; }
+trap 'rm -rf "$tmp"' EXIT
+cat >"$tmp/in"
+
+# Emit the original input unchanged and stop.
+passthrough() { cat "$tmp/in"; exit 0; }
 
 # Walk up from cwd to find a formatter config file.
 has_prettier_config() {
@@ -19,20 +22,44 @@ has_prettier_config() {
   return 1
 }
 
+# Find an executable in the nearest node_modules/.bin walking up from $PWD.
+find_local_bin() {
+  local name="$1" d="$PWD"
+  while [ "$d" != "/" ]; do
+    if [ -x "$d/node_modules/.bin/$name" ]; then
+      printf '%s\n' "$d/node_modules/.bin/$name"
+      return 0
+    fi
+    d="$(dirname "$d")"
+  done
+  return 1
+}
+
+# Run a formatter; on success with non-empty output, print it (preserving exact
+# bytes, including the trailing newline) and exit. Otherwise return non-zero so
+# the caller can fall through to passthrough.
+run_formatter() {
+  "$@" <"$tmp/in" >"$tmp/out" 2>/dev/null && [ -s "$tmp/out" ] || return 1
+  cat "$tmp/out"
+  exit 0
+}
+
 dir="$PWD"
 while [ "$dir" != "/" ]; do
   if [ -f "$dir/biome.json" ] || [ -f "$dir/biome.jsonc" ]; then
-    cd "$dir"
-    pnpm exec biome format --no-errors-on-unmatched --stdin-file-path="buffer.$ext"
-    exit $?
+    cd "$dir" || passthrough
+    bin="$(find_local_bin biome)" || passthrough
+    run_formatter "$bin" format --no-errors-on-unmatched --stdin-file-path="buffer.$ext"
+    passthrough
   fi
   if has_prettier_config "$dir"; then
-    cd "$dir"
-    pnpm exec prettier --stdin-filepath="buffer.$ext"
-    exit $?
+    cd "$dir" || passthrough
+    bin="$(find_local_bin prettier)" || passthrough
+    run_formatter "$bin" --stdin-filepath="buffer.$ext"
+    passthrough
   fi
   dir="$(dirname "$dir")"
 done
 
-# No formatter found, pass through unchanged
-cat
+# No formatter config found, pass through unchanged.
+passthrough
