@@ -18,40 +18,57 @@ Use conventional commit messages following this pattern:
 ```
 
 - Prefer `feat` and `fix` for the type, but other types are allowed including `build`, `chore`, `ci`, `docs`, `style`, `refactor`, `perf`, and `test`.
-- Use a concise scope when appropriate, but it is not always necessary.
-- Use the imperative tense, not the passive tense. For example, "add Polish language" instead of "adds Polish language".
-- Be brief and use complete sentences in commit bodies.
-- The first line must be 50 characters or less
-
-**Example commit with scope**:
-
-```
-feat(lang): add Polish language
-```
+- Use a concise lowercase scope when appropriate, but most commits don't need one. For example, `fix(varnish): don't throttle shopify webhooks`.
+- The description starts lowercase (unless it begins with an acronym or proper noun) and uses the imperative tense, not the passive tense. For example, "add Polish language" instead of "adds Polish language".
+- The first line must be 50 characters or less.
+- Trivial changes don't need a body (e.g. `fix: --help typo`).
+- When there is a body, lead with the motivation: explain why the change is needed, not just what it does. Keep it brief, in complete sentences.
+- Cite evidence in the body when it exists: Slack thread links, Sentry issue links, related PRs, API docs, and commit hashes (e.g. "The only usage was removed in 66f417fce92"). Bare URLs on their own line are fine.
 
 **Example commit with body**:
 
 ```
-fix: mobile dropdown flickering
+fix: log shopify webhooks in the background
 
-Prevent the mobile product option dropdown from flickering when first opened.
+Fix a problem where bursts of webhooks from the Matrixify app caused so
+many writes per second that DB replication could fall behind by hours.
+
+https://ifixit.slack.com/archives/C09FMSNS1/p1780528407434489
 ```
 
 ## Pull request guidelines
 
 When writing pull requests, follow these guidelines:
 
-- Title should be in 'Title case with Pronouns capitalized', without conventional commit type prefix
-- If the PR closes an issue, you should write it at the top of PR body (`- close #1234`)
-- If a PR is related to an issue but does not resolve it completely, then add at the top "- connect #1234"
+- Title should be in sentence case (first word and proper nouns capitalized), without a conventional commit type prefix. For example, "Log shopify webhooks in the background".
+- A `Component:` prefix is welcome when it adds clarity, with the description still capitalized after it. For example, "DHL: Split combined tracking numbers on `<BR>`" or "Locale picker: Handle unpublished route locales".
+- Start the body with a bulleted list of references when they exist, using full URLs rather than bare issue numbers (full URLs also work across repos):
+  - `- close https://github.com/iFixit/ifixit/issues/62287` if the PR closes the issue
+  - `- connect https://github.com/iFixit/ifixit/issues/62154` if related but not fully resolving it
+  - Other reference styles as appropriate: `- fix a bug from <PR url>`, `- built on top of <PR url>`, `- followup to <PR url>`, `- resolve [SENTRY-ID](<sentry url>)`, or just a bare `- <slack/PR url>` when the relationship is obvious
+- The description should briefly explain the change and its motivation. Link supporting evidence such as Slack threads and Sentry issues. Small changes can get away with a single sentence or even just a link.
+- Link relevant API or vendor documentation, often as a bulleted `### Docs` subsection.
+- Use `##` sections when they earn their keep: `## Changes` (bulleted changeset, with per-app `###` subsections if the PR spans apps), `## Motivation`, `## QA` (manual QA steps), `## On deploy` (commands in code blocks, or a `- [ ]` checklist of manual steps).
 
-**Example PR template**:
+**Example PR body**:
+
+````
+- close https://github.com/iFixit/ifixit/issues/62287
+
+Brief description of the change and its motivation.
+
+https://ifixit.slack.com/archives/C09FMSNS1/p1781024024937349
+
+## QA
+
+Smoke test the pull customers cli
+
+## On deploy
 
 ```
-- close #1234
-
-Brief description of the changes and their purpose.
+Exec/console netsuite:pull --table VendorBill --all
 ```
+````
 
 ## Browser Automation
 
