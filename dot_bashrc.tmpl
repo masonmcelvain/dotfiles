@@ -1,3 +1,11 @@
+# Is this an interactive shell? Non-interactive shells (scripts, Claude's tool
+# calls) skip the slow initializers below, while the cheap PATH exports stay so
+# pnpm/node/etc. still resolve.
+case $- in
+	*i*) _is_interactive=1 ;;
+	*) _is_interactive= ;;
+esac
+
 {{ if eq .chezmoi.hostname "mason-xps" -}}
 #------------------------------------------------------------------------------
 # Ubuntu defaults
@@ -18,10 +26,10 @@ HISTFILESIZE=2000
 shopt -s checkwinsize
 
 # make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+[ -n "$_is_interactive" ] && [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
+if [ -n "$_is_interactive" ] && [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
     #alias dir='dir --color=auto'
@@ -39,7 +47,7 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
-if ! shopt -oq posix; then
+if [ -n "$_is_interactive" ] && ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
     . /usr/share/bash-completion/bash_completion
   elif [ -f /etc/bash_completion ]; then
@@ -60,7 +68,7 @@ fi
 
 # https://github.com/twpayne/chezmoi/issues/1332#issuecomment-927367673
 export LESS=-FRX
-ssh-use-gpg
+[ -n "$_is_interactive" ] && ssh-use-gpg
 #------------------------------------------------------------------------------
 {{- end }}
 
@@ -78,7 +86,7 @@ export GPG_TTY=$(tty)
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+[ -n "$_is_interactive" ] && [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 . "$HOME/.cargo/env"
 
@@ -87,7 +95,7 @@ export PATH="$FLYCTL_INSTALL/bin:$PATH"
 
 # Bootstrap a freshly-spawned zellij session to the current GNOME mode.
 # Live toggles (and alacritty) are handled by theme-monitor.service.
-if [ -n "$ZELLIJ" ]; then
+if [ -n "$_is_interactive" ] && [ -n "$ZELLIJ" ]; then
 	case "$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null)" in
 		"'default'"|"'prefer-light'") zellij action set-light-theme >/dev/null 2>&1 ;;
 		*) zellij action set-dark-theme >/dev/null 2>&1 ;;
@@ -127,13 +135,13 @@ fi
 FNM_PATH="$HOME/.local/share/fnm"
 if [ -d "$FNM_PATH" ]; then
   export PATH="$FNM_PATH:$PATH"
-  eval "$(fnm env --use-on-cd --log-level quiet --shell bash)"
+  [ -n "$_is_interactive" ] && eval "$(fnm env --use-on-cd --log-level quiet --shell bash)"
 fi
 
-eval "$(zoxide init bash)"
+[ -n "$_is_interactive" ] && eval "$(zoxide init bash)"
 
 # https://starship.rs/
-eval "$(starship init bash)"
+[ -n "$_is_interactive" ] && eval "$(starship init bash)"
 export LC_ALL="en_US.UTF-8"
 
 # corepack https://github.com/nodejs/corepack/issues/485
@@ -150,7 +158,7 @@ export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$HOME/.gem/bin
 
 # mise version manager (ruby on rails)
-if [ -x ~/.local/bin/mise ]; then
+if [ -n "$_is_interactive" ] && [ -x ~/.local/bin/mise ]; then
 	eval "$(~/.local/bin/mise activate)"
 fi
 
@@ -168,5 +176,5 @@ export PATH="$WASMTIME_HOME/bin:$PATH"
 
 {{ if eq .chezmoi.hostname "cominor" -}}
 # https://github.com/direnv/direnv
-eval "$(direnv hook bash)"
+[ -n "$_is_interactive" ] && eval "$(direnv hook bash)"
 {{- end }}
