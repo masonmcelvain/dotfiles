@@ -18,6 +18,10 @@ apply_theme() {
 		[ -z "$session" ] && continue
 		zellij -s "$session" action "set-${mode}-theme" >/dev/null 2>&1 || true
 	done < <(zellij list-sessions -n 2>/dev/null | grep -v "EXITED" | awk '{print $1}')
+
+	# delta's terminal-background detection is unreliable inside zellij, pin it
+	mkdir -p "$HOME/.config/git"
+	printf '[delta]\n\t%s = true\n' "$mode" >"$HOME/.config/git/theme.gitconfig"
 }
 
 apply_theme "$(mode_from_value "$(gsettings get org.gnome.desktop.interface color-scheme)")"
