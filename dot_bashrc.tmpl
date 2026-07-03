@@ -151,8 +151,8 @@ export COREPACK_ENABLE_AUTO_PIN=0
 export BUN_INSTALL="$HOME/.bun"
 export PATH=$BUN_INSTALL/bin:$PATH
 
-# go
-export PATH=$PATH:/usr/local/go/bin
+# go (toolchain + `go install` binaries)
+export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 
 # ruby gems
 export PATH=$PATH:$HOME/.gem/bin

@@ -70,6 +70,16 @@ name = "toml"
 formatter = { command = "taplo", args = ["fmt", "-"] }
 auto-format = false
 
+# Official Docker language server (Dockerfile + Compose + Bake) in place of
+# Helix's npm-based defaults. https://github.com/docker/docker-language-server
+[[language]]
+name = "dockerfile"
+language-servers = ["docker-language-server"]
+
+[[language]]
+name = "docker-compose"
+language-servers = ["docker-language-server"]
+
 [language-server.eslint]
 command = "vscode-eslint-language-server"
 args = ["--stdio"]
@@ -116,6 +126,10 @@ undefinedVariables = false
 [language-server.psalm]
 command = "vendor/bin/psalm-language-server"
 timeout = 120
+
+[language-server.docker-language-server]
+command = "docker-language-server"
+args = ["start", "--stdio"]
 
 [language-server.rust-analyzer.config.check]
 command = "clippy"
