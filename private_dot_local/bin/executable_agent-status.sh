@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Claude Code hook handler: persist agent status to ~/.cache/agents/<session_id>.json
-# and mirror it in the name of the zellij tab the agent runs in:
-#   "● name" working, "○ name" needs input, "✓ name" done.
+# and mirror it in the name of the zellij tab the agent runs in, labeled with
+# the session's title (falling back to the tab's original name):
+#   "● title" working, "○ title" needs input, "✓ title" done.
 # Registered for hook events in ~/.claude/settings.json by dot_claude/modify_settings.json.
 # Usage: receives hook-event JSON on stdin; must be fast and never fail the agent.
 
@@ -27,6 +28,19 @@ capture_tab() {
     name=$(sed -n 's/^name: //p' <<<"$info" | sed -E 's/^[●○✓] ?//')
     [ -n "$id" ] || return 1
     printf '%s\t%s\n' "$id" "$name"
+}
+
+# Latest session title Claude Code wrote to the transcript: an explicit name
+# (claude -n, session rename) lands as "agent-name", the auto-generated title
+# as "ai-title"; newest entry wins. tac reads from the end, so this stays fast
+# on large transcripts. These entry types are undocumented internals: if they
+# vanish, this prints nothing and callers fall back to the original tab name.
+session_title() {
+    local path=$1
+    [ -n "$path" ] && [ -r "$path" ] || return 0
+    tac "$path" 2>/dev/null |
+        grep -m1 -e '"type":"agent-name"' -e '"type":"ai-title"' |
+        jq -r '.agentName // .aiTitle // empty'
 }
 
 restore_tab() {
@@ -65,10 +79,11 @@ main() {
         return 0
     fi
 
-    local prev_status tab_id orig_name
+    local prev_status tab_id orig_name last_name
     prev_status=$(jq -r '.status // empty' <<<"$old")
     tab_id=$(jq -r '.zellij.tab_id // empty' <<<"$old")
     orig_name=$(jq -r '.zellij.original_tab_name // empty' <<<"$old")
+    last_name=$(jq -r '.zellij.last_name // empty' <<<"$old")
 
     # Capture the agent's tab at session start and re-capture whenever the user
     # submits a prompt (they must be in this tab to type). Later renames target
@@ -81,18 +96,24 @@ main() {
         esac
         if [ -n "$recapture" ] && cap=$(capture_tab); then
             tab_id=${cap%%$'\t'*}
-            # A tab we already renamed and that has no name of its own captures
-            # as empty; keep the stored name rather than forgetting it.
+            # Keep the stored name when the capture is empty (a renamed tab
+            # with no name of its own) or is just the session title this
+            # script set on a previous rename.
             cap_name=${cap#*$'\t'}
-            [ -n "$cap_name" ] && orig_name=$cap_name
+            if [ -n "$cap_name" ] && [ "$cap_name" != "$last_name" ]; then
+                orig_name=$cap_name
+            fi
         fi
     fi
 
-    local now cwd msg new tmp
+    local now cwd msg title show_name new tmp
     now=$(date -Is)
     cwd=$(jq -r '.cwd // empty' <<<"$input")
     msg=""
     [ "$event" = Notification ] && msg=$(jq -r '.message // empty' <<<"$input")
+    title=$(session_title "$(jq -r '.transcript_path // empty' <<<"$input")")
+    show_name=${title:-$orig_name}
+    [ "${#show_name}" -gt 50 ] && show_name="${show_name:0:49}…"
     new=$(jq -n \
         --argjson old "$old" \
         --arg session_id "$session_id" \
@@ -101,10 +122,12 @@ main() {
         --arg now "$now" \
         --arg cwd "$cwd" \
         --arg msg "$msg" \
+        --arg title "$title" \
         --arg zsession "${ZELLIJ_SESSION_NAME:-}" \
         --arg zpane "${ZELLIJ_PANE_ID:-}" \
         --arg tab_id "$tab_id" \
-        --arg orig "$orig_name" '
+        --arg orig "$orig_name" \
+        --arg last_name "$show_name" '
         $old + {
             schema: 1,
             agent: "claude",
@@ -115,22 +138,26 @@ main() {
         }
         | if $cwd != "" then .cwd = $cwd else . end
         | if $msg != "" then .message = $msg else . end
+        | if $title != "" then .title = $title else . end
         | if $tab_id != "" then
               .zellij = {
                   session: $zsession,
                   pane_id: $zpane,
                   tab_id: ($tab_id | tonumber),
-                  original_tab_name: $orig
+                  original_tab_name: $orig,
+                  last_name: $last_name
               }
           else . end')
     tmp=$(mktemp "$state_dir/.${session_id}.XXXXXX")
     printf '%s\n' "$new" >"$tmp" && mv "$tmp" "$state_file"
 
-    # PostToolUse fires on every tool call; only rename on an actual transition.
-    if [ -n "${ZELLIJ:-}" ] && [ -n "$tab_id" ] && [ "$status" != "$prev_status" ]; then
+    # PostToolUse fires on every tool call; rename only when the glyph or the
+    # name changes (the session title appears and updates mid-session).
+    if [ -n "${ZELLIJ:-}" ] && [ -n "$tab_id" ] &&
+        { [ "$status" != "$prev_status" ] || [ "$show_name" != "$last_name" ]; }; then
         local label
         label="$(glyph_for "$status")"
-        [ -n "$orig_name" ] && label="$label $orig_name"
+        [ -n "$show_name" ] && label="$label $show_name"
         zellij action rename-tab --tab-id "$tab_id" "$label" 2>/dev/null || true
     fi
     return 0
