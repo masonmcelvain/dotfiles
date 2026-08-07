@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Claude Code hook handler: persist agent status to ~/.cache/agents/<session_id>.json
 # and mirror it in the name of the zellij tab the agent runs in:
-#   "● claude: name" working, "○ claude: name" needs input, "✓ claude: name" done.
+#   "● name" working, "○ name" needs input, "✓ name" done.
 # Registered for hook events in ~/.claude/settings.json by dot_claude/modify_settings.json.
 # Usage: receives hook-event JSON on stdin; must be fast and never fail the agent.
 
@@ -17,13 +17,14 @@ glyph_for() {
     esac
 }
 
-# Print "id<TAB>name" for the session's active tab, stripping any status prefix
-# this script previously added to the name.
+# Print "id<TAB>name" for the session's active tab, stripping any status glyph
+# this script previously added to the name. Strip only the glyph: the rest is the
+# tab's real name, even when it starts with "claude".
 capture_tab() {
     local info id name
     info=$(zellij action current-tab-info 2>/dev/null) || return 1
     id=$(sed -n 's/^id: //p' <<<"$info")
-    name=$(sed -n 's/^name: //p' <<<"$info" | sed -E 's/^[●○✓] claude(: )?//')
+    name=$(sed -n 's/^name: //p' <<<"$info" | sed -E 's/^[●○✓] ?//')
     [ -n "$id" ] || return 1
     printf '%s\t%s\n' "$id" "$name"
 }
@@ -73,14 +74,17 @@ main() {
     # submits a prompt (they must be in this tab to type). Later renames target
     # the stable tab id, so they land here even while another tab is focused.
     if [ -n "${ZELLIJ:-}" ]; then
-        local recapture="" cap
+        local recapture="" cap cap_name
         case "$event" in
             SessionStart | UserPromptSubmit) recapture=1 ;;
             *) [ -n "$tab_id" ] || recapture=1 ;;
         esac
         if [ -n "$recapture" ] && cap=$(capture_tab); then
             tab_id=${cap%%$'\t'*}
-            orig_name=${cap#*$'\t'}
+            # A tab we already renamed and that has no name of its own captures
+            # as empty; keep the stored name rather than forgetting it.
+            cap_name=${cap#*$'\t'}
+            [ -n "$cap_name" ] && orig_name=$cap_name
         fi
     fi
 
@@ -125,8 +129,8 @@ main() {
     # PostToolUse fires on every tool call; only rename on an actual transition.
     if [ -n "${ZELLIJ:-}" ] && [ -n "$tab_id" ] && [ "$status" != "$prev_status" ]; then
         local label
-        label="$(glyph_for "$status") claude"
-        [ -n "$orig_name" ] && label="$label: $orig_name"
+        label="$(glyph_for "$status")"
+        [ -n "$orig_name" ] && label="$label $orig_name"
         zellij action rename-tab --tab-id "$tab_id" "$label" 2>/dev/null || true
     fi
     return 0
