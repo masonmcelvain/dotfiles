@@ -1,0 +1,37 @@
+#!/bin/bash
+# chezmoi modify script for ~/.claude/settings.json: merge in the agent-status
+# hook registrations without managing the rest of the file, which Claude Code
+# live-edits (permission grants, plugins, etc.).
+# Receives the current target contents on stdin; prints the new contents.
+
+set -euo pipefail
+
+cmd="$HOME/.local/bin/agent-status.sh"
+
+managed=$(jq -n --arg cmd "$cmd" '
+    {type: "command", command: $cmd, timeout: 10} as $hook |
+    {
+        SessionStart:     [{hooks: [$hook]}],
+        UserPromptSubmit: [{hooks: [$hook]}],
+        Notification:     [{matcher: "permission_prompt|idle_prompt|elicitation_dialog|agent_needs_input", hooks: [$hook]}],
+        PostToolUse:      [{matcher: "*", hooks: [$hook]}],
+        Stop:             [{hooks: [$hook]}],
+        SessionEnd:       [{hooks: [$hook]}]
+    }')
+
+current=$(cat)
+[ -n "$current" ] || current='{}'
+
+# For each managed event: drop any prior agent-status entries, then append ours.
+# Idempotent; leaves all other hooks (e.g. notify-send) and settings untouched.
+jq --argjson managed "$managed" '
+    .hooks = (
+        reduce ($managed | to_entries[]) as $e (.hooks // {};
+            .[$e.key] = (
+                (.[$e.key] // [] | map(select(
+                    ((.hooks // []) | any(.command // "" | contains("agent-status.sh"))) | not
+                )))
+                + $e.value
+            ))
+    )
+' <<<"$current"
