@@ -18,16 +18,26 @@ glyph_for() {
     esac
 }
 
-# Print "id<TAB>name" for the session's active tab, stripping any status glyph
-# this script previously added to the name. Strip only the glyph: the rest is the
-# tab's real name, even when it starts with "claude".
+# Print "id<TAB>name" for the tab holding this agent's pane, stripping any status
+# glyph this script previously added to the name. Strip only the glyph: the rest
+# is the tab's real name, even when it starts with "claude".
+#
+# The tab is resolved from ZELLIJ_PANE_ID, never from the focused tab: hooks fire
+# while the user is off in another tab, and `current-tab-info` would report
+# *their* tab and rebind us to it. Filter out plugin panes -- they share the
+# numeric id space with terminals (plugin_0 and terminal_0 are both id 0).
 capture_tab() {
-    local info id name
-    info=$(zellij action current-tab-info 2>/dev/null) || return 1
-    id=$(sed -n 's/^id: //p' <<<"$info")
-    name=$(sed -n 's/^name: //p' <<<"$info" | sed -E 's/^[●○✓] ?//')
-    [ -n "$id" ] || return 1
-    printf '%s\t%s\n' "$id" "$name"
+    local pane out
+    pane=${ZELLIJ_PANE_ID:-}
+    pane=${pane#terminal_}
+    [ -n "$pane" ] || return 1
+    out=$(zellij action list-panes -j -t 2>/dev/null |
+        jq -r --arg pane "$pane" '
+            first(.[] | select((.is_plugin | not) and (.id | tostring) == $pane)
+                  | "\(.tab_id)\t\(.tab_name)")' |
+        sed -E 's/\t[●○✓] ?/\t/')
+    [ -n "$out" ] || return 1
+    printf '%s\n' "$out"
 }
 
 # Latest session title Claude Code wrote to the transcript: an explicit name
@@ -79,20 +89,28 @@ main() {
         return 0
     fi
 
-    local prev_status tab_id orig_name last_name
+    local prev_status tab_id orig_name last_name prev_zsession prev_zpane
     prev_status=$(jq -r '.status // empty' <<<"$old")
     tab_id=$(jq -r '.zellij.tab_id // empty' <<<"$old")
     orig_name=$(jq -r '.zellij.original_tab_name // empty' <<<"$old")
     last_name=$(jq -r '.zellij.last_name // empty' <<<"$old")
+    prev_zsession=$(jq -r '.zellij.session // empty' <<<"$old")
+    prev_zpane=$(jq -r '.zellij.pane_id // empty' <<<"$old")
 
-    # Capture the agent's tab at session start and re-capture whenever the user
-    # submits a prompt (they must be in this tab to type). Later renames target
-    # the stable tab id, so they land here even while another tab is focused.
+    # Capture the agent's tab at session start, re-capture on every prompt (the
+    # user may have renamed the tab or moved the pane), and otherwise reuse the
+    # stored tab id -- unless it was recorded for a different zellij session or
+    # pane, as after `claude --resume` in a new window, where it now points at
+    # some unrelated tab. Renames target the stable tab id, so they land on the
+    # agent's tab even while another tab is focused.
     if [ -n "${ZELLIJ:-}" ]; then
         local recapture="" cap cap_name
         case "$event" in
             SessionStart | UserPromptSubmit) recapture=1 ;;
-            *) [ -n "$tab_id" ] || recapture=1 ;;
+            *)
+                [ -n "$tab_id" ] && [ "$prev_zsession" = "${ZELLIJ_SESSION_NAME:-}" ] &&
+                    [ "$prev_zpane" = "${ZELLIJ_PANE_ID:-}" ] || recapture=1
+                ;;
         esac
         if [ -n "$recapture" ] && cap=$(capture_tab); then
             tab_id=${cap%%$'\t'*}
