@@ -38,7 +38,9 @@ t = ":sh git-blame-trace.sh '%{buffer_name}' %{selection_line_start} %{selection
 {{ if eq .chezmoi.hostname "cominor" -}}
 O = ":echo %sh{gh browse -n '%{buffer_name}:%{selection_line_start}-%{selection_line_end}'}"
 "B" = ":echo %sh{gh browse --blame -n '%{buffer_name}:%{selection_line_start}-%{selection_line_end}'}"
+"C" = ":echo %sh{git-line-commit.sh -n '%{buffer_name}' %{selection_line_start} 2>&1}"
 {{- else if eq .chezmoi.hostname "mason-xps" }}
 O = ":sh gh browse '%{buffer_name}:%{selection_line_start}-%{selection_line_end}' > /dev/null"
 "B" = ":sh gh browse --blame '%{buffer_name}:%{selection_line_start}-%{selection_line_end}' > /dev/null"
+"C" = ":sh git-line-commit.sh '%{buffer_name}' %{selection_line_start} > /dev/null"
 {{- end }}
