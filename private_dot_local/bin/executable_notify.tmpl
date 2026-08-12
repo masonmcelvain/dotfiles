@@ -117,7 +117,16 @@ fi
 sent=0
 
 if has_desktop; then
-    notify-send -a "$appname" -i "$icon" -u "$urgency" \
+    # GNOME Shell arms its banner timer only for non-critical notifications
+    # (messageTray.js: NOTIFICATION_TIMEOUT = 4000, skipped when urgency is
+    # CRITICAL), and ignores expire_timeout entirely -- so -u critical means
+    # "sit on screen until clicked", not "shout louder". Cap the desktop at
+    # normal and let the error icon carry the severity. ntfy still gets high
+    # priority below, where it means "buzz the phone" rather than "never go
+    # away".
+    desktop_urgency=$urgency
+    [ "$desktop_urgency" = critical ] && desktop_urgency=normal
+    notify-send -a "$appname" -i "$icon" -u "$desktop_urgency" \
         "$title" "$body" 2>/dev/null && sent=1
 fi
 

@@ -17,12 +17,15 @@
 subscribe:
   - topic: {{ .ntfy.topic }}
     # $t and $m are the publisher's title and body; $p is priority 1-5, which
-    # notify sets from its own -u, so a failed build lands as critical here
-    # too. The title carries the interesting part (the command and its status
-    # glyph) and is prefixed by notify with the host it came from.
+    # notify sets from its own -u. The title carries the interesting part (the
+    # command and its status), prefixed by notify with the host it came from.
+    #
+    # A high-priority push maps to the error icon rather than critical
+    # urgency: GNOME Shell never times out a critical banner, so a failed
+    # build on cominor would sit on screen until clicked.
     command: >-
       case "$p" in
-      4|5) u=critical i=dialog-error;;
+      4|5) u=normal i=dialog-error;;
       1|2) u=low i=dialog-information;;
       *) u=normal i=dialog-information;;
       esac;
