@@ -1,37 +1,56 @@
 #!/bin/bash
 # chezmoi modify script for ~/.claude/settings.json: merge in the agent-status
-# hook registrations without managing the rest of the file, which Claude Code
-# live-edits (permission grants, plugins, etc.).
+# and notification hook registrations without managing the rest of the file,
+# which Claude Code live-edits (permission grants, plugins, etc.).
 # Receives the current target contents on stdin; prints the new contents.
+#
+# Both hook commands are host-agnostic: agent-status.sh works out its own
+# zellij context, and notify picks a transport based on what the machine can
+# reach (desktop popup on mason-xps, ntfy push on cominor). That indirection
+# is what keeps the ntfy topic -- a bearer secret -- out of settings.json,
+# which lives unencrypted in $HOME and is rewritten by Claude Code at will.
 
 set -euo pipefail
 
-cmd="$HOME/.local/bin/agent-status.sh"
+status_cmd="$HOME/.local/bin/agent-status.sh"
+notify_cmd="$HOME/.local/bin/notify"
 
-managed=$(jq -n --arg cmd "$cmd" '
-    {type: "command", command: $cmd, timeout: 10} as $hook |
+managed=$(jq -n --arg status "$status_cmd" --arg notify "$notify_cmd" '
+    {type: "command", command: $status, timeout: 10} as $agent |
+    # Messages are single-quoted for the shell; keep them apostrophe-free.
+    def say($msg): {
+        type: "command",
+        command: "\($notify) -a claude '"'"'Claude Code'"'"' '"'"'\($msg)'"'"'"
+    };
     {
-        SessionStart:     [{hooks: [$hook]}],
-        UserPromptSubmit: [{hooks: [$hook]}],
-        Notification:     [{matcher: "permission_prompt|idle_prompt|elicitation_dialog|agent_needs_input", hooks: [$hook]}],
-        PostToolUse:      [{matcher: "*", hooks: [$hook]}],
-        Stop:             [{hooks: [$hook]}],
-        SessionEnd:       [{hooks: [$hook]}]
+        SessionStart:     [{hooks: [$agent]}],
+        UserPromptSubmit: [{hooks: [$agent]}],
+        Notification: [
+            {matcher: "permission_prompt",    hooks: [say("Permission requested")]},
+            {matcher: "auth_success",         hooks: [say("Authentication successful")]},
+            {matcher: "elicitation_dialog",   hooks: [say("MCP tool needs your input")]},
+            {matcher: "permission_prompt|idle_prompt|elicitation_dialog|agent_needs_input",
+             hooks: [$agent]}
+        ],
+        PostToolUse:      [{matcher: "*", hooks: [$agent]}],
+        Stop:             [{hooks: [say("Task completed")]}, {hooks: [$agent]}],
+        SessionEnd:       [{hooks: [$agent]}]
     }')
 
 current=$(cat)
 [ -n "$current" ] || current='{}'
 
-# For each managed event: drop any prior agent-status entries, then append ours.
-# Idempotent; leaves all other hooks (e.g. notify-send) and settings untouched.
+# For each managed event: drop any entry we own, then append the current set.
+# "Ours" covers the notify-send and curl-to-ntfy commands this script replaced,
+# so applying it migrates the old hand-written hooks rather than duplicating
+# them. Idempotent; every other hook and setting is left untouched.
 jq --argjson managed "$managed" '
+    def is_managed:
+        (.hooks // []) | any(
+            (.command // "") | test("agent-status\\.sh|notify-send|ntfy\\.sh|/notify( |$)")
+        );
     .hooks = (
         reduce ($managed | to_entries[]) as $e (.hooks // {};
-            .[$e.key] = (
-                (.[$e.key] // [] | map(select(
-                    ((.hooks // []) | any(.command // "" | contains("agent-status.sh"))) | not
-                )))
-                + $e.value
-            ))
+            .[$e.key] = ((.[$e.key] // [] | map(select(is_managed | not))) + $e.value))
     )
 ' <<<"$current"

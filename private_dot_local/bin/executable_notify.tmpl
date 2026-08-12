@@ -1,0 +1,133 @@
+#!/usr/bin/env bash
+# notify -- send a desktop notification, or push it to a phone when there is
+# no desktop to send it to.
+#
+#   notify 'Claude Code' 'Task completed'
+#   notify -u critical -t x '✗ cargo build' 'exit 1 · 4m12s · cominor:~/Code'
+#
+# Transports, in order:
+#   notify-send   GNOME popup, when a session bus is reachable (mason-xps)
+#   ntfy.sh       phone/browser push, when a topic is configured (cominor)
+#
+# ntfy only fires when notify-send didn't, so a message isn't delivered twice
+# when you're sitting at the desktop; -p forces both.
+#
+# Callers: `yo` (slow-command notifications) and the Claude Code hooks
+# registered by dot_claude/modify_settings.json. Keeping the dispatch here is
+# what lets those hooks stay identical on every machine -- and keeps the ntfy
+# topic, which is a bearer secret, out of ~/.claude/settings.json.
+#
+# The topic lives in chezmoi's config data rather than the public dotfiles
+# repo. Add to ~/.config/chezmoi/chezmoi.toml on each machine:
+#
+#   [data.ntfy]
+#      topic = "..."
+#
+# Exits 0 if at least one transport accepted the message, 1 if none did.
+
+set -uo pipefail
+
+{{ if hasKey . "ntfy" -}}
+ntfy_topic='{{ .ntfy.topic }}'
+{{- else -}}
+ntfy_topic=''
+{{- end }}
+ntfy_url="${NTFY_URL:-https://ntfy.sh}"
+
+prog=${0##*/}
+
+usage() {
+    cat <<EOF
+usage: $prog [options] <title> [body]
+
+  -u LEVEL  low | normal | critical  (default normal)
+  -i ICON   desktop icon name (default follows -u)
+  -t TAGS   ntfy tags, comma separated -- these render as emoji
+  -a NAME   application name (default $prog)
+  -p        push to ntfy even when a desktop notification also went out
+  -h        this help
+EOF
+}
+
+# A desktop session is only reachable when there's a bus to talk to. Checking
+# for the bus, rather than just the binary, keeps notify-send from failing
+# noisily over ssh, where the binary may exist but there's no session at all.
+has_desktop() {
+    command -v notify-send >/dev/null || return 1
+    [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ] ||
+        [ -S "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/bus" ]
+}
+
+# ntfy reads its headers as latin-1, so anything non-ASCII in a title arrives
+# as mojibake. Status glyphs ride in Tags instead, where they render as emoji.
+ascii() {
+    LC_ALL=C tr -cd '\11\40-\176' <<<"$1"
+}
+
+urgency=normal icon='' tags='' appname=$prog push=0
+
+while getopts ':u:i:t:a:ph' opt; do
+    case $opt in
+        u) urgency=$OPTARG ;;
+        i) icon=$OPTARG ;;
+        t) tags=$OPTARG ;;
+        a) appname=$OPTARG ;;
+        p) push=1 ;;
+        h)
+            usage
+            exit 0
+            ;;
+        :)
+            printf '%s: -%s needs an argument\n' "$prog" "$OPTARG" >&2
+            exit 2
+            ;;
+        *)
+            printf '%s: unknown option -%s\n' "$prog" "$OPTARG" >&2
+            usage >&2
+            exit 2
+            ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+case $urgency in
+    low) priority=low ;;
+    normal) priority=default ;;
+    critical) priority=high ;;
+    *)
+        printf '%s: -u wants low, normal or critical\n' "$prog" >&2
+        exit 2
+        ;;
+esac
+
+if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+    usage >&2
+    exit 2
+fi
+
+title=$1
+body=${2:-}
+
+if [ -z "$icon" ]; then
+    if [ "$urgency" = critical ]; then icon=dialog-error; else icon=dialog-information; fi
+fi
+
+sent=0
+
+if has_desktop; then
+    notify-send -a "$appname" -i "$icon" -u "$urgency" \
+        "$title" "$body" 2>/dev/null && sent=1
+fi
+
+if [ -n "$ntfy_topic" ] && { [ "$sent" = 0 ] || [ "$push" = 1 ]; } &&
+    command -v curl >/dev/null; then
+    args=(-sS -m 10 -H "Title: $(ascii "$title")" -H "Priority: $priority")
+    [ -n "$tags" ] && args+=(-H "Tags: $tags")
+    # -m so a network stall can't wedge the shell that's waiting on this.
+    curl "${args[@]}" -d "$body" "$ntfy_url/$ntfy_topic" >/dev/null 2>&1 && sent=1
+fi
+
+if [ "$sent" = 0 ]; then
+    printf '%s: no notification transport available\n' "$prog" >&2
+    exit 1
+fi

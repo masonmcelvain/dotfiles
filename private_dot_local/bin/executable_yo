@@ -6,31 +6,21 @@
 #   yo -c 'pnpm build | tee build.log'     # a whole shell line
 #   yo -w 31337                            # attach to something already running
 #
-# The notification is sent over every transport that is available:
-#   notify-send   GNOME popup, when a session bus is reachable (mason-xps)
-#   ntfy.sh       phone/browser push, when a topic is configured (cominor)
-#   terminal bell unless -q; zellij eats the bell and flags the tab with [!]
-#
-# The ntfy topic is a shared secret -- anyone holding it can read and publish
-# to the channel -- so it lives in chezmoi's config data rather than in this
-# public repo. Add to ~/.config/chezmoi/chezmoi.toml on each machine:
-#
-#   [data.ntfy]
-#      topic = "..."
+# Delivery is `notify`'s problem -- desktop popup on a machine with a session
+# bus, ntfy push on one without. What yo adds on top is the terminal bell,
+# which zellij renders as a [!] flag on the tab the command ran in.
 #
 # yo exits with the status of the command it ran, so it composes:
 #   yo cargo test && yo ./deploy.sh
 
 set -uo pipefail
 
-{{ if hasKey . "ntfy" -}}
-ntfy_topic='{{ .ntfy.topic }}'
-{{- else -}}
-ntfy_topic=''
-{{- end }}
-ntfy_url="${NTFY_URL:-https://ntfy.sh}"
-
 prog=${0##*/}
+
+# Prefer the notify sitting next to this script, so a yo run by absolute path
+# out of a hook or a cron entry doesn't depend on PATH being set up.
+notify=${0%/*}/notify
+[ -x "$notify" ] || notify=notify
 
 usage() {
     cat <<EOF
@@ -74,63 +64,9 @@ truncate_label() {
     fi
 }
 
-# A desktop session is only reachable when there's a bus to talk to. Checking
-# for the bus (rather than just the binary) keeps notify-send from failing
-# noisily over ssh, where the binary may exist but there's no session at all.
-has_desktop() {
-    command -v notify-send >/dev/null || return 1
-    [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ] ||
-        [ -S "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/bus" ]
-}
-
-# ntfy headers are read as latin-1, so anything non-ASCII in a title arrives
-# as mojibake. The status glyph rides in Tags instead, where it renders as an
-# emoji, and the title is stripped down to printable ASCII.
-ascii() {
-    LC_ALL=C tr -cd '\11\40-\176' <<<"$1"
-}
-
-notify() {
-    local ok=$1 label=$2 detail=$3 sent=0
-
-    if has_desktop; then
-        local glyph icon urgency
-        if [ "$ok" = 1 ]; then
-            glyph='✓' icon=dialog-information urgency=normal
-        else
-            glyph='✗' icon=dialog-error urgency=critical
-        fi
-        notify-send -a "$prog" -i "$icon" -u "$urgency" \
-            "$glyph $label" "$detail" 2>/dev/null && sent=1
-    fi
-
-    if [ -n "$ntfy_topic" ] && { [ "$sent" = 0 ] || [ "$push" = 1 ]; } &&
-        command -v curl >/dev/null; then
-        local tags priority
-        if [ "$ok" = 1 ]; then
-            tags=white_check_mark priority=default
-        else
-            tags=x priority=high
-        fi
-        # -m so a network stall can't wedge the shell you're waiting in.
-        curl -sS -m 10 \
-            -H "Title: $(ascii "$label")" \
-            -H "Tags: $tags" \
-            -H "Priority: $priority" \
-            -d "$detail" \
-            "$ntfy_url/$ntfy_topic" >/dev/null 2>&1 && sent=1
-    fi
-
-    [ "$bell" = 1 ] && printf '\a' >/dev/tty 2>/dev/null
-
-    if [ "$sent" = 0 ]; then
-        printf '%s: no notification transport available\n' "$prog" >&2
-        return 1
-    fi
-    return 0
-}
-
-shell_line='' wait_pid='' label='' threshold=0 push=0 bell=1
+# push holds the flag itself rather than a boolean, so it can be spliced into
+# the notify call as either "-p" or nothing at all.
+shell_line='' wait_pid='' label='' threshold=0 push='' bell=1
 
 while getopts ':c:w:m:t:pqh' opt; do
     case $opt in
@@ -138,7 +74,7 @@ while getopts ':c:w:m:t:pqh' opt; do
         w) wait_pid=$OPTARG ;;
         m) label=$OPTARG ;;
         t) threshold=$OPTARG ;;
-        p) push=1 ;;
+        p) push=-p ;;
         q) bell=0 ;;
         h)
             usage
@@ -204,16 +140,21 @@ where="$(hostname -s):${PWD/#$HOME/\~}"
 if [ -n "$wait_pid" ]; then
     # Nothing to report but the fact that it's over: the exit status of a
     # process this shell didn't spawn isn't ours to read.
-    ok=1
+    glyph='✓' urgency=normal tags=white_check_mark
     detail="finished after $duration · $where"
 elif [ "$status" -eq 0 ]; then
-    ok=1
+    glyph='✓' urgency=normal tags=white_check_mark
     detail="$duration · $where"
 else
-    ok=0
+    glyph='✗' urgency=critical tags=x
     detail="exit $status · $duration · $where"
 fi
 
-notify "$ok" "$(truncate_label "$label")" "$detail"
+# $push is deliberately unquoted: empty must expand to no argument at all.
+# shellcheck disable=SC2086
+"$notify" $push -a "$prog" -u "$urgency" -t "$tags" \
+    "$glyph $(truncate_label "$label")" "$detail"
+
+[ "$bell" = 1 ] && printf '\a' >/dev/tty 2>/dev/null
 
 exit "$status"
