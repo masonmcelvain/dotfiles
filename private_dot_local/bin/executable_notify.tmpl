@@ -60,8 +60,10 @@ has_desktop() {
 
 # ntfy reads its headers as latin-1, so anything non-ASCII in a title arrives
 # as mojibake. Status glyphs ride in Tags instead, where they render as emoji.
+# Dropping a glyph leaves the space that separated it, so collapse the gap
+# rather than pushing a ragged "host:  title" out to every subscriber.
 ascii() {
-    LC_ALL=C tr -cd '\11\40-\176' <<<"$1"
+    LC_ALL=C tr -cd '\11\40-\176' <<<"$1" | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//'
 }
 
 urgency=normal icon='' tags='' appname=$prog push=0
@@ -121,7 +123,11 @@ fi
 
 if [ -n "$ntfy_topic" ] && { [ "$sent" = 0 ] || [ "$push" = 1 ]; } &&
     command -v curl >/dev/null; then
-    args=(-sS -m 10 -H "Title: $(ascii "$title")" -H "Priority: $priority")
+    # Name the origin host in the title. A push is read somewhere other than
+    # the machine that sent it -- on a phone, or by the ntfy-client subscriber
+    # on the desktop -- so "which box was that?" is the first question it has
+    # to answer. Local notify-send popups don't need it.
+    args=(-sS -m 10 -H "Title: $(ascii "$(hostname -s): $title")" -H "Priority: $priority")
     [ -n "$tags" ] && args+=(-H "Tags: $tags")
     # -m so a network stall can't wedge the shell that's waiting on this.
     curl "${args[@]}" -d "$body" "$ntfy_url/$ntfy_topic" >/dev/null 2>&1 && sent=1

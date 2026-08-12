@@ -1,1 +1,8 @@
 CLAUDE.md
+
+{{/* The ntfy subscriber only earns its keep on a host that has both a desktop
+     session to raise notifications on and a topic to listen to. cominor
+     publishes to the topic but has nothing to show a popup with. */}}
+{{ if or (not (hasKey . "ntfy")) (ne .chezmoi.hostname "mason-xps") -}}
+.config/ntfy/client.yml
+{{ end -}}
