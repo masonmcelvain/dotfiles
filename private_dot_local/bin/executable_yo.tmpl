@@ -1,0 +1,219 @@
+#!/usr/bin/env bash
+# yo -- run a slow command and get notified when it finishes, so you can
+# wander off to another pane instead of babysitting it.
+#
+#   yo make -j8
+#   yo -c 'pnpm build | tee build.log'     # a whole shell line
+#   yo -w 31337                            # attach to something already running
+#
+# The notification is sent over every transport that is available:
+#   notify-send   GNOME popup, when a session bus is reachable (mason-xps)
+#   ntfy.sh       phone/browser push, when a topic is configured (cominor)
+#   terminal bell unless -q; zellij eats the bell and flags the tab with [!]
+#
+# The ntfy topic is a shared secret -- anyone holding it can read and publish
+# to the channel -- so it lives in chezmoi's config data rather than in this
+# public repo. Add to ~/.config/chezmoi/chezmoi.toml on each machine:
+#
+#   [data.ntfy]
+#      topic = "..."
+#
+# yo exits with the status of the command it ran, so it composes:
+#   yo cargo test && yo ./deploy.sh
+
+set -uo pipefail
+
+{{ if hasKey . "ntfy" -}}
+ntfy_topic='{{ .ntfy.topic }}'
+{{- else -}}
+ntfy_topic=''
+{{- end }}
+ntfy_url="${NTFY_URL:-https://ntfy.sh}"
+
+prog=${0##*/}
+
+usage() {
+    cat <<EOF
+usage: $prog [options] <command> [args...]
+       $prog [options] -c '<shell line>'
+       $prog [options] -w <pid>
+
+Run a command and send a notification when it finishes.
+
+  -c LINE   run LINE with \$SHELL -c, so pipes and redirects work
+  -w PID    don't run anything; wait for an existing process to exit
+  -m LABEL  label the notification with LABEL instead of the command
+  -t SECS   only notify if the command ran at least SECS seconds
+  -p        push to ntfy even when a desktop notification also went out
+  -q        no terminal bell
+  -h        this help
+
+Exits with the status of the command (0 when -w is used, since the exit
+status of a process you don't own isn't observable).
+EOF
+}
+
+# 12s / 4m12s / 1h04m -- humans don't need seconds past the hour mark.
+fmt_duration() {
+    local s=$1
+    if ((s < 60)); then
+        printf '%ds' "$s"
+    elif ((s < 3600)); then
+        printf '%dm%02ds' $((s / 60)) $((s % 60))
+    else
+        printf '%dh%02dm' $((s / 3600)) $((s % 3600 / 60))
+    fi
+}
+
+truncate_label() {
+    local s=$1 max=${2:-60}
+    if [ "${#s}" -gt "$max" ]; then
+        printf '%s…' "${s:0:max-1}"
+    else
+        printf '%s' "$s"
+    fi
+}
+
+# A desktop session is only reachable when there's a bus to talk to. Checking
+# for the bus (rather than just the binary) keeps notify-send from failing
+# noisily over ssh, where the binary may exist but there's no session at all.
+has_desktop() {
+    command -v notify-send >/dev/null || return 1
+    [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ] ||
+        [ -S "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/bus" ]
+}
+
+# ntfy headers are read as latin-1, so anything non-ASCII in a title arrives
+# as mojibake. The status glyph rides in Tags instead, where it renders as an
+# emoji, and the title is stripped down to printable ASCII.
+ascii() {
+    LC_ALL=C tr -cd '\11\40-\176' <<<"$1"
+}
+
+notify() {
+    local ok=$1 label=$2 detail=$3 sent=0
+
+    if has_desktop; then
+        local glyph icon urgency
+        if [ "$ok" = 1 ]; then
+            glyph='✓' icon=dialog-information urgency=normal
+        else
+            glyph='✗' icon=dialog-error urgency=critical
+        fi
+        notify-send -a "$prog" -i "$icon" -u "$urgency" \
+            "$glyph $label" "$detail" 2>/dev/null && sent=1
+    fi
+
+    if [ -n "$ntfy_topic" ] && { [ "$sent" = 0 ] || [ "$push" = 1 ]; } &&
+        command -v curl >/dev/null; then
+        local tags priority
+        if [ "$ok" = 1 ]; then
+            tags=white_check_mark priority=default
+        else
+            tags=x priority=high
+        fi
+        # -m so a network stall can't wedge the shell you're waiting in.
+        curl -sS -m 10 \
+            -H "Title: $(ascii "$label")" \
+            -H "Tags: $tags" \
+            -H "Priority: $priority" \
+            -d "$detail" \
+            "$ntfy_url/$ntfy_topic" >/dev/null 2>&1 && sent=1
+    fi
+
+    [ "$bell" = 1 ] && printf '\a' >/dev/tty 2>/dev/null
+
+    if [ "$sent" = 0 ]; then
+        printf '%s: no notification transport available\n' "$prog" >&2
+        return 1
+    fi
+    return 0
+}
+
+shell_line='' wait_pid='' label='' threshold=0 push=0 bell=1
+
+while getopts ':c:w:m:t:pqh' opt; do
+    case $opt in
+        c) shell_line=$OPTARG ;;
+        w) wait_pid=$OPTARG ;;
+        m) label=$OPTARG ;;
+        t) threshold=$OPTARG ;;
+        p) push=1 ;;
+        q) bell=0 ;;
+        h)
+            usage
+            exit 0
+            ;;
+        :)
+            printf '%s: -%s needs an argument\n' "$prog" "$OPTARG" >&2
+            exit 2
+            ;;
+        *)
+            printf '%s: unknown option -%s\n' "$prog" "$OPTARG" >&2
+            usage >&2
+            exit 2
+            ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+if ! [[ $threshold =~ ^[0-9]+$ ]]; then
+    printf '%s: -t wants a whole number of seconds\n' "$prog" >&2
+    exit 2
+fi
+
+start=$SECONDS
+status=0
+
+if [ -n "$wait_pid" ]; then
+    if [ -n "$shell_line" ] || [ $# -gt 0 ]; then
+        printf '%s: -w takes no command\n' "$prog" >&2
+        exit 2
+    fi
+    if ! [[ $wait_pid =~ ^[0-9]+$ ]] || ! kill -0 "$wait_pid" 2>/dev/null; then
+        printf '%s: no such running process: %s\n' "$prog" "$wait_pid" >&2
+        exit 2
+    fi
+    [ -n "$label" ] || label=$(ps -o args= -p "$wait_pid" 2>/dev/null | head -1)
+    [ -n "$label" ] || label="pid $wait_pid"
+    # Polling, not `wait`: the target is usually not a child of this shell.
+    while kill -0 "$wait_pid" 2>/dev/null; do sleep 1; done
+elif [ -n "$shell_line" ]; then
+    [ $# -eq 0 ] || {
+        printf '%s: -c takes the whole command as one argument\n' "$prog" >&2
+        exit 2
+    }
+    [ -n "$label" ] || label=$shell_line
+    "${SHELL:-/bin/bash}" -c "$shell_line"
+    status=$?
+elif [ $# -gt 0 ]; then
+    [ -n "$label" ] || label="$*"
+    "$@"
+    status=$?
+else
+    usage >&2
+    exit 2
+fi
+
+elapsed=$((SECONDS - start))
+((elapsed >= threshold)) || exit "$status"
+
+duration=$(fmt_duration "$elapsed")
+where="$(hostname -s):${PWD/#$HOME/\~}"
+
+if [ -n "$wait_pid" ]; then
+    # Nothing to report but the fact that it's over: the exit status of a
+    # process this shell didn't spawn isn't ours to read.
+    ok=1
+    detail="finished after $duration · $where"
+elif [ "$status" -eq 0 ]; then
+    ok=1
+    detail="$duration · $where"
+else
+    ok=0
+    detail="exit $status · $duration · $where"
+fi
+
+notify "$ok" "$(truncate_label "$label")" "$detail"
+
+exit "$status"

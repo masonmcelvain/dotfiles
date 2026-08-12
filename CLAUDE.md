@@ -37,7 +37,10 @@ Templates use Go's `text/template` syntax with chezmoi data. The primary branchi
 {{- end }}
 ```
 
-Custom data variables (from `chezmoidata`): `.gitconfig.email`, `.gitconfig.signingkey`.
+Custom data variables live in `~/.config/chezmoi/chezmoi.toml`, which is *not* in this repo — the repo is public, so secrets belong there:
+
+- `.gitconfig.email`, `.gitconfig.signingkey`
+- `.ntfy.topic` — ntfy.sh topic used by `yo` for push notifications (optional; guard reads with `hasKey`)
 
 ## Architecture
 
@@ -47,5 +50,6 @@ Custom data variables (from `chezmoidata`): `.gitconfig.email`, `.gitconfig.sign
 - **Terminals**: `private_dot_config/alacritty/` (emulator), `private_dot_config/zellij/` (multiplexer), `dot_tmux.conf.tmpl` (alt multiplexer)
 - **Fonts**: `dot_fonts/` - SF Mono, SF Pro, Liga SF Mono Nerd Font, Apple Color Emoji
 - **Scripts**: `bin/executable_vnstat_graph.sh`, `private_dot_local/bin/executable_hx-theme.sh`
+- **Notifications**: `private_dot_local/bin/executable_yo.tmpl` - `yo <slow command>` notifies when the command finishes. Falls through the transports available on the host: `notify-send` when a D-Bus session exists (mason-xps), an ntfy.sh push when `.ntfy.topic` is set (cominor), and the terminal bell (zellij turns it into a `[!]` tab flag)
 - **Claude Code config**: `dot_claude/` - global CLAUDE.md, keybindings, custom agents and commands
 - **Agent status**: `private_dot_local/bin/executable_agent-status.sh` - Claude Code hook handler that writes agent state to `~/.cache/agents/<session_id>.json` and renames the agent's zellij tab (`● name` working, `○` needs input, `✓` done). Hook registrations are merged into `~/.claude/settings.json` by `dot_claude/modify_settings.json` (a chezmoi modify script; the rest of settings.json stays unmanaged because Claude Code live-edits it)
