@@ -207,12 +207,14 @@ get_key() {
         case $rest in
             '[A') KEY=up ;;
             '[B') KEY=down ;;
+            '[Z') KEY=up ;; # shift+tab, undocumented alias for k
             *) KEY=other ;;
         esac
         return 0
     fi
     case $k in
         '') KEY=enter ;;
+        $'\t') KEY=down ;; # tab, undocumented alias for j
         j) KEY=down ;;
         k) KEY=up ;;
         g) KEY=top ;;
