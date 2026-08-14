@@ -26,6 +26,24 @@ hxr() {
    fi
    hx $(git diff --name-only "$(git merge-base "$base" HEAD)"; git ls-files --others --exclude-standard)
 }
+# Like hxr, but helix's diff gutter marks every line the branch changed
+hxrb() {
+   local base=$1
+   if [ -z "$base" ]; then
+      base=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null \
+         || git rev-parse --quiet --verify --abbrev-ref main 2>/dev/null \
+         || echo master)
+   fi
+   local orig mb
+   orig=$(git symbolic-ref --quiet HEAD || git rev-parse HEAD) || return 1
+   mb=$(git merge-base "$base" HEAD) || return 1
+   git update-ref --no-deref HEAD "$mb" || return 1
+   hx $(git diff --name-only "$mb"; git ls-files --others --exclude-standard)
+   case $orig in
+      refs/*) git symbolic-ref HEAD "$orig" ;;
+      *) git update-ref --no-deref HEAD "$orig" ;;
+   esac
+}
 alias tp='mkdir -p ~/.notes && hx-theme.sh papercolor-light ~/.notes/$(date +%Y-%m-%d_%H%M%S).md'
 alias np='hx-theme.sh papercolor-light ~/notepad.md'
 alias sss='ss -tlpn'
