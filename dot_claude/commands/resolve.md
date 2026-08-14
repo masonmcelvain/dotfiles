@@ -39,5 +39,5 @@ test fixtures) and say you skipped them.
 
 When done: typecheck/lint if you changed code, then finish with a summary that quotes
 each comment with its location and outcome — fixed, answered, or declined, with one
-line of why. Don't commit; I'll review the result and either leave another round of
-comments or commit myself.
+line of why. Don't commit; I'll review the result and potentially leave another round
+of comments.
