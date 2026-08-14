@@ -14,7 +14,7 @@ alias pn=pnpm
 {{ if eq .chezmoi.hostname "cominor" -}}
 alias hx='cd -P . && hx'
 {{- end }}
-alias hxg='hx $(git diff --name-only)'
+alias hxg='hx $(git diff --name-only HEAD; git ls-files --others --exclude-standard)'
 # Review the files this branch has modified (committed or not) relative to the
 # default branch, ignoring drift: diff against the merge base, not the branch tip
 hxr() {
