@@ -6,3 +6,7 @@ CLAUDE.md
 {{ if or (not (hasKey . "ntfy")) (ne .chezmoi.hostname "mason-xps") -}}
 .config/ntfy/client.yml
 {{ end -}}
+
+{{ if ne .chezmoi.hostname "mason-xps" -}}
+.ssh/config
+{{ end -}}

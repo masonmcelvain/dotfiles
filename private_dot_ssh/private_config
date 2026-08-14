@@ -1,0 +1,11 @@
+Host cominor
+  HostName cominor.com
+  User mmcelvain
+  AddKeysToAgent yes
+  ForwardAgent yes
+  RemoteForward /run/user/1062/gnupg/S.gpg-agent /run/user/1000/gnupg/S.gpg-agent.extra
+  RemoteForward /run/user/1062/gnupg/S.gpg-agent.ssh /run/user/1000/gnupg/S.gpg-agent.ssh
+  # An encrypted probe every 20s keeps the NAT entry fresh
+  ServerAliveInterval 20
+  # After 3 unanswered probes, ssh exits with 'Timeout, server not responding'
+  ServerAliveCountMax 3
