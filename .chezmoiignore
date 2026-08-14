@@ -10,3 +10,9 @@ CLAUDE.md
 {{ if ne .chezmoi.hostname "mason-xps" -}}
 .ssh/config
 {{ end -}}
+
+{{/* The skill symlink resolves its target by running `hunk skill path`, which
+     would fail the whole apply on a host that hasn't installed hunk yet. */}}
+{{ if not (lookPath "hunk") -}}
+.claude/skills/hunk-review
+{{ end -}}

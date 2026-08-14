@@ -1,0 +1,10 @@
+theme = "github-light-default"
+mode = "stack"
+# Reload as the working directory changes
+watch = true
+prompt_save_view_preferences = false
+
+[keybindings]
+# Print the bundled review skill for an agent that isn't already carrying it.
+# Ships unbound; `a` is taken by toggle-agent-notes, so this is shift-a.
+"hunk.app.openAgentSkill" = "A"

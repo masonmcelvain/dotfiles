@@ -14,35 +14,29 @@ alias pn=pnpm
 {{ if eq .chezmoi.hostname "cominor" -}}
 alias hx='cd -P . && hx'
 {{- end }}
-alias hxg='hx $(git diff --name-only HEAD; git ls-files --others --exclude-standard)'
-# Review the files this branch has modified (committed or not) relative to the
-# default branch, ignoring drift: diff against the merge base, not the branch tip
-hxr() {
+# The commit this branch diverged from the default branch at. Reviewing from
+# here rather than the branch tip keeps upstream drift out of the changeset.
+_review_base() {
    local base=$1
    if [ -z "$base" ]; then
       base=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null \
          || git rev-parse --quiet --verify --abbrev-ref main 2>/dev/null \
          || echo master)
    fi
-   hx $(git diff --name-only "$(git merge-base "$base" HEAD)"; git ls-files --others --exclude-standard)
+   git merge-base "$base" HEAD
 }
-# Like hxr, but helix's diff gutter marks every line the branch changed
-hxrb() {
-   local base=$1
-   if [ -z "$base" ]; then
-      base=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null \
-         || git rev-parse --quiet --verify --abbrev-ref main 2>/dev/null \
-         || echo master)
-   fi
-   local orig mb
-   orig=$(git symbolic-ref --quiet HEAD || git rev-parse HEAD) || return 1
-   mb=$(git merge-base "$base" HEAD) || return 1
-   git update-ref --no-deref HEAD "$mb" || return 1
-   hx $(git diff --name-only "$mb"; git ls-files --others --exclude-standard)
-   case $orig in
-      refs/*) git symbolic-ref HEAD "$orig" ;;
-      *) git update-ref --no-deref HEAD "$orig" ;;
-   esac
+
+# Open the changed files in helix, to edit them
+alias hxg='hx $(git diff --name-only HEAD; git ls-files --others --exclude-standard)'
+# hxg's scope is uncommitted work; hxr's is everything this branch added
+hxr() {
+   hx $(git diff --name-only "$(_review_base "$1")"; git ls-files --others --exclude-standard)
+}
+
+# Read the same changesets as a diff in hunk (unstaged, staged, and untracked)
+alias hkg='hunk diff HEAD'
+hkr() {
+   hunk diff "$(_review_base "$1")"
 }
 alias tp='mkdir -p ~/.notes && hx-theme.sh papercolor-light ~/.notes/$(date +%Y-%m-%d_%H%M%S).md'
 alias np='hx-theme.sh papercolor-light ~/notepad.md'
