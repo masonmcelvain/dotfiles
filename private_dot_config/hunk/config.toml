@@ -1,4 +1,4 @@
-theme = "github-light-default"
+theme = "github-light"
 mode = "stack"
 # Reload as the working directory changes
 watch = true
