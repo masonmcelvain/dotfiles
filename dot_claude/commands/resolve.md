@@ -61,5 +61,5 @@ back empty), stop and tell me — don't fall back to grepping the tree for marke
 
 When done: typecheck/lint if you changed code, then finish with a summary that quotes
 each comment with its location and outcome — fixed, answered, or declined, with one
-line of why. Don't commit; I'll review the result and potentially leave another round
-of comments.
+line of why. Don't commit unless I say so; I'll review the result and potentially
+leave another round of comments.
