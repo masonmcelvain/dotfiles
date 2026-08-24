@@ -36,6 +36,7 @@ hxr() {
 # Read the same changesets as a diff in hunk (unstaged, staged, and untracked)
 alias hk='hunk'
 alias hkg='hunk diff HEAD'
+alias hkh='hunk diff HEAD~1'
 hkr() {
    hunk diff "$(_review_base "$1")"
 }
