@@ -283,7 +283,9 @@ pane_frames false
 theme "everforest-light"
 theme_light "everforest-light"
 theme_dark "everforest-dark"
-
+{{ if eq .chezmoi.hostname "cominor" }}
+explicit_theme_hue "light"
+{{ end }}
 // The name of the default layout to load on startup
 // Default: "default"
 //
