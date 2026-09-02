@@ -1,4 +1,4 @@
-theme = "github-light"
+theme = "everforest-light"
 mode = "stack"
 sidebar = true
 # Reload as the working directory changes
