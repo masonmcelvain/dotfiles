@@ -1,8 +1,7 @@
 theme = "everforest-light"
 mode = "stack"
 sidebar = true
-# Reload as the working directory changes
-watch = true
+watch = false
 prompt_save_view_preferences = false
 
 [keybindings]

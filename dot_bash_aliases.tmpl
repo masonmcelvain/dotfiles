@@ -36,10 +36,10 @@ hxr() {
 
 # Read the same changesets as a diff in hunk (unstaged, staged, and untracked)
 alias hk='hunk'
-alias hkg='hunk diff HEAD'
-alias hkh='hunk diff HEAD~1'
+alias hkg='hunk diff --fast HEAD'
+alias hkh='hunk diff --fast HEAD~1'
 hkr() {
-   hunk diff "$(_review_base "$1")"
+   hunk diff --fast "$(_review_base "$1")"
 }
 alias tp='mkdir -p ~/.notes && hx-theme.sh papercolor-light ~/.notes/$(date +%Y-%m-%d_%H%M%S).md'
 alias np='hx-theme.sh papercolor-light ~/notepad.md'
