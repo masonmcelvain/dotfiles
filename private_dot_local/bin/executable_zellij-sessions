@@ -1,0 +1,291 @@
+#!/usr/bin/env bash
+# zellij-sessions: fzf picker for zellij sessions, listing each session's git
+# branch and working directory alongside its name. Attaches from a plain shell
+# and switches from inside a session, so it works either way; aliased to `zf`
+# and bound to Alt+s as a floating pane in ~/.config/zellij/config.kdl.
+# With stdout not a TTY, prints a plain table instead of opening the picker.
+#
+# Session cwds come from zellij's own on-disk session info rather than from
+# `zellij action dump-layout`: dump-layout needs a running server per session
+# and hangs on exited ones, while the cache covers live and exited alike
+# without spawning anything. Branches are read straight out of .git/HEAD for
+# the same reason -- a `git` per session is the one thing that would make this
+# feel slow.
+
+set -uo pipefail
+shopt -s nullglob
+
+SEP=$'\x1f'
+TAB=$'\t'
+
+C_RESET=$'\e[0m' C_DIM=$'\e[2m' C_GREEN=$'\e[32m' C_ORANGE=$'\e[38;5;208m'
+
+# Where zellij keeps per-session layout/metadata. The parent is a contract
+# version ("contract_version_1") that changed from plain version numbers in
+# earlier releases, so glob it and take the freshest rather than hardcoding.
+find_info_dir() {
+    local d best='' t newest=0
+    for d in "${XDG_CACHE_HOME:-$HOME/.cache}"/zellij/*/session_info; do
+        [ -d "$d" ] || continue
+        t=$(stat -c %Y "$d" 2>/dev/null) || continue
+        if ((t > newest)); then
+            newest=$t
+            best=$d
+        fi
+    done
+    printf '%s' "$best"
+}
+
+INFO_DIR=$(find_info_dir)
+
+# The session layout carries exactly one top-level `cwd`; every pane inherits
+# it, which is what makes "the session's directory" a well-defined thing.
+session_cwd() {
+    local line
+    [ -n "$INFO_DIR" ] || return 0
+    line=$(grep -m1 -E '^[[:space:]]*cwd ' \
+        "$INFO_DIR/$1/session-layout.kdl" 2>/dev/null) || return 0
+    line=${line#*\"}
+    printf '%s' "${line%\"*}"
+}
+
+# When a session exits, zellij stops rewriting its metadata -- so the mtime is
+# when it was last used. Live sessions all share a rewrite tick, so their
+# mtimes are identical and useless; those fall back to their creation age.
+session_mtime() {
+    [ -n "$INFO_DIR" ] || return 0
+    stat -c %Y "$INFO_DIR/$1/session-metadata.kdl" 2>/dev/null
+}
+
+# Walk up for a .git, then read HEAD. Handles worktrees and submodules, where
+# .git is a file pointing elsewhere, and detached HEADs, which get a short sha.
+git_branch() {
+    local dir=$1 gitdir head
+    [ -n "$dir" ] || return 0
+    while [ -n "$dir" ]; do
+        [ -e "$dir/.git" ] && break
+        dir=${dir%/*}
+    done
+    [ -n "$dir" ] && [ -e "$dir/.git" ] || return 0
+
+    gitdir=$dir/.git
+    if [ -f "$gitdir" ]; then
+        read -r _ gitdir <"$dir/.git" 2>/dev/null || return 0
+        [[ $gitdir == /* ]] || gitdir=$dir/$gitdir
+    fi
+    read -r head <"$gitdir/HEAD" 2>/dev/null || return 0
+
+    case $head in
+        "ref: refs/heads/"*) printf '%s' "${head#ref: refs/heads/}" ;;
+        "ref: "*) printf '%s' "${head#ref: }" ;;
+        ?*) printf '%s' "${head:0:7}" ;;
+    esac
+}
+
+# "3days 1h 24m 8s" (zellij's own phrasing) -> seconds.
+dur_to_secs() {
+    local tok n unit total=0
+    for tok in $1; do
+        n=${tok%%[!0-9]*}
+        [ -n "$n" ] || continue
+        unit=${tok#"$n"}
+        case $unit in
+            s | sec | secs) total=$((total + n)) ;;
+            m | min | mins) total=$((total + n * 60)) ;;
+            h | hour | hours) total=$((total + n * 3600)) ;;
+            d | day | days) total=$((total + n * 86400)) ;;
+            w | week | weeks) total=$((total + n * 604800)) ;;
+            month | months) total=$((total + n * 2592000)) ;;
+            y | year | years) total=$((total + n * 31536000)) ;;
+        esac
+    done
+    printf '%s' "$total"
+}
+
+age_str() {
+    local s=$1
+    ((s < 0)) && s=0
+    if ((s < 60)); then printf '%ds' "$s"
+    elif ((s < 3600)); then printf '%dm' $((s / 60))
+    elif ((s < 86400)); then printf '%dh' $((s / 3600))
+    elif ((s < 2592000)); then printf '%dd' $((s / 86400))
+    elif ((s < 31536000)); then printf '%dmo' $((s / 2592000))
+    else printf '%dy' $((s / 31536000)); fi
+}
+
+# Truncate $1 to $2 chars (adding …) and pad to exactly $2. printf's %-*s pads
+# by bytes, so pad manually with char counts to keep unicode columns aligned.
+fit() {
+    local s=$1 w=$2
+    ((${#s} > w)) && s="${s:0:w-1}…"
+    printf '%s%*s' "$s" $((w - ${#s})) ''
+}
+
+# Fields, SEP-separated: 1 name  2 live|exited  3 branch  4 cwd  5 age
+ROWS=()
+
+collect() {
+    local line name age cwd branch now live=() dead=()
+    now=$(date +%s)
+
+    # -r sorts newest first, which is the order we want for live sessions.
+    while IFS= read -r line; do
+        [ -n "$line" ] || continue
+        name=${line%% *}
+        [ -n "$name" ] || continue
+        # Switching to the session you are already in is a no-op; skip it.
+        [ "$name" = "${ZELLIJ_SESSION_NAME:-}" ] && continue
+
+        cwd=$(session_cwd "$name")
+        branch=$(git_branch "$cwd")
+
+        if [[ $line == *EXITED* ]]; then
+            local mtime
+            mtime=$(session_mtime "$name")
+            if [ -n "$mtime" ]; then
+                age=$(age_str $((now - mtime)))
+            else
+                age=$(age_str "$(dur_to_secs "${line#*\[Created }")")
+            fi
+            dead+=("${mtime:-0}${SEP}${name}${SEP}exited${SEP}${branch}${SEP}${cwd}${SEP}${age}")
+        else
+            age=${line#*\[Created }
+            age=$(age_str "$(dur_to_secs "${age%% ago\]*}")")
+            live+=("${name}${SEP}live${SEP}${branch}${SEP}${cwd}${SEP}${age}")
+        fi
+    done < <(zellij list-sessions -rn 2>/dev/null)
+
+    ROWS=("${live[@]}")
+    # Exited sessions sort by when they exited, most recently used first.
+    if ((${#dead[@]} > 0)); then
+        while IFS= read -r line; do
+            ROWS+=("${line#*"$SEP"}")
+        done < <(printf '%s\n' "${dead[@]}" | sort -t "$SEP" -k1,1nr)
+    fi
+}
+
+# Emits "name<TAB>display" lines; fzf hides field 1 but hands it back on select.
+render() {
+    local row name state branch cwd age
+    local name_w=4 branch_w=6 path_w=8 cols avail over give
+
+    # Start every column at the width its longest value wants.
+    for row in "${ROWS[@]}"; do
+        IFS=$SEP read -r name _ branch cwd _ <<<"$row"
+        cwd=${cwd/#$HOME/\~}
+        ((${#name} > name_w)) && name_w=${#name}
+        ((${#branch} > branch_w)) && branch_w=${#branch}
+        ((${#cwd} > path_w)) && path_w=${#cwd}
+    done
+
+    # Reserve fzf's own chrome (border and pointer gutter) plus the gaps and
+    # the age column, or the last column wraps and fzf clips it to "..".
+    cols=$(tput cols 2>/dev/null || echo 80)
+    avail=$((cols - 18))
+
+    # Only claw width back when the natural widths don't fit -- on a wide
+    # terminal nothing is truncated. The path yields first, then the branch,
+    # then the name: the branch is the thing worth reading here, and a
+    # truncated name stops identifying the session at all.
+    over=$((name_w + branch_w + path_w - avail))
+    if ((over > 0)); then
+        give=$((path_w - 12))
+        ((give > over)) && give=$over
+        ((give > 0)) && {
+            path_w=$((path_w - give))
+            over=$((over - give))
+        }
+    fi
+    if ((over > 0)); then
+        give=$((branch_w - 12))
+        ((give > over)) && give=$over
+        ((give > 0)) && {
+            branch_w=$((branch_w - give))
+            over=$((over - give))
+        }
+    fi
+    if ((over > 0)); then
+        give=$((name_w - 8))
+        ((give > over)) && give=$over
+        ((give > 0)) && {
+            name_w=$((name_w - give))
+            over=$((over - give))
+        }
+    fi
+    # Narrower than every floor combined: let the path absorb the remainder.
+    ((over > 0)) && path_w=$((path_w - over))
+    ((path_w < 4)) && path_w=4
+
+    for row in "${ROWS[@]}"; do
+        IFS=$SEP read -r name state branch cwd age <<<"$row"
+        local dim='' line
+        [ "$state" = exited ] && dim=$C_DIM
+        line="${dim}$(fit "$name" "$name_w")  "
+        line+="${C_GREEN}${dim}$(fit "$branch" "$branch_w")${C_RESET}${dim}  "
+        line+="${C_DIM}$(fit "${cwd/#$HOME/\~}" "$path_w")${C_RESET}${dim}  "
+        if [ "$state" = exited ]; then
+            line+="${C_DIM}$(printf '%5s' "$age")${C_RESET}"
+        else
+            line+="${C_ORANGE}$(printf '%5s' "$age")${C_RESET}"
+        fi
+        printf '%s%s%s%s\n' "$name" "$TAB" "$line" "$C_RESET"
+    done
+}
+
+plain_list() {
+    local row name state branch cwd age
+    {
+        for row in "${ROWS[@]}"; do
+            IFS=$SEP read -r name state branch cwd age <<<"$row"
+            printf '%s\t%s\t%s\t%s\t%s\n' \
+                "$name" "${branch:--}" "${cwd/#$HOME/\~}" "$age" "$state"
+        done
+    } | column -t -s$'\t' 2>/dev/null || true
+}
+
+open_session() {
+    local name=$1
+    [ -n "$name" ] || return 0
+    if [ -z "${ZELLIJ:-}" ]; then
+        # Outside zellij: attach, which resurrects an exited session.
+        exec zellij attach "$name"
+    else
+        # Inside: detach this client from the current session (leaving it
+        # running) and land it in the target, resurrecting it if it had exited.
+        zellij action switch-session "$name" >/dev/null
+    fi
+}
+
+main() {
+    command -v zellij >/dev/null || {
+        echo 'zellij-sessions: zellij is not installed' >&2
+        exit 1
+    }
+
+    collect
+    if ((${#ROWS[@]} == 0)); then
+        echo 'zellij-sessions: no other sessions' >&2
+        exit 1
+    fi
+
+    if [ ! -t 1 ]; then
+        plain_list
+        return 0
+    fi
+
+    command -v fzf >/dev/null || {
+        echo 'zellij-sessions: fzf is required' >&2
+        exit 1
+    }
+
+    local choice
+    choice=$(render | fzf \
+        --ansi --no-multi --no-sort \
+        --height=100% \
+        --delimiter="$TAB" --with-nth=2.. \
+        --prompt='session> ') || return 0
+
+    open_session "${choice%%"$TAB"*}"
+}
+
+main "$@"
