@@ -1,7 +1,7 @@
 theme = "everforest-light"
 mode = "stack"
 sidebar = true
-watch = false
+watch = true
 prompt_save_view_preferences = false
 
 [keybindings]
