@@ -178,3 +178,8 @@ export PATH="$WASMTIME_HOME/bin:$PATH"
 # https://github.com/direnv/direnv
 [ -n "$_is_interactive" ] && eval "$(direnv hook bash)"
 {{- end }}
+
+{{ if eq .chezmoi.hostname "mason-xps" -}}
+export ANDROID_HOME="$HOME/Android/Sdk"
+export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
+{{- end }}
