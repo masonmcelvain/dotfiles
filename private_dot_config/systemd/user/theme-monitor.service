@@ -2,7 +2,7 @@
 Description=Sync alacritty + zellij themes with GNOME color-scheme
 After=graphical-session.target
 PartOf=graphical-session.target
-ConditionHost=mason-xps
+ConditionHost=masons-xps
 
 [Service]
 Type=simple

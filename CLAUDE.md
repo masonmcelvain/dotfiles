@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-A chezmoi-managed dotfiles repository for two machines: `mason-xps` (Ubuntu desktop) and `cominor` (remote CentOS). The chezmoi source directory is the repo root; there is no `.chezmoiroot`.
+A chezmoi-managed dotfiles repository for two machines: `masons-xps` (Ubuntu desktop) and `cominor` (remote CentOS). The chezmoi source directory is the repo root; there is no `.chezmoiroot`.
 
 ## Chezmoi Commands
 
@@ -30,7 +30,7 @@ Files use chezmoi's source-state naming:
 Templates use Go's `text/template` syntax with chezmoi data. The primary branching variable is `.chezmoi.hostname`:
 
 ```
-{{ if eq .chezmoi.hostname "mason-xps" -}}
+{{ if eq .chezmoi.hostname "masons-xps" -}}
 # Ubuntu-specific
 {{- else if eq .chezmoi.hostname "cominor" -}}
 # CentOS-specific
@@ -51,8 +51,8 @@ Custom data variables live in `~/.config/chezmoi/chezmoi.toml`, which is *not* i
 - **Fonts**: `dot_fonts/` - SF Mono, SF Pro, Liga SF Mono Nerd Font, Apple Color Emoji
 - **Scripts**: `bin/executable_vnstat_graph.sh`, `private_dot_local/bin/executable_hx-theme.sh`
 - **Session picker**: `private_dot_local/bin/executable_zellij-sessions` - an fzf picker over zellij sessions listing each one's git branch and directory, so a session is recognizable by the work in it rather than by its name alone. `zf` (bash) and `Alt s` (zellij, a floating pane) both open it; it attaches from a plain shell and `switch-session`s from inside one, and either path resurrects an exited session. Session cwds are read from zellij's own cache (`~/.cache/zellij/*/session_info/<name>/session-layout.kdl`) rather than from `zellij action dump-layout`, which needs a running server per session and hangs on exited ones; branches come straight out of `.git/HEAD`, since a `git` per session is what would make it feel slow
-- **Notifications**: `private_dot_local/bin/executable_notify.tmpl` picks whatever transport the host can reach - `notify-send` when a D-Bus session exists (mason-xps), an ntfy.sh push when `.ntfy.topic` is set (cominor). Its two callers are `executable_yo` (`yo <slow command>` notifies when the command finishes, and adds a terminal bell that zellij turns into a `[!]` tab flag) and the Claude Code hooks. Routing both through `notify` is what keeps the ntfy topic out of `~/.claude/settings.json`
-- **Notification subscriber**: `private_dot_config/ntfy/private_client.yml.tmpl` closes the loop for pushes from cominor - `ntfy-client.service` (a user unit from the `ntfy` package, not managed here) streams the topic and replays each message through `notify-send`. Only managed on mason-xps, via a conditional in `.chezmoiignore`; restart the unit after changing it. Both halves read `.ntfy.topic`, so rotating the topic is one line in `~/.config/chezmoi/chezmoi.toml` plus a `chezmoi apply`
+- **Notifications**: `private_dot_local/bin/executable_notify.tmpl` picks whatever transport the host can reach - `notify-send` when a D-Bus session exists (masons-xps), an ntfy.sh push when `.ntfy.topic` is set (cominor). Its two callers are `executable_yo` (`yo <slow command>` notifies when the command finishes, and adds a terminal bell that zellij turns into a `[!]` tab flag) and the Claude Code hooks. Routing both through `notify` is what keeps the ntfy topic out of `~/.claude/settings.json`
+- **Notification subscriber**: `private_dot_config/ntfy/private_client.yml.tmpl` closes the loop for pushes from cominor - `ntfy-client.service` (a user unit from the `ntfy` package, not managed here) streams the topic and replays each message through `notify-send`. Only managed on masons-xps, via a conditional in `.chezmoiignore`; restart the unit after changing it. Both halves read `.ntfy.topic`, so rotating the topic is one line in `~/.config/chezmoi/chezmoi.toml` plus a `chezmoi apply`
 - **Claude Code config**: `dot_claude/` - global CLAUDE.md, keybindings, custom agents and commands
 - **Local review loop**: review a diff without leaving the terminal - `hkg`/`hkr` (bash) open the working tree or the branch's own work in [hunk](https://www.hunk.dev/), `c` (hunk) leaves an inline comment on the selected hunk, and the `/resolve` command (`dot_claude/commands/resolve.md`) has Claude read them back over `hunk session comment list --type user`, fix or push back on each, and clear them. `hkr` diffs from the merge base rather than the branch tip, so upstream drift stays out of the changeset; `hxr`/`hxg` are the helix counterparts, for editing the same files rather than reviewing them. The comments live in the running TUI, not the tree - close it and they're gone
 - **Agent review loop**: `dot_claude/skills/review-loop/SKILL.md` runs the same round-trip with a second agent instead of me, before a PR goes out. `/review-loop` spawns the read-only `code-reviewer` agent (`dot_claude/agents/code-reviewer.md`) on the `hkr` changeset, addresses each numbered finding (fix, or decline with `file:line`), then continues the same reviewer via `SendMessage` so it re-checks the fixes and contests declines at most once. It stops on `APPROVE`, on a stalemate, or after four rounds, and reports every finding's outcome; stalemates also land as `--author claude` comments in an open hunk session

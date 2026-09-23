@@ -6,7 +6,7 @@ case $- in
 	*) _is_interactive= ;;
 esac
 
-{{ if eq .chezmoi.hostname "mason-xps" -}}
+{{ if eq .chezmoi.hostname "masons-xps" -}}
 #------------------------------------------------------------------------------
 # Ubuntu defaults
 #------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ export LESS=-FRX
 #------------------------------------------------------------------------------
 {{- end }}
 
-{{ if eq .chezmoi.hostname "mason-xps" -}}
+{{ if eq .chezmoi.hostname "masons-xps" -}}
 #------------------------------------------------------------------------------
 # Local
 #------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ export PATH="$WASMTIME_HOME/bin:$PATH"
 [ -n "$_is_interactive" ] && eval "$(direnv hook bash)"
 {{- end }}
 
-{{ if eq .chezmoi.hostname "mason-xps" -}}
+{{ if eq .chezmoi.hostname "masons-xps" -}}
 export ANDROID_HOME="$HOME/Android/Sdk"
 export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
 {{- end }}

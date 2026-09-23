@@ -86,14 +86,14 @@ export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
   --border="rounded" --border-label="" --preview-window="border-rounded" --prompt="> "
   --marker=">" --pointer="◆" --separator="─" --scrollbar="│"'
 if type fd &> /dev/null; then
-{{ if eq .chezmoi.hostname "mason-xps" }}
+{{ if eq .chezmoi.hostname "masons-xps" }}
    export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --follow --exclude .git --color=always'
 {{ else }}
    export FZF_DEFAULT_COMMAND='fd --type f --follow --exclude .git --color=always'
 {{- end }}
 fi
 
-{{ if eq .chezmoi.hostname "mason-xps" -}}
+{{ if eq .chezmoi.hostname "masons-xps" -}}
 #------------------------------------------------------------------------------
 # Local
 #------------------------------------------------------------------------------

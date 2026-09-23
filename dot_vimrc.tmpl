@@ -116,7 +116,7 @@ endfunction
 execute "set <M-R>=\eR"
 nnoremap <M-R> :call EchoAndCopy(fnamemodify(expand("%"), ":~:."))<CR>
 
-{{ if eq .chezmoi.hostname "mason-xps" -}}
+{{ if eq .chezmoi.hostname "masons-xps" -}}
 " Copy/paste with system clipboard
 " copy: "+y
 xnoremap <C-Y> "+y
@@ -147,7 +147,7 @@ let g:dracula_underline = 0
 let g:dracula_colorterm = 0
 colorscheme dracula
 
-{{ if eq .chezmoi.hostname "mason-xps" -}}
+{{ if eq .chezmoi.hostname "masons-xps" -}}
 " Enable `fzf`
 source /usr/share/doc/fzf/examples/fzf.vim
 " Fun fzf in vim with `:FZF`

@@ -67,13 +67,13 @@ set -g @dracula-show-powerline true
 set -g @dracula-show-left-icon session
 set -g @dracula-cpu-usage-label "cpu"
 set -g status-justify centre
-{{- if eq .chezmoi.hostname "mason-xps" }}
+{{- if eq .chezmoi.hostname "masons-xps" }}
 set -g @dracula-plugins "cpu-usage spotify-tui"
 {{- else if eq .chezmoi.hostname "cominor" }}
 set -g @dracula-plugins "ram-usage"
 {{- end }}
 
-{{ if eq .chezmoi.hostname "mason-xps" -}}
+{{ if eq .chezmoi.hostname "masons-xps" -}}
 # plugin commands
 set -g @continuum-boot 'on'
 set -g @continuum-restore 'on'
