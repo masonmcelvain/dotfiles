@@ -1,6 +1,9 @@
+{{ if eq .chezmoi.hostname "cominor" -}}
 theme = "everforest_light"
+{{- else if eq .chezmoi.hostname "masons-xps" }}
 # https://github.com/helix-editor/helix/issues/13281
-# theme = { dark = "dracula", light = "everforest_light" }
+theme = { dark = "everforest_dark", light = "everforest_light" }
+{{- end }}
 
 [editor]
 bufferline = "multiple"
