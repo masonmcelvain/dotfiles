@@ -9,6 +9,7 @@ CLAUDE.md
 
 {{ if ne .chezmoi.hostname "masons-xps" -}}
 .ssh/config
+.config/xdg-terminals.list
 {{ end -}}
 
 {{/* The skill symlink resolves its target by running `hunk skill path`, which
