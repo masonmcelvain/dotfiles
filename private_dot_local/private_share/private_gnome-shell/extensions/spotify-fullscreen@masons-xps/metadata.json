@@ -1,0 +1,6 @@
+{
+  "uuid": "spotify-fullscreen@masons-xps",
+  "name": "Spotify Fullscreen",
+  "description": "Open Spotify fullscreen, since it ignores --start-fullscreen",
+  "shell-version": ["50"]
+}
