@@ -27,6 +27,11 @@ subscribe:
     # glyph is what marks a failure. A high-priority push still stays normal
     # urgency: GNOME Shell never times out a critical banner, so a failed
     # build on cominor would sit on screen until clicked.
+    #
+    # The header icon is notify's -n, which a push doesn't carry -- ntfy only
+    # forwards tags, and a non-emoji tag shows up as text on the phone. So
+    # pick it from the title: the Claude Code hooks all send that title, and
+    # everything else that pushes is yo, run from a terminal.
     command: >-
       case ",$tags," in
       *,x,*) g='✗ ';;
@@ -37,4 +42,8 @@ subscribe:
       1|2) u=low;;
       *) u=normal;;
       esac;
-      notify-send -a ntfy -u "$u" "$g${t:-Notification}" "$m"
+      case "$t" in
+      *": Claude Code") n=claude-desktop;;
+      *) n=Alacritty;;
+      esac;
+      notify-send -a ntfy -u "$u" -n "$n" "$g${t:-Notification}" "$m"
