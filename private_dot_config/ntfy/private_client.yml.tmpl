@@ -17,16 +17,24 @@
 subscribe:
   - topic: {{ .ntfy.topic }}
     # $t and $m are the publisher's title and body; $p is priority 1-5, which
-    # notify sets from its own -u. The title carries the interesting part (the
-    # command and its status), prefixed by notify with the host it came from.
+    # notify sets from its own -u, and $tags is its -t. The title carries the
+    # interesting part (the command and its status), prefixed by notify with
+    # the host it came from.
     #
-    # A high-priority push maps to the error icon rather than critical
+    # notify strips non-ASCII from a pushed title, so yo's status glyph rides
+    # in the tags; put it back in front so the popup reads like a local one.
+    # There's no body icon, to match GNOME 50's Chrome-style popups, so the
+    # glyph is what marks a failure. A high-priority push still stays normal
     # urgency: GNOME Shell never times out a critical banner, so a failed
     # build on cominor would sit on screen until clicked.
     command: >-
-      case "$p" in
-      4|5) u=normal i=dialog-error;;
-      1|2) u=low i=dialog-information;;
-      *) u=normal i=dialog-information;;
+      case ",$tags," in
+      *,x,*) g='✗ ';;
+      *,white_check_mark,*) g='✓ ';;
+      *) g='';;
       esac;
-      notify-send -a ntfy -u "$u" -i "$i" "${t:-Notification}" "$m"
+      case "$p" in
+      1|2) u=low;;
+      *) u=normal;;
+      esac;
+      notify-send -a ntfy -u "$u" "$g${t:-Notification}" "$m"

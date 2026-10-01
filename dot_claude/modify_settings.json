@@ -20,7 +20,7 @@ managed=$(jq -n --arg status "$status_cmd" --arg notify "$notify_cmd" '
     # Messages are single-quoted for the shell; keep them apostrophe-free.
     def say($msg): {
         type: "command",
-        command: "\($notify) -a claude '"'"'Claude Code'"'"' '"'"'\($msg)'"'"'"
+        command: "\($notify) -a claude -n claude-desktop '"'"'Claude Code'"'"' '"'"'\($msg)'"'"'"
     };
     {
         SessionStart:     [{hooks: [$agent]}],

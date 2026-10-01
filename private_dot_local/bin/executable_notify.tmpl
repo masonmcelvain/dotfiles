@@ -4,6 +4,7 @@
 #
 #   notify 'Claude Code' 'Task completed'
 #   notify -u critical -t x '✗ cargo build' 'exit 1 · 4m12s · cominor:~/Code'
+#   notify -n claude-desktop 'Claude Code' 'Task completed'
 #
 # Transports, in order:
 #   notify-send   GNOME popup, when a session bus is reachable (masons-xps)
@@ -41,7 +42,8 @@ usage() {
 usage: $prog [options] <title> [body]
 
   -u LEVEL  low | normal | critical  (default normal)
-  -i ICON   desktop icon name (default follows -u)
+  -i ICON   desktop body icon (default none)
+  -n ICON   desktop header icon, beside the app name, e.g. Alacritty
   -t TAGS   ntfy tags, comma separated -- these render as emoji
   -a NAME   application name (default $prog)
   -p        push to ntfy even when a desktop notification also went out
@@ -66,12 +68,13 @@ ascii() {
     LC_ALL=C tr -cd '\11\40-\176' <<<"$1" | sed -E 's/[[:space:]]+/ /g; s/^ //; s/ $//'
 }
 
-urgency=normal icon='' tags='' appname=$prog push=0
+urgency=normal icon='' appicon='' tags='' appname=$prog push=0
 
-while getopts ':u:i:t:a:ph' opt; do
+while getopts ':u:i:n:t:a:ph' opt; do
     case $opt in
         u) urgency=$OPTARG ;;
         i) icon=$OPTARG ;;
+        n) appicon=$OPTARG ;;
         t) tags=$OPTARG ;;
         a) appname=$OPTARG ;;
         p) push=1 ;;
@@ -110,10 +113,6 @@ fi
 title=$1
 body=${2:-}
 
-if [ -z "$icon" ]; then
-    if [ "$urgency" = critical ]; then icon=dialog-error; else icon=dialog-information; fi
-fi
-
 sent=0
 
 if has_desktop; then
@@ -121,13 +120,21 @@ if has_desktop; then
     # (messageTray.js: NOTIFICATION_TIMEOUT = 4000, skipped when urgency is
     # CRITICAL), and ignores expire_timeout entirely -- so -u critical means
     # "sit on screen until clicked", not "shout louder". Cap the desktop at
-    # normal and let the error icon carry the severity. ntfy still gets high
-    # priority below, where it means "buzz the phone" rather than "never go
-    # away".
+    # normal and let the title's glyph carry the severity. ntfy still gets
+    # high priority below, where it means "buzz the phone" rather than "never
+    # go away".
     desktop_urgency=$urgency
     [ "$desktop_urgency" = critical ] && desktop_urgency=normal
-    notify-send -a "$appname" -i "$icon" -u "$desktop_urgency" \
-        "$title" "$body" 2>/dev/null && sent=1
+    # No body icon by default: GNOME 50 renders -i as a large image beside
+    # the text, where Chrome's popups have only a small icon in the header.
+    # That header icon is -n. A desktop-entry hint would also set it, but it
+    # ties the notification to an app, and GNOME destroys an app's
+    # notifications once their sender leaves the bus (notificationDaemon.js,
+    # _onNameVanished) -- which notify-send does the moment it returns.
+    args=(-a "$appname" -u "$desktop_urgency")
+    [ -n "$icon" ] && args+=(-i "$icon")
+    [ -n "$appicon" ] && args+=(-n "$appicon")
+    notify-send "${args[@]}" "$title" "$body" 2>/dev/null && sent=1
 fi
 
 if [ -n "$ntfy_topic" ] && { [ "$sent" = 0 ] || [ "$push" = 1 ]; } &&

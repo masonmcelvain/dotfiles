@@ -152,7 +152,7 @@ fi
 
 # $push is deliberately unquoted: empty must expand to no argument at all.
 # shellcheck disable=SC2086
-"$notify" $push -a "$prog" -u "$urgency" -t "$tags" \
+"$notify" $push -a "$prog" -n Alacritty -u "$urgency" -t "$tags" \
     "$glyph $(truncate_label "$label")" "$detail"
 
 [ "$bell" = 1 ] && printf '\a' >/dev/tty 2>/dev/null
