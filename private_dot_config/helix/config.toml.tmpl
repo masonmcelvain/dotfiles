@@ -2,7 +2,7 @@
 theme = "everforest_light"
 {{- else if eq .chezmoi.hostname "masons-xps" }}
 # https://github.com/helix-editor/helix/issues/13281
-theme = { dark = "everforest_dark", light = "everforest_light" }
+theme = { dark = "everforest_dark", light = "everforest_light", fallback = "everforest_light" }
 {{- end }}
 
 [editor]
