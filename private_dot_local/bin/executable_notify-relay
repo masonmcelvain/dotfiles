@@ -1,0 +1,155 @@
+#!/usr/bin/env python3
+"""notify-relay -- notify-send through one long-lived D-Bus connection, so
+GNOME stacks the notifications.
+
+    notify-relay -a claude -n claude-desktop 'Claude Code' 'Task completed'
+    notify-relay --serve
+
+GNOME Shell's notification center stacks per source, and a notification
+without a desktop-entry hint gets the source keyed by its sender's pid and
+app name (notificationDaemon.js, _getSourceForPidAndName). Every notify-send
+is a new pid, so every popup lands in a group of its own. Chrome stacks
+because it's one process; this makes our notifications one process too.
+Each app name still gets its own stack, so claude, yo and ntfy stay apart.
+
+The desktop-entry hint would group by app instead, but GNOME destroys an
+app's notifications once the sender that created its source leaves the bus.
+These sources have no app, so they outlive the relay: a restart only means
+the next notification starts a fresh stack.
+
+The server half runs from notify-relay.socket, which systemd listens on so
+the first send of a session starts it. The client half takes notify-send's
+-a/-n/-i/-u and exits 1 when the relay can't deliver, so callers can fall
+back to notify-send itself.
+"""
+
+import argparse
+import json
+import os
+import socket
+import sys
+
+SOCKET = os.path.join(
+    os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}"),
+    "notify-relay.sock",
+)
+URGENCY = {"low": 0, "normal": 1, "critical": 2}
+MAX_REQUEST = 64 * 1024
+
+
+def send(args):
+    request = {
+        "app": args.app_name,
+        "app_icon": args.app_icon,
+        "image": args.icon,
+        "urgency": URGENCY[args.urgency],
+        "summary": args.summary,
+        "body": args.body,
+    }
+    try:
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
+            sock.settimeout(5)
+            sock.connect(SOCKET)
+            sock.sendall(json.dumps(request).encode())
+            sock.shutdown(socket.SHUT_WR)
+            reply = sock.makefile().readline().strip()
+    except OSError as err:
+        print(f"notify-relay: {err}", file=sys.stderr)
+        return 1
+    if not reply.startswith("ok"):
+        print(f"notify-relay: {reply or 'no reply'}", file=sys.stderr)
+        return 1
+    return 0
+
+
+def serve():
+    # Only the server needs gi; keeping the import here keeps every send fast.
+    import gi
+
+    gi.require_version("Gio", "2.0")
+    from gi.repository import Gio, GLib
+
+    bus = Gio.bus_get_sync(Gio.BusType.SESSION)
+
+    def notify(req):
+        hints = {"urgency": GLib.Variant("y", req["urgency"])}
+        if req.get("image"):
+            hints["image-path"] = GLib.Variant("s", req["image"])
+        params = GLib.Variant(
+            "(susssasa{sv}i)",
+            (
+                req["app"],
+                0,
+                req.get("app_icon") or "",
+                req["summary"],
+                req.get("body") or "",
+                [],
+                hints,
+                -1,
+            ),
+        )
+        reply = bus.call_sync(
+            "org.freedesktop.Notifications",
+            "/org/freedesktop/Notifications",
+            "org.freedesktop.Notifications",
+            "Notify",
+            params,
+            GLib.VariantType("(u)"),
+            Gio.DBusCallFlags.NONE,
+            5000,
+            None,
+        )
+        return reply.unpack()[0]
+
+    # systemd hands over the listening socket as fd 3; run by hand, bind it.
+    if os.environ.get("LISTEN_PID") == str(os.getpid()):
+        listener = socket.socket(fileno=3)
+    else:
+        listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        if os.path.exists(SOCKET):
+            os.unlink(SOCKET)
+        listener.bind(SOCKET)
+        listener.listen()
+
+    while True:
+        conn, _ = listener.accept()
+        with conn:
+            conn.settimeout(5)
+            try:
+                data = b""
+                while chunk := conn.recv(4096):
+                    data += chunk
+                    if len(data) > MAX_REQUEST:
+                        raise ValueError("request too large")
+                reply = f"ok {notify(json.loads(data))}"
+            except Exception as err:  # one bad request mustn't kill the relay
+                reply = f"error {err}"
+            try:
+                conn.sendall(f"{reply}\n".encode())
+            except OSError:
+                pass
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="notify-send through a long-lived relay, so GNOME stacks"
+    )
+    parser.add_argument("--serve", action="store_true", help="run the relay")
+    parser.add_argument("-a", "--app-name", default="notify-relay")
+    parser.add_argument("-n", "--app-icon", default="", help="header icon")
+    parser.add_argument("-i", "--icon", default="", help="body image")
+    parser.add_argument("-u", "--urgency", choices=URGENCY, default="normal")
+    parser.add_argument("summary", nargs="?")
+    parser.add_argument("body", nargs="?", default="")
+    args = parser.parse_args()
+
+    if args.serve:
+        serve()
+    elif args.summary is None:
+        parser.error("a summary is required")
+    else:
+        sys.exit(send(args))
+
+
+if __name__ == "__main__":
+    main()

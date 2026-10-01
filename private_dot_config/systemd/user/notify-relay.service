@@ -1,0 +1,10 @@
+[Unit]
+Description=Relay notifications through one D-Bus connection so GNOME stacks them
+Requires=notify-relay.socket
+ConditionHost=masons-xps
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/notify-relay --serve
+Restart=on-failure
+RestartSec=2

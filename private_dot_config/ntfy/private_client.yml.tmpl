@@ -32,6 +32,9 @@ subscribe:
     # forwards tags, and a non-emoji tag shows up as text on the phone. So
     # pick it from the title: the Claude Code hooks all send that title, and
     # everything else that pushes is yo, run from a terminal.
+    #
+    # Sending through notify-relay rather than straight to notify-send is what
+    # stacks the relayed popups, as notify's own are; see that script for why.
     command: >-
       case ",$tags," in
       *,x,*) g='✗ ';;
@@ -46,4 +49,5 @@ subscribe:
       *": Claude Code") n=claude-desktop;;
       *) n=Alacritty;;
       esac;
-      notify-send -a ntfy -u "$u" -n "$n" "$g${t:-Notification}" "$m"
+      set -- -a ntfy -u "$u" -n "$n" "$g${t:-Notification}" "$m";
+      "$HOME/.local/bin/notify-relay" "$@" 2>/dev/null || notify-send "$@"

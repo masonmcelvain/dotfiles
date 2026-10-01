@@ -1,0 +1,10 @@
+[Unit]
+Description=Socket for notify-relay, which makes GNOME stack notifications
+ConditionHost=masons-xps
+
+[Socket]
+ListenStream=%t/notify-relay.sock
+SocketMode=0600
+
+[Install]
+WantedBy=sockets.target

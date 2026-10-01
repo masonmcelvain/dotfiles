@@ -7,7 +7,8 @@
 #   notify -n claude-desktop 'Claude Code' 'Task completed'
 #
 # Transports, in order:
-#   notify-send   GNOME popup, when a session bus is reachable (masons-xps)
+#   notify-send   GNOME popup, when a session bus is reachable (masons-xps),
+#                 sent through notify-relay when it's running so they stack
 #   ntfy.sh       phone/browser push, when a topic is configured (cominor)
 #
 # ntfy only fires when notify-send didn't, so a message isn't delivered twice
@@ -134,7 +135,13 @@ if has_desktop; then
     args=(-a "$appname" -u "$desktop_urgency")
     [ -n "$icon" ] && args+=(-i "$icon")
     [ -n "$appicon" ] && args+=(-n "$appicon")
-    notify-send "${args[@]}" "$title" "$body" 2>/dev/null && sent=1
+    # notify-relay takes the same flags, but sends from one long-lived
+    # process, which is what lets GNOME stack the popups per app name.
+    # notify-send still delivers when the relay isn't running, just unstacked.
+    relay=${0%/*}/notify-relay
+    [ -x "$relay" ] || relay=notify-relay
+    { "$relay" "${args[@]}" "$title" "$body" ||
+        notify-send "${args[@]}" "$title" "$body"; } 2>/dev/null && sent=1
 fi
 
 if [ -n "$ntfy_topic" ] && { [ "$sent" = 0 ] || [ "$push" = 1 ]; } &&
