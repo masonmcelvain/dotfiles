@@ -46,6 +46,7 @@ Custom data variables live in `~/.config/chezmoi/chezmoi.toml`, which is *not* i
 
 - **Shell**: `dot_bashrc.tmpl`, `dot_bash_aliases.tmpl`, `dot_bash_keybindings` - hostname-conditional shell setup with fnm, zoxide, starship, fzf, direnv
 - **Git**: `dot_gitconfig.tmpl`, `dot_gitmessage` - templated for per-machine GPG keys and email
+- **SSH**: `private_dot_ssh/private_config` (masons-xps only) forwards the laptop's gpg-agent to cominor, which is the only way commits get signed there. Every connection re-binds that socket and leaves it dead when it closes, so all sessions multiplex over one persistent `ControlMaster`; `ssh -O exit cominor` drops signing on cominor until the next `ssh`
 - **Editors**: `private_dot_config/helix/` (primary editor), `dot_vimrc.tmpl` (fallback)
 - **Terminals**: `private_dot_config/alacritty/` (emulator, made the GNOME default by `private_dot_config/xdg-terminals.list`, which `xdg-terminal-exec` reads; masons-xps only), `private_dot_config/zellij/` (multiplexer), `dot_tmux.conf.tmpl` (alt multiplexer)
 - **GNOME extensions**: `private_dot_local/private_share/private_gnome-shell/extensions/` (masons-xps only, via `.chezmoiignore`). `spotify-fullscreen@masons-xps` fullscreens Spotify when it opens, because Spotify ignores `--start-fullscreen`. Enabling it is a `gsettings` change to `org.gnome.shell enabled-extensions`, not a file, and on Wayland the shell only picks up a new or edited extension at the next login

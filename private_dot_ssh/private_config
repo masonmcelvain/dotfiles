@@ -9,3 +9,9 @@ Host cominor
   ServerAliveInterval 20
   # After 3 unanswered probes, ssh exits with 'Timeout, server not responding'
   ServerAliveCountMax 3
+  # Every new connection re-binds the forwarded gpg sockets above, and when it
+  # closes, signing on cominor dies for every other session too. Multiplexing
+  # all sessions over one long-lived master keeps a single owner of the forward
+  ControlMaster auto
+  ControlPath /run/user/%i/ssh-%C
+  ControlPersist yes
