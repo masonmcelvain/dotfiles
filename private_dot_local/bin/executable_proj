@@ -701,8 +701,9 @@ main() {
             FLASH=''
             case $KEY in
                 quit) QUIT=1 ;;
-                down) ((SEL < ${#PROJECTS[@]} - 1)) && ((SEL++)) ;;
-                up) ((SEL > 0)) && ((SEL--)) ;;
+                # Moving past either end wraps around to the other.
+                down) ((${#PROJECTS[@]} > 0)) && SEL=$(((SEL + 1) % ${#PROJECTS[@]})) ;;
+                up) ((${#PROJECTS[@]} > 0)) && SEL=$(((SEL - 1 + ${#PROJECTS[@]}) % ${#PROJECTS[@]})) ;;
                 top) SEL=0 ;;
                 bottom) ((${#PROJECTS[@]} > 0)) && SEL=$((${#PROJECTS[@]} - 1)) ;;
                 enter) open_project "$SEL" ;;
