@@ -18,3 +18,9 @@ CLAUDE.md
 {{ if not (lookPath "hunk") -}}
 .claude/skills/hunk-review
 {{ end -}}
+
+{{/* proj works over the Code/ slots, which only exist on cominor. */}}
+{{ if ne .chezmoi.hostname "cominor" -}}
+.local/bin/proj
+.local/bin/proj-claude
+{{ end -}}

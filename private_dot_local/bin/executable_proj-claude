@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# proj-claude: the command in a project session's claude tab (see `proj`).
+# Starts the project's Claude Code session on first run and resumes it on
+# every run after, so the pane can be rerun -- by zellij reviving an exited
+# session, or by pressing enter after quitting claude -- without starting the
+# task over.
+#
+# The session id lives in the slot's git config as
+# branch.<branch>.claude-session, written by `proj new`, and the first prompt
+# waits in $XDG_STATE_HOME/proj/<id>.prompt. The session counts as started
+# once claude has written its transcript, not when claude is launched: one
+# that exits before its first turn (say, at the folder trust prompt) gets the
+# prompt again on the next run instead of losing it.
+
+set -uo pipefail
+
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/proj"
+
+branch=$(git branch --show-current 2>/dev/null)
+if [ -z "$branch" ]; then
+    echo "proj-claude: $PWD is not on a branch; starting a plain session" >&2
+    exec claude
+fi
+
+id=$(git config --get "branch.$branch.claude-session" 2>/dev/null)
+
+if [ -n "$id" ]; then
+    # Transcripts sit under a per-directory folder whose name is the mangled
+    # real path; globbing across all of them avoids reproducing the mangling.
+    if compgen -G "$HOME/.claude/projects/*/$id.jsonl" >/dev/null; then
+        rm -f "$state_dir/$id.prompt"
+        exec claude --resume "$id"
+    fi
+    if [ -f "$state_dir/$id.prompt" ]; then
+        exec claude --session-id "$id" -n "$branch" "$(cat "$state_dir/$id.prompt")"
+    fi
+    exec claude --session-id "$id" -n "$branch"
+fi
+
+# A project made before proj: carry on with whatever ran last in this slot, if
+# anything has. --continue with nothing to continue exits instead of starting
+# fresh.
+transcripts="$HOME/.claude/projects/$(realpath . | sed 's/[^a-zA-Z0-9]/-/g')"
+if compgen -G "$transcripts/*.jsonl" >/dev/null; then
+    exec claude --continue
+fi
+exec claude -n "$branch"
