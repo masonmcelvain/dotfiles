@@ -1,0 +1,10 @@
+[Unit]
+Description=Retry the workbot ssh link until the key is unlocked
+ConditionHost=masons-xps
+
+[Timer]
+OnCalendar=*:0/2
+AccuracySec=15s
+
+[Install]
+WantedBy=timers.target

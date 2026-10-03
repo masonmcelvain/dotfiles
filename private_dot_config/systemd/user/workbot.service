@@ -1,0 +1,16 @@
+[Unit]
+Description=workbot: watch the hosts and GitHub, notify during work hours
+Documentation=https://github.com/masonmcelvain/workbot
+After=network-online.target
+ConditionHost=masons-xps
+
+[Service]
+Type=simple
+# node comes from fnm's default alias; the hub lives at ~/.local/bin/workbot.
+Environment=PATH=%h/.local/share/fnm/aliases/default/bin:%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=%h/.local/bin/workbot watch
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
