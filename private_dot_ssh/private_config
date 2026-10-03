@@ -15,3 +15,11 @@ Host cominor
   ControlMaster auto
   ControlPath /run/user/%i/ssh-%C
   ControlPersist yes
+
+# sshd on cominor won't bind a forwarded socket over a file that's already
+# there, and the RemoteForwards above only warn when that happens, so a
+# master started after a dropped one would come up with signing dead. Right
+# before a new master connects, remove the stale sockets over a throwaway
+# connection; -F none keeps that one from forwarding, multiplexing, or
+# running this hook again. The hook is skipped while a master is running.
+Match originalhost cominor exec "ssh -F none -S /run/user/%i/ssh-%C -O check cominor 2>/dev/null || ssh -F none -o ConnectTimeout=5 mmcelvain@cominor.com 'rm -f /run/user/1062/gnupg/S.gpg-agent /run/user/1062/gnupg/S.gpg-agent.ssh' >/dev/null 2>&1; true"
