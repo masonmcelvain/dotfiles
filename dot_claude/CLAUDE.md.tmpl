@@ -30,7 +30,7 @@ Use conventional commit messages following this pattern:
 - Trivial changes don't need a body (e.g. `fix: --help typo`).
 - When there is a body, lead with the motivation: explain why the change is needed, not just what it does. Keep it brief, in complete sentences.
 - Cite evidence in the body when it exists: Slack thread links, Sentry issue links, API docs, and commit hashes. Bare URLs on their own line are fine.
-- Never reference pull requests or issues in a commit message, by number or by URL.
+- Never link pull requests or issues in a commit message. When one is worth citing, write its bare number without a `#` (e.g. "zellij issue 3998"), so GitHub doesn't auto-link it; never use `#123` or a URL.
 
 **Example commit with body**:
 
