@@ -4,11 +4,14 @@
 # to the selected agent's zellij tab, attaching or switching sessions as
 # needed. Works from a plain shell or from inside any zellij session; bound to
 # Alt+Shift+A as a floating pane in ~/.config/zellij/config.kdl.
-# Keys: 1-9 jump, j/k move, g/G top/bottom, enter open, d dismiss, r refresh,
-# q quit. With stdout not a TTY, prints a plain table instead.
+# Keys: picker.sh's, plus d to dismiss. With stdout not a TTY, prints a plain
+# table instead.
 
 set -uo pipefail
 shopt -s nullglob
+
+# shellcheck source=picker.sh
+source "$(dirname "${BASH_SOURCE[0]}")/picker.sh"
 
 state_dir="${XDG_CACHE_HOME:-$HOME/.cache}/agents"
 
@@ -22,9 +25,12 @@ SEP=$'\x1f'
 AGENTS=()
 declare -A SESS_STATE=() # zellij session name -> live|exited (absent = gone)
 NOW=0
-SEL=0 SCROLL=0 FLASH='' QUIT=''
 
-C_RESET=$'\e[0m' C_DIM=$'\e[2m' C_UNDIM=$'\e[22m' C_FG=$'\e[39m'
+PICKER_TITLE=agents
+PICKER_HELP='1-9 jump · j/k move · enter open · d dismiss · q quit'
+PICKER_EMPTY='no agents running'
+PICKER_DETAIL_LINES=2
+
 C_WAIT=$'\e[38;5;208m' C_DONE=$'\e[32m' C_WORK=$'\e[34m'
 
 glyph_for() {
@@ -82,29 +88,6 @@ load_agents() {
         sort -t "$SEP" -k2,2n -k1,1nr)
 }
 
-clamp_sel() {
-    local n=${#AGENTS[@]}
-    ((n == 0)) && SEL=0 || { ((SEL >= n)) && SEL=$((n - 1)); }
-    ((SEL < 0)) && SEL=0
-}
-
-age_str() {
-    local s=$((NOW - $1))
-    ((s < 0)) && s=0
-    if ((s < 60)); then printf '%ds' "$s"
-    elif ((s < 3600)); then printf '%dm' $((s / 60))
-    elif ((s < 86400)); then printf '%dh' $((s / 3600))
-    else printf '%dd' $((s / 86400)); fi
-}
-
-# Truncate $1 to $2 chars (adding …) and pad to exactly $2. printf's %-*s pads
-# by bytes, so pad manually with char counts to keep unicode columns aligned.
-fit() {
-    local s=$1 w=$2
-    ((${#s} > w)) && s="${s:0:w-1}…"
-    printf '%s%*s' "$s" $((w - ${#s})) ''
-}
-
 # Session name + liveness for row $1, as "display<SEP>state".
 session_disp() {
     local zs=$1
@@ -119,20 +102,16 @@ session_disp() {
     esac
 }
 
-draw() {
-    local cols n=${#AGENTS[@]} buf='' i
-    cols=$(tput cols)
+picker_load() {
+    load_agents
+    PICKER_N=${#AGENTS[@]}
+}
 
-    local host=${HOSTNAME:-$(hostname)}
-    local head="  agents · $n"
-    buf+="${C_DIM}${head}"
-    buf+="$(printf '%*s' $((cols - ${#head} - ${#host} - 2)) '')${host}${C_RESET}"
-    buf+=$'\e[K\n\e[K\n'
-
-    # Precompute session column
+picker_render() {
+    local w=$1 i sd state zs epoch status title
     local -a sdisp=() sstate=()
-    local sess_w=3 sd zs
-    for ((i = 0; i < n; i++)); do
+    local sess_w=3
+    for ((i = 0; i < PICKER_N; i++)); do
         IFS=$SEP read -r _ _ _ _ _ zs _ _ _ _ _ <<<"${AGENTS[i]}"
         IFS=$SEP read -r sd "sstate[i]" <<<"$(session_disp "$zs")"
         sdisp[i]=$sd
@@ -140,110 +119,41 @@ draw() {
     done
     ((sess_w > 24)) && sess_w=24
 
-    local title_w=$((cols - 11 - 2 - sess_w - 2 - 4 - 1))
+    local title_w=$((w - 3 - 2 - sess_w - 2 - 4 - 1))
     ((title_w < 8)) && title_w=8
 
-    local list_h=$(($(tput lines) - 7))
-    ((list_h < 1)) && list_h=1
-    ((SEL < SCROLL)) && SCROLL=$SEL
-    ((SEL >= SCROLL + list_h)) && SCROLL=$((SEL - list_h + 1))
-
-    local epoch status title cwd msg marker num numseq attrs line
-    local sel_cwd='' sel_msg=''
-    for ((i = SCROLL; i < n && i < SCROLL + list_h; i++)); do
-        IFS=$SEP read -r epoch _ _ _ status zs _ _ title cwd msg <<<"${AGENTS[i]}"
-        marker='  ' && ((i == SEL)) && marker='->'
-        num=' ' && ((i < 9)) && num=$((i + 1))
-        attrs=''
-        case "${sstate[i]}" in exited | gone) attrs+=$C_DIM ;; esac
-        if [[ $attrs == *"$C_DIM"* ]]; then
-            numseq=$num
-        else
-            numseq="${C_DIM}${num}${C_UNDIM}"
-        fi
-        line="${attrs}  ${marker} ${numseq}  $(glyph_for "$status")  "
-        line+="$(fit "$title" "$title_w")  $(fit "${sdisp[i]}" "$sess_w")  "
-        line+="$(printf '%4s' "$(age_str "$epoch")")"
-        buf+="${line}${C_RESET}"$'\e[K\n'
-        if ((i == SEL)); then
-            sel_cwd=$cwd
-            sel_msg=$msg
-        fi
+    for ((i = 0; i < PICKER_N; i++)); do
+        IFS=$SEP read -r epoch _ _ _ status _ _ _ title _ _ <<<"${AGENTS[i]}"
+        case "${sstate[i]}" in exited | gone) PICKER_DIM[i]=1 ;; esac
+        PICKER_ROWS[i]="$(glyph_for "$status")  $(fit "$title" "$title_w")  "
+        PICKER_ROWS[i]+="$(fit "${sdisp[i]}" "$sess_w")  "
+        PICKER_ROWS[i]+="$(printf '%4s' "$(age_str $((NOW - epoch)))")"
     done
-    if ((n == 0)); then
-        buf+="  ${C_DIM}no agents running${C_RESET}"$'\e[K\n'
-    fi
-
-    local sep_line
-    printf -v sep_line '%*s' $((cols - 2)) ''
-    sep_line="  ${C_DIM}${sep_line// /─}${C_RESET}"$'\e[K\n'
-
-    buf+=$'\e[K\n'"$sep_line"
-    buf+="   $(fit "${sel_cwd/#$HOME/\~}" $((cols - 4)))"$'\e[K\n'
-    if [ -n "$sel_msg" ]; then
-        buf+="   ${C_DIM}$(fit "$sel_msg" $((cols - 4)))${C_RESET}"$'\e[K\n'
-    else
-        buf+=$'\e[K\n'
-    fi
-    buf+="$sep_line"
-    if [ -n "$FLASH" ]; then
-        buf+="   ${C_WAIT}${FLASH}${C_RESET}"$'\e[K'
-    else
-        buf+="   ${C_DIM}1-9 jump · j/k move · enter open · d dismiss · q quit${C_RESET}"$'\e[K'
-    fi
-    printf '\e[H%s\e[J' "$buf"
 }
 
-# Sets KEY; returns 1 on timeout (refresh tick).
-get_key() {
-    local k rest
-    KEY=''
-    IFS= read -rsn1 -t 1 k || return 1
-    if [[ $k == $'\e' ]]; then
-        IFS= read -rsn2 -t 0.05 rest || {
-            KEY=quit
-            return 0
-        }
-        case $rest in
-            '[A') KEY=up ;;
-            '[B') KEY=down ;;
-            '[Z') KEY=up ;; # shift+tab, undocumented alias for k
-            *) KEY=other ;;
-        esac
-        return 0
-    fi
-    case $k in
-        '') KEY=enter ;;
-        $'\t') KEY=down ;; # tab, undocumented alias for j
-        j) KEY=down ;;
-        k) KEY=up ;;
-        g) KEY=top ;;
-        G) KEY=bottom ;;
-        q) KEY=quit ;;
-        d) KEY=dismiss ;;
-        r) KEY=reload ;;
-        [1-9]) KEY=num:$k ;;
-        *) KEY=other ;;
+picker_detail() {
+    local cwd msg
+    IFS=$SEP read -r _ _ _ _ _ _ _ _ _ cwd msg <<<"${AGENTS[$1]}"
+    PICKER_DETAIL=("$(fit "${cwd/#$HOME/\~}" "$2")")
+    [ -n "$msg" ] && PICKER_DETAIL+=("${C_DIM}$(fit "$msg" "$2")")
+}
+
+picker_key() {
+    case $1 in
+        d) dismiss "$PICKER_SEL" ;;
     esac
 }
 
-cleanup() {
-    tput rmcup
-    tput cnorm
-}
-
-open_agent() {
-    local i=$1
-    ((i >= 0 && i < ${#AGENTS[@]})) || return 0
-    local zs tab pane
+picker_open() {
+    local i=$1 zs tab pane
     IFS=$SEP read -r _ _ _ _ _ zs tab pane _ _ _ <<<"${AGENTS[i]}"
     if [ -z "$zs" ]; then
-        FLASH='not in zellij'
+        PICKER_FLASH='not in zellij'
         return 0
     fi
     # Attaching to a deleted session would create a fresh one with its name.
     if [ -z "${SESS_STATE[$zs]:-}" ]; then
-        FLASH="session $zs is gone · d to dismiss"
+        PICKER_FLASH="session $zs is gone · d to dismiss"
         return 0
     fi
 
@@ -262,19 +172,19 @@ open_agent() {
             ) >/dev/null 2>&1 &
             disown
         fi
-        cleanup
+        picker_cleanup
         exec zellij attach "$zs"
     elif [ "${ZELLIJ_SESSION_NAME:-}" = "$zs" ]; then
         zellij action go-to-tab-by-id "$tab" >/dev/null 2>&1
-        QUIT=1
+        PICKER_QUIT=1
     else
         # Detaches this client from the current session (leaving it running)
         # and drops it on the agent's pane in the target session.
         if zellij action switch-session "$zs" \
             ${pane:+--pane-id "terminal_$pane"} >/dev/null 2>&1; then
-            QUIT=1
+            PICKER_QUIT=1
         else
-            FLASH="couldn't switch to $zs"
+            PICKER_FLASH="couldn't switch to $zs"
         fi
     fi
 }
@@ -284,8 +194,7 @@ dismiss() {
     ((i >= 0 && i < ${#AGENTS[@]})) || return 0
     IFS=$SEP read -r _ _ _ sid _ _ _ _ _ _ _ <<<"${AGENTS[i]}"
     [ -n "$sid" ] && rm -f "$state_dir/$sid.json"
-    load_agents
-    clamp_sel
+    picker_reload
 }
 
 plain_list() {
@@ -296,7 +205,7 @@ plain_list() {
             IFS=$SEP read -r epoch _ _ _ status zs _ _ title cwd _ <<<"$row"
             IFS=$SEP read -r zs _ <<<"$(session_disp "$zs")"
             printf '%s\t%s\t%s\t%s\t%s\n' \
-                "$status" "$title" "$zs" "${cwd/#$HOME/\~}" "$(age_str "$epoch")"
+                "$status" "$title" "$zs" "${cwd/#$HOME/\~}" "$(age_str $((NOW - epoch)))"
         done
     } | column -t -s$'\t' 2>/dev/null || true
 }
@@ -311,34 +220,7 @@ main() {
         return 0
     fi
 
-    tput smcup
-    tput civis
-    trap cleanup EXIT
-    trap 'exit 130' INT TERM
-    trap : WINCH # interrupts read -> immediate reload + redraw
-
-    load_agents
-    while [ -z "$QUIT" ]; do
-        draw
-        if get_key; then
-            FLASH=''
-            case $KEY in
-                quit) QUIT=1 ;;
-                # Moving past either end wraps around to the other.
-                down) ((${#AGENTS[@]} > 0)) && SEL=$(((SEL + 1) % ${#AGENTS[@]})) ;;
-                up) ((${#AGENTS[@]} > 0)) && SEL=$(((SEL - 1 + ${#AGENTS[@]}) % ${#AGENTS[@]})) ;;
-                top) SEL=0 ;;
-                bottom) ((${#AGENTS[@]} > 0)) && SEL=$((${#AGENTS[@]} - 1)) ;;
-                enter) open_agent "$SEL" ;;
-                num:*) open_agent $((${KEY#num:} - 1)) ;;
-                dismiss) dismiss "$SEL" ;;
-                reload) load_agents && clamp_sel ;;
-            esac
-        else
-            load_agents
-            clamp_sel
-        fi
-    done
+    picker_run
 }
 
 main

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# zellij-sessions: fzf picker for zellij sessions, listing each session's git
+# zellij-sessions: picker for zellij sessions, listing each session's git
 # branch and working directory alongside its name. Attaches from a plain shell
 # and switches from inside a session, so it works either way; aliased to `zf`
-# and bound to Alt+s as a floating pane in ~/.config/zellij/config.kdl.
-# With stdout not a TTY, prints a plain table instead of opening the picker.
+# and bound to Alt+f as a floating pane in ~/.config/zellij/config.kdl.
+# Keys are picker.sh's. With stdout not a TTY, prints a plain table instead.
 #
 # Session cwds come from zellij's own on-disk session info rather than from
 # `zellij action dump-layout`: dump-layout needs a running server per session
@@ -15,10 +15,17 @@
 set -uo pipefail
 shopt -s nullglob
 
-SEP=$'\x1f'
-TAB=$'\t'
+# shellcheck source=picker.sh
+source "$(dirname "${BASH_SOURCE[0]}")/picker.sh"
 
-C_RESET=$'\e[0m' C_DIM=$'\e[2m' C_GREEN=$'\e[32m' C_ORANGE=$'\e[38;5;208m'
+SEP=$'\x1f'
+
+PICKER_TITLE=sessions
+PICKER_HELP='1-9 jump · j/k move · enter open · q quit'
+PICKER_EMPTY='no other sessions'
+PICKER_DETAIL_LINES=2
+
+C_GREEN=$'\e[32m' C_ORANGE=$'\e[38;5;208m'
 
 # Where zellij keeps per-session layout/metadata. The parent is a contract
 # version ("contract_version_1") that changed from plain version numbers in
@@ -102,25 +109,6 @@ dur_to_secs() {
     printf '%s' "$total"
 }
 
-age_str() {
-    local s=$1
-    ((s < 0)) && s=0
-    if ((s < 60)); then printf '%ds' "$s"
-    elif ((s < 3600)); then printf '%dm' $((s / 60))
-    elif ((s < 86400)); then printf '%dh' $((s / 3600))
-    elif ((s < 2592000)); then printf '%dd' $((s / 86400))
-    elif ((s < 31536000)); then printf '%dmo' $((s / 2592000))
-    else printf '%dy' $((s / 31536000)); fi
-}
-
-# Truncate $1 to $2 chars (adding …) and pad to exactly $2. printf's %-*s pads
-# by bytes, so pad manually with char counts to keep unicode columns aligned.
-fit() {
-    local s=$1 w=$2
-    ((${#s} > w)) && s="${s:0:w-1}…"
-    printf '%s%*s' "$s" $((w - ${#s})) ''
-}
-
 # Fields, SEP-separated: 1 name  2 live|exited  3 branch  4 cwd  5 age
 ROWS=()
 
@@ -164,10 +152,14 @@ collect() {
     fi
 }
 
-# Emits "name<TAB>display" lines; fzf hides field 1 but hands it back on select.
-render() {
-    local row name state branch cwd age
-    local name_w=4 branch_w=6 path_w=8 cols avail over give
+picker_load() {
+    collect
+    PICKER_N=${#ROWS[@]}
+}
+
+picker_render() {
+    local row name state branch cwd age i
+    local name_w=4 branch_w=6 path_w=8 avail over give
 
     # Start every column at the width its longest value wants.
     for row in "${ROWS[@]}"; do
@@ -178,10 +170,8 @@ render() {
         ((${#cwd} > path_w)) && path_w=${#cwd}
     done
 
-    # Reserve fzf's own chrome (border and pointer gutter) plus the gaps and
-    # the age column, or the last column wraps and fzf clips it to "..".
-    cols=$(tput cols 2>/dev/null || echo 80)
-    avail=$((cols - 18))
+    # Leave room for the gaps, the age column and a spare column at the edge.
+    avail=$(($1 - 12))
 
     # Only claw width back when the natural widths don't fit -- on a wide
     # terminal nothing is truncated. The path yields first, then the branch,
@@ -216,20 +206,31 @@ render() {
     ((over > 0)) && path_w=$((path_w - over))
     ((path_w < 4)) && path_w=4
 
-    for row in "${ROWS[@]}"; do
-        IFS=$SEP read -r name state branch cwd age <<<"$row"
+    for ((i = 0; i < PICKER_N; i++)); do
+        IFS=$SEP read -r name state branch cwd age <<<"${ROWS[i]}"
         local dim='' line
-        [ "$state" = exited ] && dim=$C_DIM
-        line="${dim}$(fit "$name" "$name_w")  "
+        [ "$state" = exited ] && dim=$C_DIM && PICKER_DIM[i]=1
+        line="$(fit "$name" "$name_w")  "
         line+="${C_GREEN}${dim}$(fit "$branch" "$branch_w")${C_RESET}${dim}  "
         line+="${C_DIM}$(fit "${cwd/#$HOME/\~}" "$path_w")${C_RESET}${dim}  "
         if [ "$state" = exited ]; then
-            line+="${C_DIM}$(printf '%5s' "$age")${C_RESET}"
+            line+="${C_DIM}$(printf '%5s' "$age")"
         else
-            line+="${C_ORANGE}$(printf '%5s' "$age")${C_RESET}"
+            line+="${C_ORANGE}$(printf '%5s' "$age")"
         fi
-        printf '%s%s%s%s\n' "$name" "$TAB" "$line" "$C_RESET"
+        PICKER_ROWS[i]=$line
     done
+}
+
+picker_detail() {
+    local state cwd age
+    IFS=$SEP read -r _ state _ cwd age <<<"${ROWS[$1]}"
+    PICKER_DETAIL=("$(fit "${cwd/#$HOME/\~}" "$2")")
+    if [ "$state" = exited ]; then
+        PICKER_DETAIL+=("${C_DIM}exited ${age} ago · enter resurrects it")
+    else
+        PICKER_DETAIL+=("${C_DIM}live · created ${age} ago")
+    fi
 }
 
 plain_list() {
@@ -243,16 +244,19 @@ plain_list() {
     } | column -t -s$'\t' 2>/dev/null || true
 }
 
-open_session() {
-    local name=$1
-    [ -n "$name" ] || return 0
+picker_open() {
+    local name
+    IFS=$SEP read -r name _ <<<"${ROWS[$1]}"
     if [ -z "${ZELLIJ:-}" ]; then
         # Outside zellij: attach, which resurrects an exited session.
+        picker_cleanup
         exec zellij attach "$name"
+    # Inside: detach this client from the current session (leaving it running)
+    # and land it in the target, resurrecting it if it had exited.
+    elif zellij action switch-session "$name" >/dev/null 2>&1; then
+        PICKER_QUIT=1
     else
-        # Inside: detach this client from the current session (leaving it
-        # running) and land it in the target, resurrecting it if it had exited.
-        zellij action switch-session "$name" >/dev/null
+        PICKER_FLASH="couldn't switch to $name"
     fi
 }
 
@@ -261,31 +265,12 @@ main() {
         echo 'zellij-sessions: zellij is not installed' >&2
         exit 1
     }
-
-    collect
-    if ((${#ROWS[@]} == 0)); then
-        echo 'zellij-sessions: no other sessions' >&2
-        exit 1
-    fi
-
     if [ ! -t 1 ]; then
+        collect
         plain_list
         return 0
     fi
-
-    command -v fzf >/dev/null || {
-        echo 'zellij-sessions: fzf is required' >&2
-        exit 1
-    }
-
-    local choice
-    choice=$(render | fzf \
-        --ansi --no-multi --no-sort \
-        --height=100% \
-        --delimiter="$TAB" --with-nth=2.. \
-        --prompt='session> ') || return 0
-
-    open_session "${choice%%"$TAB"*}"
+    picker_run
 }
 
 main "$@"
