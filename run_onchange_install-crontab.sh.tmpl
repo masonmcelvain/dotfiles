@@ -1,0 +1,7 @@
+{{ if eq .chezmoi.hostname "cominor" -}}
+#!/bin/bash
+# Restart the carpenter dev servers nightly so idle ones drop back to ~110 MB.
+crontab - <<'EOF'
+0 4 * * * /mnt/ebs/home/mmcelvain/Code/Exec/pm2 restart all >/dev/null 2>&1
+EOF
+{{ end -}}
