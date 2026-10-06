@@ -10,6 +10,13 @@ set -uo pipefail
 
 state_dir="${XDG_CACHE_HOME:-$HOME/.cache}/agents"
 
+# zellij action hangs, rather than failing, when ZELLIJ_SESSION_NAME is stale (the
+# session was renamed after the agent started), and a hung hook is killed at its
+# timeout before it writes any state. Cap each call so the state file still lands.
+zj() {
+    timeout 1 zellij action "$@"
+}
+
 glyph_for() {
     case "$1" in
         working) printf '●' ;;
@@ -31,7 +38,7 @@ capture_tab() {
     pane=${ZELLIJ_PANE_ID:-}
     pane=${pane#terminal_}
     [ -n "$pane" ] || return 1
-    out=$(zellij action list-panes -j -t 2>/dev/null |
+    out=$(zj list-panes -j -t 2>/dev/null |
         jq -r --arg pane "$pane" '
             first(.[] | select((.is_plugin | not) and (.id | tostring) == $pane)
                   | "\(.tab_id)\t\(.tab_name)")' |
@@ -58,7 +65,7 @@ restore_tab() {
     tab_id=$(jq -r '.zellij.tab_id // empty' <<<"$state")
     orig=$(jq -r '.zellij.original_tab_name // empty' <<<"$state")
     [ -n "$tab_id" ] && [ -n "$orig" ] || return 0
-    zellij action rename-tab --tab-id "$tab_id" "$orig" 2>/dev/null || true
+    zj rename-tab --tab-id "$tab_id" "$orig" 2>/dev/null || true
 }
 
 main() {
@@ -176,7 +183,7 @@ main() {
         local label
         label="$(glyph_for "$status")"
         [ -n "$show_name" ] && label="$label $show_name"
-        zellij action rename-tab --tab-id "$tab_id" "$label" 2>/dev/null || true
+        zj rename-tab --tab-id "$tab_id" "$label" 2>/dev/null || true
     fi
     return 0
 }
