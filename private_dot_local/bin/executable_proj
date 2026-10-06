@@ -453,9 +453,10 @@ suggest_branch() {
 }
 
 # Checks out $2 in slot $1: an existing local or remote branch as it is,
-# otherwise a new one off the base branch, freshly fetched.
+# otherwise a new one off base branch $3, once the fetch of it running as pid
+# $4 finishes.
 checkout_branch() {
-    local slot=$1 branch=$2 base
+    local slot=$1 branch=$2 base=$3 fetch_pid=$4
     if git -C "$slot" worktree list --porcelain | grep -qxF "branch refs/heads/$branch"; then
         echo "proj: $branch is already checked out in another slot" >&2
         return 1
@@ -465,9 +466,11 @@ checkout_branch() {
         git -C "$slot" switch "$branch"
         return
     fi
-    base=$(base_branch "$slot")
-    git -C "$slot" fetch -q origin "$base" &&
-        git -C "$slot" switch --no-track -c "$branch" "origin/$base"
+    wait "$fetch_pid" || {
+        echo "proj: couldn't fetch origin/$base" >&2
+        return 1
+    }
+    git -C "$slot" switch --no-track -c "$branch" "origin/$base"
 }
 
 # Starts a project: task from $1 (a file), branch from $2 or haiku's
@@ -494,6 +497,13 @@ start_project() {
         }
     fi
 
+    # Fetch the base while haiku names the branch, so the wait for one hides
+    # the other. Quiet, since it may still be running after a failure below.
+    local base fetch_pid
+    base=$(base_branch "$slot")
+    git -C "$slot" fetch -q origin "$base" >/dev/null 2>&1 &
+    fetch_pid=$!
+
     if [ -z "$branch" ]; then
         echo 'proj: naming the branch…'
         branch=$(suggest_branch <"$task")
@@ -504,7 +514,7 @@ start_project() {
     }
 
     echo "proj: $branch in $(slot_name "$slot")"
-    checkout_branch "$slot" "$branch" || return 1
+    checkout_branch "$slot" "$branch" "$base" "$fetch_pid" || return 1
 
     local id
     id=$(cat /proc/sys/kernel/random/uuid)
