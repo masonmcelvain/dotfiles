@@ -469,12 +469,12 @@ checkout_branch() {
         git -C "$slot" switch --no-track -c "$branch" "origin/$base"
 }
 
-# Starts a project: task from $1 (a file), branch from $2 or a suggestion
-# (edited at the terminal when $interactive), slot from $3 or the first free
-# one. Leaves the new session's name in NEW_SESSION.
+# Starts a project: task from $1 (a file), branch from $2 or haiku's
+# suggestion, slot from $3 or the first free one. Leaves the new session's
+# name in NEW_SESSION.
 NEW_SESSION=''
 start_project() {
-    local task=$1 branch=${2:-} slot=${3:-} interactive=${4:-}
+    local task=$1 branch=${2:-} slot=${3:-}
     if [ -n "$slot" ]; then
         local name=$slot
         slot=$(slot_path "$name") || {
@@ -496,9 +496,6 @@ start_project() {
     if [ -z "$branch" ]; then
         echo 'proj: naming the branch…'
         branch=$(suggest_branch <"$task")
-        if [ -n "$interactive" ]; then
-            read -r -e -i "$branch" -p 'branch: ' branch || return 1
-        fi
     fi
     git check-ref-format --branch "$branch" >/dev/null 2>&1 || {
         echo "proj: '$branch' isn't a valid branch name" >&2
@@ -538,7 +535,7 @@ new_project() {
         FLASH='nothing written; no project started'
         return 0
     fi
-    if start_project "$task" '' '' interactive; then
+    if start_project "$task"; then
         rm -f "$task"
         goto_session "$NEW_SESSION"
         [ -n "$QUIT" ] && return 0
