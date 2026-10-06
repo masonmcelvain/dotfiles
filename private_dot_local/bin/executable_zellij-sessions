@@ -4,7 +4,8 @@
 # and switches from inside a session, so it works either way; aliased to `zf`
 # and bound to Alt+f as a floating pane in ~/.config/zellij/config.kdl.
 # Keys: picker.sh's, plus d to delete a session (killing it first if it's
-# live). With stdout not a TTY, prints a plain table instead.
+# live) and, where zellij-new is installed (cominor), n to start a fresh one.
+# With stdout not a TTY, prints a plain table instead.
 #
 # Session cwds come from zellij's own on-disk session info rather than from
 # `zellij action dump-layout`: dump-layout needs a running server per session
@@ -22,7 +23,9 @@ source "$(dirname "${BASH_SOURCE[0]}")/picker.sh"
 SEP=$'\x1f'
 
 PICKER_TITLE=sessions
-PICKER_HELP='1-9 jump · j/k move · enter open · d delete · q quit'
+HAS_NEW=''
+command -v zellij-new >/dev/null && HAS_NEW=1
+PICKER_HELP="1-9 jump · j/k move · enter open${HAS_NEW:+ · n new} · d delete · q quit"
 PICKER_EMPTY='no other sessions'
 PICKER_DETAIL_LINES=2
 
@@ -280,9 +283,25 @@ delete_session() {
     picker_reload
 }
 
+new_session() {
+    if [ -z "${ZELLIJ:-}" ]; then
+        # zellij-new attaches itself, so hand it the terminal.
+        picker_cleanup
+        exec zellij-new
+    fi
+    # Inside, it switches this client over and returns; keep its error.
+    local err
+    if err=$(zellij-new 2>&1 >/dev/null); then
+        PICKER_QUIT=1
+    else
+        PICKER_FLASH=${err#zellij-new: }
+    fi
+}
+
 picker_key() {
     case $1 in
         d) ((PICKER_N > 0)) && delete_session "$PICKER_SEL" ;;
+        n) [ -n "$HAS_NEW" ] && new_session ;;
     esac
 }
 
