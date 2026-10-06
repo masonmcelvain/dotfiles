@@ -1,0 +1,6 @@
+{
+  "uuid": "hide-date-menu-cards@masons-xps",
+  "name": "Hide Date Menu Cards",
+  "description": "Hide the Today and World Clocks cards in the date menu, which GNOME has no setting for",
+  "shell-version": ["50"]
+}
