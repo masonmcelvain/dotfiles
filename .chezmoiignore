@@ -19,10 +19,7 @@ CLAUDE.md
 .claude/skills/hunk-review
 {{ end -}}
 
-{{/* proj and zellij-new work over the Code/ slots, which only exist on
-     cominor. */}}
+{{/* zellij-new works over the Code/ slots, which only exist on cominor. */}}
 {{ if ne .chezmoi.hostname "cominor" -}}
-.local/bin/proj
-.local/bin/proj-claude
 .local/bin/zellij-new
 {{ end -}}

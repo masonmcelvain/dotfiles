@@ -123,8 +123,6 @@ source /usr/share/doc/fzf/examples/key-bindings.bash
 # Cominor
 #------------------------------------------------------------------------------
 alias code="cd $HOME/Code"
-# Projects in the Code/ slots, one zellij session each; also bound to Alt+g
-alias p=proj
 alias psalm='ionice -c Idle nice -n 19 psalm --threads=$(($(nproc)/2))'
 alias psalmset="psalm --set-baseline=psalm-baseline.xml"
 alias list-prime='list-machines | rg worker-prime | rg --color=never -o "ec2-\S*"'
