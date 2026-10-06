@@ -3,7 +3,8 @@
 # branch and working directory alongside its name. Attaches from a plain shell
 # and switches from inside a session, so it works either way; aliased to `zf`
 # and bound to Alt+f as a floating pane in ~/.config/zellij/config.kdl.
-# Keys are picker.sh's. With stdout not a TTY, prints a plain table instead.
+# Keys: picker.sh's, plus d to delete a session (killing it first if it's
+# live). With stdout not a TTY, prints a plain table instead.
 #
 # Session cwds come from zellij's own on-disk session info rather than from
 # `zellij action dump-layout`: dump-layout needs a running server per session
@@ -21,7 +22,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/picker.sh"
 SEP=$'\x1f'
 
 PICKER_TITLE=sessions
-PICKER_HELP='1-9 jump · j/k move · enter open · q quit'
+PICKER_HELP='1-9 jump · j/k move · enter open · d delete · q quit'
 PICKER_EMPTY='no other sessions'
 PICKER_DETAIL_LINES=2
 
@@ -258,6 +259,31 @@ picker_open() {
     else
         PICKER_FLASH="couldn't switch to $name"
     fi
+}
+
+delete_session() {
+    local name state
+    IFS=$SEP read -r name state _ <<<"${ROWS[$1]}"
+    if [ "$state" = live ]; then
+        picker_ask "kill and delete $name? y yes · else no"
+    else
+        picker_ask "delete $name? y yes · else no"
+    fi
+    [ "$PICKER_ANSWER" = y ] || return 0
+
+    # --force kills a live session first; without it zellij refuses one.
+    if zellij delete-session --force "$name" >/dev/null 2>&1; then
+        PICKER_FLASH="deleted $name"
+    else
+        PICKER_FLASH="couldn't delete $name"
+    fi
+    picker_reload
+}
+
+picker_key() {
+    case $1 in
+        d) ((PICKER_N > 0)) && delete_session "$PICKER_SEL" ;;
+    esac
 }
 
 main() {

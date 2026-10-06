@@ -11,7 +11,8 @@
 #                          lines about row I
 #   picker_open I          act on row I; set PICKER_QUIT=1 to leave
 #   picker_key CHAR        optional: handle a key the picker doesn't bind
-# Either hook can set PICKER_FLASH to show a message in place of the hint.
+# Either hook can set PICKER_FLASH to show a message in place of the hint, or
+# call picker_ask to put a question there and read the answer.
 #
 # Keys: 1-9 open, j/k or arrows move (wrapping around the ends), g/G
 # top/bottom, enter open, r refresh, ctrl+l redraw, q or esc quit.
@@ -137,6 +138,16 @@ picker_get_key() {
         [1-9]) PICKER_KEY=num:$k ;;
         *) PICKER_KEY=key:$k ;;
     esac
+}
+
+# Shows $1 in place of the hint and sets PICKER_ANSWER to the next key. Waits
+# without a refresh tick, so the rows can't shift under the question.
+picker_ask() {
+    PICKER_FLASH=$1
+    picker_draw
+    PICKER_FLASH=''
+    PICKER_ANSWER=''
+    IFS= read -rsn1 PICKER_ANSWER
 }
 
 picker_cleanup() {
