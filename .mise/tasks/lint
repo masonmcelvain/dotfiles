@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+#MISE description="Shellcheck every shell script, rendering templates for each host"
+# Plain scripts are found by shebang rather than extension, since most of
+# them have none. Templates aren't shell until chezmoi renders them, so each
+# shell template is rendered once per host and the output is checked as
+# <file>@<host>; line numbers in those findings are the rendered file's.
+set -euo pipefail
+
+hosts=(masons-xps cominor)
+rc=$PWD/.shellcheckrc
+files=() templates=()
+while IFS= read -r -d '' f; do
+	first=$(head -n1 "$f")
+	case "$f" in
+	*.tmpl)
+		if [[ $f == dot_bash*.tmpl || $f == *.sh.tmpl || $first =~ ^\#!.*sh ]]; then
+			templates+=("$f")
+		fi
+		;;
+	*/picker.sh) files+=("$f") ;;
+	*) [[ $first =~ ^\#!.*\b(ba)?sh\b ]] && files+=("$f") ;;
+	esac
+done < <(git ls-files -z)
+
+status=0
+shellcheck --rcfile "$rc" "${files[@]}" || status=1
+
+rendered=$(mktemp -d)
+trap 'rm -rf "$rendered"' EXIT
+names=()
+for f in "${templates[@]}"; do
+	for h in "${hosts[@]}"; do
+		out=$rendered/${f//\//__}@$h
+		chezmoi execute-template --source "$PWD" \
+			--override-data "{\"chezmoi\":{\"hostname\":\"$h\"}}" <"$f" >"$out"
+		# A template can render to nothing on a host it doesn't apply to.
+		[ -s "$out" ] && names+=("${out##*/}")
+	done
+done
+# The dotfiles have no shebang, so tell shellcheck they're bash.
+(cd "$rendered" && shellcheck --rcfile "$rc" --shell=bash "${names[@]}") || status=1
+exit $status

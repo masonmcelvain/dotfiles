@@ -18,7 +18,9 @@ chezmoi cd                 # cd into this source directory
 
 ## Linting
 
-`.mise.toml` pins shellcheck as a dev tool for this repo. Run `mise run lint` after changing a shell script; it checks every non-template script found by shebang, plus the sourced `picker.sh`, and CI (`.github/workflows/lint.yml`) runs the same task. mise only activates in interactive shells, so from a non-interactive one call `~/.local/bin/mise run lint`, or `mise install` first on a fresh checkout. `.tmpl` scripts aren't linted, since they aren't shell until chezmoi renders them.
+`.mise.toml` pins shellcheck and chezmoi as dev tools for this repo. Run `mise run lint` (`.mise/tasks/lint`) after changing a shell script or shell template; CI (`.github/workflows/lint.yml`) runs the same task. mise only activates in interactive shells, so from a non-interactive one call `~/.local/bin/mise run lint`, or `mise install` first on a fresh checkout.
+
+Plain scripts are found by shebang, plus the sourced `picker.sh`. Shell templates (`dot_bash*`, `*.sh.tmpl`, or a shebang on line 1) are rendered once per host with `chezmoi execute-template --override-data` and checked as `<file>@<host>`, so both sides of every hostname branch get linted. Line numbers in those findings are the rendered file's, not the template's; find the line by its text.
 
 ## Chezmoi Naming Conventions
 
