@@ -16,6 +16,10 @@ chezmoi edit ~/.bashrc     # Edit the source file for a target
 chezmoi cd                 # cd into this source directory
 ```
 
+## Linting
+
+`.mise.toml` pins shellcheck as a dev tool for this repo. Run `mise run lint` after changing a shell script; it checks every non-template script found by shebang, plus the sourced `picker.sh`, and CI (`.github/workflows/lint.yml`) runs the same task. mise only activates in interactive shells, so from a non-interactive one call `~/.local/bin/mise run lint`, or `mise install` first on a fresh checkout. `.tmpl` scripts aren't linted, since they aren't shell until chezmoi renders them.
+
 ## Chezmoi Naming Conventions
 
 Files use chezmoi's source-state naming:

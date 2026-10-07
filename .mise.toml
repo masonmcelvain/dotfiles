@@ -1,0 +1,24 @@
+# Dev tools for working on this repo, not tools the dotfiles install. Run
+# `mise install` once, then `mise run lint`. chezmoi ignores this file because
+# its name starts with a dot.
+
+[tools]
+shellcheck = "0.11.0"
+
+[tasks.lint]
+description = "Shellcheck every shell script that isn't a chezmoi template"
+# Templates are skipped because their {{ }} directives aren't shell until
+# chezmoi renders them. Scripts are found by shebang rather than extension,
+# since most of them have none.
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+files=()
+while IFS= read -r -d '' f; do
+	case "$f" in *.tmpl) continue ;; esac
+	if [[ $f == */picker.sh ]] || head -n1 "$f" | grep -qE '^#!.*\b(ba)?sh\b'; then
+		files+=("$f")
+	fi
+done < <(git ls-files -z)
+shellcheck "${files[@]}"
+'''

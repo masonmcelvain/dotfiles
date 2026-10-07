@@ -1,0 +1,3 @@
+# Resolve `# shellcheck source=picker.sh` next to the script, not the cwd.
+source-path=SCRIPTDIR
+external-sources=true
