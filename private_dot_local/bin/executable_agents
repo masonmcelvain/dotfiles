@@ -92,7 +92,7 @@ load_agents() {
 session_disp() {
     local zs=$1
     if [ -z "$zs" ]; then
-        printf -- "-${SEP}none"
+        printf -- '-%snone' "$SEP"
         return
     fi
     case "${SESS_STATE[$zs]:-gone}" in
@@ -108,7 +108,7 @@ picker_load() {
 }
 
 picker_render() {
-    local w=$1 i sd state zs epoch status title
+    local w=$1 i sd zs epoch status title
     local -a sdisp=() sstate=()
     local sess_w=3
     for ((i = 0; i < PICKER_N; i++)); do

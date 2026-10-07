@@ -1,3 +1,8 @@
+# shellcheck shell=bash
+# Its globals are shared with the sourcing script, so shellcheck sees some as
+# unused (SC2034) or unassigned (SC2153) when checking this file alone.
+# shellcheck disable=SC2034,SC2153
+
 # picker.sh: the full-screen list picker shared by agents and zellij-sessions.
 # Sourced, not run. Draws a header, the rows, a detail pane about the selected
 # row and a key hint, reloading the rows on every refresh tick.

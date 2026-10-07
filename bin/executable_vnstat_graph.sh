@@ -16,12 +16,12 @@ USE_COLORS=true
 
 # Color codes - check if terminal supports colors and colors are enabled
 if [ "$USE_COLORS" = true ] && [[ -t 1 ]] && { command -v tput >/dev/null 2>&1 && [ "$(tput colors 2>/dev/null || echo 0)" -ge 8 ]; }; then
-    RED=$(tput setaf 1 2>/dev/null || echo '\033[0;31m')
-    GREEN=$(tput setaf 2 2>/dev/null || echo '\033[0;32m') 
-    YELLOW=$(tput setaf 3 2>/dev/null || echo '\033[1;33m')
-    BLUE=$(tput setaf 4 2>/dev/null || echo '\033[0;34m')
-    CYAN=$(tput setaf 6 2>/dev/null || echo '\033[0;36m')
-    NC=$(tput sgr0 2>/dev/null || echo '\033[0m')
+    RED=$(tput setaf 1 2>/dev/null || printf '\033[0;31m')
+    GREEN=$(tput setaf 2 2>/dev/null || printf '\033[0;32m') 
+    YELLOW=$(tput setaf 3 2>/dev/null || printf '\033[1;33m')
+    BLUE=$(tput setaf 4 2>/dev/null || printf '\033[0;34m')
+    CYAN=$(tput setaf 6 2>/dev/null || printf '\033[0;36m')
+    NC=$(tput sgr0 2>/dev/null || printf '\033[0m')
 else
     # No colors
     RED=""
