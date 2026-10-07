@@ -23,3 +23,7 @@ CLAUDE.md
 {{ if ne .chezmoi.hostname "cominor" -}}
 .local/bin/zellij-new
 {{ end -}}
+
+{{/* mm's Go source; run_onchange_before_build-mm.sh builds it into
+     ~/.local/bin instead. */}}
+mm

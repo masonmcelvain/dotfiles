@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#MISE description="Shellcheck every shell script, rendering templates for each host"
+#MISE description="Shellcheck every shell script, rendering templates for each host, and vet mm"
 # Plain scripts are found by shebang rather than extension, since most of
 # them have none. Templates aren't shell until chezmoi renders them, so each
 # shell template is rendered once per host and the output is checked as
@@ -44,4 +44,14 @@ done
 # The dotfiles have no shebang, so tell shellcheck they're bash.
 (cd "$rendered" && shellcheck --rcfile "$rc" --shell=bash "${names[@]}") || status=1
 echo "shellcheck: ${#files[@]} scripts, ${#names[@]} rendered templates"
+
+cd mm
+unformatted=$(gofmt -l .)
+if [ -n "$unformatted" ]; then
+	printf 'gofmt: needs formatting: %s\n' "$unformatted"
+	status=1
+fi
+go vet ./... || status=1
+staticcheck ./... || status=1
+echo "mm: gofmt, go vet, staticcheck"
 exit $status

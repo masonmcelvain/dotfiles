@@ -1,0 +1,27 @@
+#!/bin/bash
+# Build mm, the Go module in mm/, into ~/.local/bin. chezmoi re-runs this
+# whenever the hash below changes, which is whenever the Go source does. It
+# runs before files are updated so the binary exists by the time
+# modify_settings.json points Claude Code's hooks at it.
+{{- $mm := joinPath .chezmoi.sourceDir "mm" }}
+{{- $sums := list }}
+{{- range concat (glob (joinPath $mm "**/*.go")) (list (joinPath $mm "go.mod") (joinPath $mm "go.sum")) }}
+{{-   $sums = append $sums (printf "%s %s" (include . | sha256sum) .) }}
+{{- end }}
+# mm source: {{ $sums | join "\n" | sha256sum }}
+set -euo pipefail
+
+# A non-interactive shell may not have the tarball install on its PATH.
+PATH=$PATH:/usr/local/go/bin
+command -v go >/dev/null || {
+	echo 'build-mm: go is required to build mm' >&2
+	exit 1
+}
+
+bin=$HOME/.local/bin
+mkdir -p "$bin"
+cd {{ $mm | quote }}
+# Build beside the old binary and rename over it, so a hook firing mid-build
+# never runs a half-written file.
+go build -trimpath -o "$bin/.mm.new" .
+mv -f "$bin/.mm.new" "$bin/mm"
