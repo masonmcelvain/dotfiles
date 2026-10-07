@@ -60,6 +60,8 @@ alias zj="zellij"
 alias zjn="zellij --layout ~/.config/zellij/layout.kdl"
 # Pick a session by name, git branch and directory; also bound to Alt+f
 alias zf=zellij-sessions
+# Go to the session on a branch, or start one on it
+alias zb='zellij-sessions branch'
 {{- if eq .chezmoi.hostname "cominor" }}
 # Start a fresh sN session in the least recently used Code slot
 alias zn=zellij-new

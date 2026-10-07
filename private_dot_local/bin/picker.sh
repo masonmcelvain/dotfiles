@@ -17,7 +17,8 @@
 #   picker_open I          act on row I; set PICKER_QUIT=1 to leave
 #   picker_key CHAR        optional: handle a key the picker doesn't bind
 # Either hook can set PICKER_FLASH to show a message in place of the hint, or
-# call picker_ask to put a question there and read the answer.
+# call picker_ask to put a question there and read the answer, or picker_read
+# to read a line of text there.
 #
 # Keys: 1-9 open, j/k or arrows move (wrapping around the ends), g/G
 # top/bottom, enter open, r refresh, ctrl+l redraw, q or esc quit.
@@ -153,6 +154,22 @@ picker_ask() {
     PICKER_FLASH=''
     PICKER_ANSWER=''
     IFS= read -rsn1 PICKER_ANSWER
+}
+
+# Prompts with $1 in place of the hint and sets PICKER_ANSWER to the line typed
+# after it, with readline editing; an empty line is the way to back out. The
+# prompt is readline's own, drawn over a blank hint line, so its redraws know
+# where the input starts; \001/\002 tell it the color codes take no width.
+picker_read() {
+    PICKER_FLASH=' '
+    picker_draw
+    PICKER_FLASH=''
+    PICKER_ANSWER=''
+    printf '\r'
+    tput cnorm
+    IFS= read -rep "   "$'\001'"$C_FLASH"$'\002'"$1"$'\001'"$C_RESET"$'\002' PICKER_ANSWER ||
+        PICKER_ANSWER=''
+    tput civis
 }
 
 picker_cleanup() {

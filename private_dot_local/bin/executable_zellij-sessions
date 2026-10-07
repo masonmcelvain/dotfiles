@@ -4,8 +4,14 @@
 # and switches from inside a session, so it works either way; aliased to `zf`
 # and bound to Alt+f as a floating pane in ~/.config/zellij/config.kdl.
 # Keys: picker.sh's, plus d to delete a session (killing it first if it's
-# live) and, where zellij-new is installed (cominor), n to start a fresh one.
-# With stdout not a TTY, prints a plain table instead.
+# live), b to go to a branch, and, where zellij-new is installed (cominor), n
+# to start a fresh one. With stdout not a TTY, prints a plain table instead.
+#
+# `zellij-sessions branch NAME` (or `b NAME`; aliased to `zb`) does what the b
+# key does without the picker: goes to the session that has branch NAME
+# checked out, preferring a live one, or else has zellij-new start a session
+# on it, which errors if the branch exists neither locally nor on origin.
+# Without zellij-new, a branch with no session is an error.
 #
 # Session cwds come from zellij's own on-disk session info rather than from
 # `zellij action dump-layout`: dump-layout needs a running server per session
@@ -25,7 +31,7 @@ SEP=$'\x1f'
 PICKER_TITLE=sessions
 HAS_NEW=''
 command -v zellij-new >/dev/null && HAS_NEW=1
-PICKER_HELP="1-9 jump · j/k move · enter open${HAS_NEW:+ · n new} · d delete · q quit"
+PICKER_HELP="1-9 jump · j/k move · enter open · b branch${HAS_NEW:+ · n new} · d delete · q quit"
 PICKER_EMPTY='no other sessions'
 PICKER_DETAIL_LINES=2
 
@@ -248,20 +254,44 @@ plain_list() {
     } | column -t -s$'\t' 2>/dev/null || true
 }
 
+# Lands this terminal in session $1. Outside zellij, attaches, which resurrects
+# an exited session. Inside, detaches this client from the current session
+# (leaving it running) and lands it in the target, resurrecting it too.
+switch_to() {
+    [ -z "${ZELLIJ:-}" ] && exec zellij attach "$1"
+    zellij action switch-session "$1" >/dev/null 2>&1
+}
+
+open_session() {
+    [ -z "${ZELLIJ:-}" ] && picker_cleanup
+    if switch_to "$1"; then
+        PICKER_QUIT=1
+    else
+        PICKER_FLASH="couldn't switch to $1"
+    fi
+}
+
 picker_open() {
     local name
     IFS=$SEP read -r name _ <<<"${ROWS[$1]}"
-    if [ -z "${ZELLIJ:-}" ]; then
-        # Outside zellij: attach, which resurrects an exited session.
-        picker_cleanup
-        exec zellij attach "$name"
-    # Inside: detach this client from the current session (leaving it running)
-    # and land it in the target, resurrecting it if it had exited.
-    elif zellij action switch-session "$name" >/dev/null 2>&1; then
-        PICKER_QUIT=1
-    else
-        PICKER_FLASH="couldn't switch to $name"
+    open_session "$name"
+}
+
+# Prints the session with branch $1 checked out. ROWS lists live sessions
+# first, then exited ones by last use, so the first match is the best one. The
+# current session isn't in ROWS, but standing in it already counts.
+branch_session() {
+    local row name branch
+    if [ -n "${ZELLIJ_SESSION_NAME:-}" ] &&
+        [ "$(git_branch "$(session_cwd "$ZELLIJ_SESSION_NAME")")" = "$1" ]; then
+        printf '%s' "$ZELLIJ_SESSION_NAME"
+        return 0
     fi
+    for row in "${ROWS[@]}"; do
+        IFS=$SEP read -r name _ branch _ <<<"$row"
+        [ "$branch" = "$1" ] && printf '%s' "$name" && return 0
+    done
+    return 1
 }
 
 # Detaches HEAD in a deleted session's checkout so its branch is free to check
@@ -322,33 +352,85 @@ delete_session() {
     picker_reload
 }
 
+# Runs zellij-new with any branch in $1.
 new_session() {
     if [ -z "${ZELLIJ:-}" ]; then
         # zellij-new attaches itself, so hand it the terminal.
         picker_cleanup
-        exec zellij-new
+        exec zellij-new "$@"
     fi
     # Inside, it switches this client over and returns; keep its error.
     local err
-    if err=$(zellij-new 2>&1 >/dev/null); then
+    if err=$(zellij-new "$@" 2>&1 >/dev/null); then
         PICKER_QUIT=1
     else
         PICKER_FLASH=${err#zellij-new: }
     fi
 }
 
+branch_key() {
+    local branch name
+    picker_read 'branch: '
+    read -r branch <<<"$PICKER_ANSWER"
+    [ -n "$branch" ] || return 0
+
+    if name=$(branch_session "$branch"); then
+        if [ "$name" = "${ZELLIJ_SESSION_NAME:-}" ]; then
+            PICKER_FLASH="already in $name, on $branch"
+        else
+            open_session "$name"
+        fi
+    elif [ -n "$HAS_NEW" ]; then
+        # Checking the branch can mean a fetch; say so rather than look hung.
+        PICKER_FLASH="starting a session on $branch…"
+        picker_draw
+        PICKER_FLASH=''
+        new_session "$branch"
+    else
+        PICKER_FLASH="no session has $branch checked out"
+    fi
+}
+
 picker_key() {
     case $1 in
+        b) branch_key ;;
         d) ((PICKER_N > 0)) && delete_session "$PICKER_SEL" ;;
         n) [ -n "$HAS_NEW" ] && new_session ;;
     esac
 }
 
+die() {
+    echo "zellij-sessions: $*" >&2
+    exit 1
+}
+
+branch_cli() {
+    local name
+    collect
+    if name=$(branch_session "$1"); then
+        if [ "$name" = "${ZELLIJ_SESSION_NAME:-}" ]; then
+            echo "zellij-sessions: already in $name, on $1"
+            return 0
+        fi
+        switch_to "$name" || die "couldn't switch to $name"
+    elif [ -n "$HAS_NEW" ]; then
+        exec zellij-new "$1"
+    else
+        die "no session has $1 checked out"
+    fi
+}
+
 main() {
-    command -v zellij >/dev/null || {
-        echo 'zellij-sessions: zellij is not installed' >&2
-        exit 1
-    }
+    command -v zellij >/dev/null || die 'zellij is not installed'
+    case ${1:-} in
+        '') ;;
+        b | branch)
+            [ -n "${2:-}" ] || die "usage: zellij-sessions $1 BRANCH"
+            branch_cli "$2"
+            return
+            ;;
+        *) die "unknown command $1; try branch BRANCH" ;;
+    esac
     if [ ! -t 1 ]; then
         collect
         plain_list
