@@ -18,6 +18,7 @@ import (
 const usage = `usage: mm COMMAND
 
   agents              jump to a Claude Code agent's zellij tab
+  agent-status        Claude Code hook: record agent state, label its tab
 
 With stdout not a terminal, agents prints a plain table.
 `
@@ -31,6 +32,9 @@ func main() {
 	switch cmd {
 	case "agents":
 		runAgents()
+	case "agent-status":
+		// A hook must never fail the agent.
+		agents.RunHook(os.Stdin)
 	case "-h", "--help", "help":
 		fmt.Print(usage)
 	default:
