@@ -8,17 +8,21 @@ set -euo pipefail
 
 hosts=(masons-xps cominor)
 rc=$PWD/.shellcheckrc
+# A regex in a variable, since [[ =~ ]] would read an inline \b as a plain b.
+sh_shebang='^#!.*[/ ](ba)?sh([[:space:]]|$)'
 files=() templates=()
 while IFS= read -r -d '' f; do
-	first=$(head -n1 "$f")
+	# tr keeps the fonts' null bytes out of the command substitution.
+	first=$(head -c 128 "$f" | tr -d '\0')
+	first=${first%%$'\n'*}
 	case "$f" in
 	*.tmpl)
-		if [[ $f == dot_bash*.tmpl || $f == *.sh.tmpl || $first =~ ^\#!.*sh ]]; then
+		if [[ $f == dot_bash*.tmpl || $f == *.sh.tmpl || $first =~ $sh_shebang ]]; then
 			templates+=("$f")
 		fi
 		;;
 	*/picker.sh) files+=("$f") ;;
-	*) [[ $first =~ ^\#!.*\b(ba)?sh\b ]] && files+=("$f") ;;
+	*) [[ $first =~ $sh_shebang ]] && files+=("$f") ;;
 	esac
 done < <(git ls-files -z)
 
@@ -39,4 +43,5 @@ for f in "${templates[@]}"; do
 done
 # The dotfiles have no shebang, so tell shellcheck they're bash.
 (cd "$rendered" && shellcheck --rcfile "$rc" --shell=bash "${names[@]}") || status=1
+echo "shellcheck: ${#files[@]} scripts, ${#names[@]} rendered templates"
 exit $status
