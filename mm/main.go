@@ -13,14 +13,18 @@ import (
 
 	"github.com/masonmcelvain/dotfiles/mm/internal/agents"
 	"github.com/masonmcelvain/dotfiles/mm/internal/picker"
+	"github.com/masonmcelvain/dotfiles/mm/internal/sessions"
 )
 
 const usage = `usage: mm COMMAND
 
   agents              jump to a Claude Code agent's zellij tab
+  sessions            pick a zellij session by name, branch and directory
+  sessions branch B   go to the session on branch B, or start one on it
+  new [BRANCH]        start a session in the least recently used Code slot
   agent-status        Claude Code hook: record agent state, label its tab
 
-With stdout not a terminal, agents prints a plain table.
+With stdout not a terminal, agents and sessions print a plain table.
 `
 
 func main() {
@@ -28,13 +32,26 @@ func main() {
 		fmt.Fprint(os.Stderr, usage)
 		os.Exit(2)
 	}
-	cmd := os.Args[1]
+	cmd, args := os.Args[1], os.Args[2:]
 	switch cmd {
 	case "agents":
 		runAgents()
 	case "agent-status":
 		// A hook must never fail the agent.
 		agents.RunHook(os.Stdin)
+	case "sessions":
+		runSessions(args)
+	case "new":
+		requireZellij()
+		branch := ""
+		if len(args) > 0 {
+			branch = args[0]
+		}
+		argv, msg, err := sessions.New(branch)
+		if msg != "" {
+			fmt.Println("mm: " + msg)
+		}
+		finish(argv, err)
 	case "-h", "--help", "help":
 		fmt.Print(usage)
 	default:
@@ -49,6 +66,33 @@ func runAgents() {
 		return
 	}
 	argv, err := picker.Run(agents.Config, src)
+	finish(argv, err)
+}
+
+func runSessions(args []string) {
+	requireZellij()
+	if len(args) > 0 {
+		switch args[0] {
+		case "b", "branch":
+			if len(args) < 2 {
+				die("usage: mm sessions branch BRANCH")
+			}
+			argv, msg, err := sessions.GoToBranch(args[1])
+			if msg != "" {
+				fmt.Println("mm: " + msg)
+			}
+			finish(argv, err)
+			return
+		default:
+			die("unknown sessions command %s; try branch BRANCH", args[0])
+		}
+	}
+	if !term.IsTerminal(os.Stdout.Fd()) {
+		sessions.PrintTable(os.Stdout, sessions.Collect())
+		return
+	}
+	src, cfg := sessions.NewSource()
+	argv, err := picker.Run(cfg, src)
 	finish(argv, err)
 }
 
@@ -67,6 +111,12 @@ func finish(argv []string, err error) {
 	}
 	err = syscall.Exec(path, argv, os.Environ())
 	die("exec %s: %v", argv[0], err)
+}
+
+func requireZellij() {
+	if _, err := exec.LookPath("zellij"); err != nil {
+		die("zellij is not installed")
+	}
 }
 
 func die(format string, args ...any) {
