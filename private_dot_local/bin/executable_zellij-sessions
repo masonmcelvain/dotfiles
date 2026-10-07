@@ -264,9 +264,47 @@ picker_open() {
     fi
 }
 
+# Detaches HEAD in a deleted session's checkout so its branch is free to check
+# out in another worktree; git refuses a branch that any worktree holds. The
+# commit and files stay put. Prints why it didn't, if it didn't.
+#
+# A dirty tree keeps its branch: detaching would strand the uncommitted work
+# away from the branch it belongs to. The index mtime is put back afterwards
+# because zellij-new reads it as the slot's last use, and an abandoned slot
+# shouldn't look like the freshest one.
+release_branch() {
+    local name=$1 cwd=$2 branch=$3 row other state ocwd gitdir stamp
+    [ -n "$branch" ] && [ -d "$cwd" ] || return 0
+
+    # Another live session in the same checkout is still using the branch.
+    for row in "${ROWS[@]}"; do
+        IFS=$SEP read -r other state _ ocwd _ <<<"$row"
+        [ "$other" != "$name" ] && [ "$state" = live ] && [ "$ocwd" = "$cwd" ] &&
+            return 0
+    done
+    [ -n "${ZELLIJ_SESSION_NAME:-}" ] &&
+        [ "$(session_cwd "$ZELLIJ_SESSION_NAME")" = "$cwd" ] && return 0
+
+    git -C "$cwd" symbolic-ref -q HEAD >/dev/null || return 0
+    # --no-optional-locks keeps status from refreshing (and touching) the index.
+    if [ -n "$(git --no-optional-locks -C "$cwd" status --porcelain 2>/dev/null)" ]; then
+        printf '%s still checked out (uncommitted changes)' "$branch"
+        return 0
+    fi
+
+    gitdir=$(git -C "$cwd" rev-parse --absolute-git-dir 2>/dev/null) || return 0
+    stamp=$(stat -c %Y "$gitdir/index" 2>/dev/null)
+    if ! git -C "$cwd" switch -q --detach >/dev/null 2>&1; then
+        printf "couldn't release %s" "$branch"
+        return 0
+    fi
+    [ -n "$stamp" ] && touch -d "@$stamp" "$gitdir/index" 2>/dev/null
+    return 0
+}
+
 delete_session() {
-    local name state
-    IFS=$SEP read -r name state _ <<<"${ROWS[$1]}"
+    local name state branch cwd note
+    IFS=$SEP read -r name state branch cwd _ <<<"${ROWS[$1]}"
     if [ "$state" = live ]; then
         picker_ask "kill and delete $name? y yes · else no"
     else
@@ -276,7 +314,8 @@ delete_session() {
 
     # --force kills a live session first; without it zellij refuses one.
     if zellij delete-session --force "$name" >/dev/null 2>&1; then
-        PICKER_FLASH="deleted $name"
+        note=$(release_branch "$name" "$cwd" "$branch")
+        PICKER_FLASH="deleted $name${note:+ · $note}"
     else
         PICKER_FLASH="couldn't delete $name"
     fi
