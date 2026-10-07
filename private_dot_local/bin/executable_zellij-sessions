@@ -68,10 +68,44 @@ session_cwd() {
 
 # When a session exits, zellij stops rewriting its metadata -- so the mtime is
 # when it was last used. Live sessions all share a rewrite tick, so their
-# mtimes are identical and useless; those fall back to their creation age.
+# mtimes are identical and useless; those use load_last_input instead.
 session_mtime() {
     [ -n "$INFO_DIR" ] || return 0
     stat -c %Y "$INFO_DIR/$1/session-metadata.kdl" 2>/dev/null
+}
+
+# Fills LAST_INPUT with when each live session was last typed in, as epoch
+# seconds keyed by name. Every pane is its own pty, and the kernel bumps a
+# tty's atime whenever the program in it reads input -- the clock `w` uses for
+# IDLE -- so the newest atime across a session's panes is its last keystroke.
+# Output only bumps mtime, so a busy agent doesn't count as use. The panes are
+# the server's direct children; anything started from a pane's shell shares
+# its pty. One ps and one stat cover every session.
+declare -A LAST_INPUT
+load_last_input() {
+    local pid ppid tty args t path
+    local -A server=() owner=()
+    local children=()
+    LAST_INPUT=()
+
+    while read -r pid ppid tty args; do
+        if [[ $args == *"zellij --server "* ]]; then
+            server[$pid]=${args##*/}
+        elif [[ $tty == pts/* ]]; then
+            children+=("$ppid /dev/$tty")
+        fi
+    done < <(ps -e -o pid=,ppid=,tty=,args= 2>/dev/null)
+
+    for t in "${children[@]}"; do
+        ppid=${t%% *}
+        [ -n "${server[$ppid]:-}" ] && owner[${t#* }]=${server[$ppid]}
+    done
+    ((${#owner[@]} > 0)) || return 0
+
+    while read -r t path; do
+        pid=${owner[$path]}
+        ((t > ${LAST_INPUT[$pid]:-0})) && LAST_INPUT[$pid]=$t
+    done < <(stat -c '%X %n' "${!owner[@]}" 2>/dev/null)
 }
 
 # Walk up for a .git, then read HEAD. Handles worktrees and submodules, where
@@ -123,10 +157,10 @@ dur_to_secs() {
 ROWS=()
 
 collect() {
-    local line name age cwd branch now live=() dead=()
+    local line name age cwd branch now stamp live=() dead=()
     now=$(date +%s)
+    load_last_input
 
-    # -r sorts newest first, which is the order we want for live sessions.
     while IFS= read -r line; do
         [ -n "$line" ] || continue
         name=${line%% *}
@@ -147,19 +181,31 @@ collect() {
             fi
             dead+=("${mtime:-0}${SEP}${name}${SEP}exited${SEP}${branch}${SEP}${cwd}${SEP}${age}")
         else
-            age=${line#*\[Created }
-            age=$(age_str "$(dur_to_secs "${age%% ago\]*}")")
-            live+=("${name}${SEP}live${SEP}${branch}${SEP}${cwd}${SEP}${age}")
+            # A session with no pty panes left has no input clock; its
+            # creation time is the best stand-in.
+            stamp=${LAST_INPUT[$name]:-}
+            if [ -z "$stamp" ]; then
+                age=${line#*\[Created }
+                stamp=$((now - $(dur_to_secs "${age%% ago\]*}")))
+            fi
+            age=$(age_str $((now - stamp)))
+            live+=("${stamp}${SEP}${name}${SEP}live${SEP}${branch}${SEP}${cwd}${SEP}${age}")
         fi
-    done < <(zellij list-sessions -rn 2>/dev/null)
+    done < <(zellij list-sessions -n 2>/dev/null)
 
-    ROWS=("${live[@]}")
-    # Exited sessions sort by when they exited, most recently used first.
-    if ((${#dead[@]} > 0)); then
-        while IFS= read -r line; do
-            ROWS+=("${line#*"$SEP"}")
-        done < <(printf '%s\n' "${dead[@]}" | sort -t "$SEP" -k1,1nr)
-    fi
+    # Live sessions first, then exited ones; each most recently used first.
+    ROWS=()
+    by_stamp "${live[@]}"
+    by_stamp "${dead[@]}"
+}
+
+# Appends stamp-prefixed rows to ROWS, newest stamp first, minus the stamp.
+by_stamp() {
+    (($# > 0)) || return 0
+    local line
+    while IFS= read -r line; do
+        ROWS+=("${line#*"$SEP"}")
+    done < <(printf '%s\n' "$@" | sort -t "$SEP" -k1,1nr)
 }
 
 picker_load() {
@@ -239,7 +285,7 @@ picker_detail() {
     if [ "$state" = exited ]; then
         PICKER_DETAIL+=("${C_DIM}exited ${age} ago · enter resurrects it")
     else
-        PICKER_DETAIL+=("${C_DIM}live · created ${age} ago")
+        PICKER_DETAIL+=("${C_DIM}live · last typed in ${age} ago")
     fi
 }
 
