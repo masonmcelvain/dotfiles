@@ -1,5 +1,3 @@
-# Resolve `# shellcheck source=picker.sh` next to the script, not the cwd.
-source-path=SCRIPTDIR
 external-sources=true
 # Most sources are files in ~ that only exist on the host, like /etc/bashrc
 # or sdkman's init script, so not finding them is expected.

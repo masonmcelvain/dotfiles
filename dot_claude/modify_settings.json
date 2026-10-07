@@ -1,10 +1,11 @@
 #!/bin/bash
 # chezmoi modify script for ~/.claude/settings.json: merge in the agent-status
-# and notification hook registrations without managing the rest of the file,
-# which Claude Code live-edits (permission grants, plugins, etc.).
+# (`mm agent-status`) and notification hook registrations without managing the
+# rest of the file, which Claude Code live-edits (permission grants, plugins,
+# etc.).
 # Receives the current target contents on stdin; prints the new contents.
 #
-# Both hook commands are host-agnostic: agent-status.sh works out its own
+# Both hook commands are host-agnostic: mm agent-status works out its own
 # zellij context, and notify picks a transport based on what the machine can
 # reach (desktop popup on masons-xps, ntfy push on cominor). That indirection
 # is what keeps the ntfy topic -- a bearer secret -- out of settings.json,
@@ -12,7 +13,7 @@
 
 set -euo pipefail
 
-status_cmd="$HOME/.local/bin/agent-status.sh"
+status_cmd="$HOME/.local/bin/mm agent-status"
 notify_cmd="$HOME/.local/bin/notify"
 
 managed=$(jq -n --arg status "$status_cmd" --arg notify "$notify_cmd" '
@@ -42,12 +43,12 @@ current=$(cat)
 
 # For each managed event: drop any entry we own, then append the current set.
 # "Ours" covers the notify-send and curl-to-ntfy commands this script replaced,
-# so applying it migrates the old hand-written hooks rather than duplicating
-# them. Idempotent; every other hook and setting is left untouched.
+# and the agent-status.sh that mm replaced, so applying it migrates the old
+# hooks rather than duplicating them. Idempotent; every other hook and setting is left untouched.
 jq --argjson managed "$managed" '
     def is_managed:
         (.hooks // []) | any(
-            (.command // "") | test("agent-status\\.sh|notify-send|ntfy\\.sh|/notify( |$)")
+            (.command // "") | test("agent-status\\.sh|/mm agent-status$|notify-send|ntfy\\.sh|/notify( |$)")
         );
     .hooks = (
         reduce ($managed | to_entries[]) as $e (.hooks // {};

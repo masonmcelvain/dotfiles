@@ -1,0 +1,7 @@
+{{/* The shell tools mm replaced. chezmoi leaves a file in place when its source
+     disappears, so these would otherwise linger in ~/.local/bin. */}}
+.local/bin/agents
+.local/bin/agent-status.sh
+.local/bin/picker.sh
+.local/bin/zellij-new
+.local/bin/zellij-sessions

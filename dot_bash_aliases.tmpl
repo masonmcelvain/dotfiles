@@ -10,7 +10,7 @@ alias resource="source ~/.bashrc"
 
 alias g=git
 alias pn=pnpm
-alias ag=agents
+alias ag="mm agents"
 
 {{ if eq .chezmoi.hostname "cominor" -}}
 alias hx='cd -P . && hx'
@@ -59,12 +59,12 @@ alias ssh='TERM=xterm-256color ssh'
 alias zj="zellij"
 alias zjn="zellij --layout ~/.config/zellij/layout.kdl"
 # Pick a session by name, git branch and directory; also bound to Alt+f
-alias zf=zellij-sessions
+alias zf="mm sessions"
 # Go to the session on a branch, or start one on it
-alias zb='zellij-sessions branch'
+alias zb="mm sessions branch"
 {{- if eq .chezmoi.hostname "cominor" }}
 # Start a fresh sN session in the least recently used Code slot
-alias zn=zellij-new
+alias zn="mm new"
 {{- end }}
 
 # Show timestamp next to commands in `history`
