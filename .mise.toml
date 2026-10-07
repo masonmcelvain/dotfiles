@@ -11,3 +11,8 @@ chezmoi = "2.73.0"
 # Builds and checks mm; chezmoi apply builds it with the host's own go.
 go = "1.26.8"
 staticcheck = "2026.2.1"
+
+# `mise run lint` runs every linter in .mise/tasks/lint/.
+[tasks.lint]
+description = "Run every linter"
+depends = ["lint:*"]

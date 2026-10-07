@@ -18,9 +18,9 @@ chezmoi cd                 # cd into this source directory
 
 ## Linting
 
-`.mise.toml` pins shellcheck, chezmoi, go and staticcheck as dev tools for this repo. Run `mise run lint` (`.mise/tasks/lint`) after changing a shell script, shell template or Go file, and `mise run test` (`.mise/tasks/test`) after changing Go; CI (`.github/workflows/lint.yml`) runs both. mise only activates in interactive shells, so from a non-interactive one call `~/.local/bin/mise run lint`, or `mise install` first on a fresh checkout.
+`.mise.toml` pins shellcheck, chezmoi, go and staticcheck as dev tools for this repo. Run `mise run lint` after a change; it runs every task in `.mise/tasks/lint/`, and `mise run lint:shell` or `mise run lint:go` runs just one. Run `mise run test` (`.mise/tasks/test`) after changing Go. CI runs the same tasks: `.github/workflows/shell.yml` on every push, and `.github/workflows/go.yml`, with lint and test as separate jobs, only when `mm/` or its tasks change. mise only activates in interactive shells, so from a non-interactive one call `~/.local/bin/mise run lint`, or `mise install` first on a fresh checkout.
 
-Plain scripts are found by shebang. Shell templates (`dot_bash*`, `*.sh.tmpl`, or a shebang on line 1) are rendered once per host with `chezmoi execute-template --override-data` and checked as `<file>@<host>`, so both sides of every hostname branch get linted. Line numbers in those findings are the rendered file's, not the template's; find the line by its text. Go gets `gofmt -l`, `go vet` and `staticcheck` over `mm/`.
+Plain scripts are found by shebang. Shell templates (`dot_bash*`, `*.sh.tmpl`, or a shebang on line 1) are rendered once per host with `chezmoi execute-template --override-data` and checked as `<file>@<host>`, so both sides of every hostname branch get linted. Line numbers in those findings are the rendered file's, not the template's; find the line by its text. `lint:go` runs `gofmt -l`, `go vet` and `staticcheck` over `mm/`, reporting all three even when one fails.
 
 ## Chezmoi Naming Conventions
 

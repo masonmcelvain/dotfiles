@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 #MISE description="Run mm's Go tests"
+#MISE dir="{{config_root}}/mm"
 set -euo pipefail
-cd mm
 go test ./...

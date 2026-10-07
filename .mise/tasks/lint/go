@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#MISE description="Check mm's Go with gofmt, go vet and staticcheck"
+#MISE dir="{{config_root}}/mm"
+# Every check runs even after one fails, so a single run reports them all.
+set -uo pipefail
+
+status=0
+unformatted=$(gofmt -l .)
+if [ -n "$unformatted" ]; then
+	printf 'gofmt: needs formatting: %s\n' "$unformatted"
+	status=1
+fi
+go vet ./... || status=1
+staticcheck ./... || status=1
+exit $status

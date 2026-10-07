@@ -1,0 +1,56 @@
+name: Go
+
+# Only mm is Go, so skip the toolchain install when nothing it builds from
+# changed.
+on:
+  push:
+    branches: [main]
+    paths:
+      - mm/**
+      - .mise.toml
+      - .mise/tasks/lint/go
+      - .mise/tasks/test
+      - .github/workflows/go.yml
+  pull_request:
+    paths:
+      - mm/**
+      - .mise.toml
+      - .mise/tasks/lint/go
+      - .mise/tasks/test
+      - .github/workflows/go.yml
+
+env:
+  # Only install what each job uses; mise would otherwise fetch every tool
+  # in .mise.toml before running the task.
+  MISE_TASK_RUN_AUTO_INSTALL: "false"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+        with:
+          install_args: go staticcheck
+      - uses: actions/cache@v6
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: go-lint-${{ hashFiles('mm/go.sum') }}
+      - run: mise run lint:go
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+        with:
+          install_args: go
+      - uses: actions/cache@v6
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: go-test-${{ hashFiles('mm/go.sum') }}
+      - run: mise run test
