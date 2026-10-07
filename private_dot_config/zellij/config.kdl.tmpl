@@ -8,8 +8,8 @@ keybinds {
         bind "Alt m" { ToggleFloatingPanes; }
         bind "Alt p" { TogglePanePinned; }
         bind "Alt z" { ToggleFocusFullscreen; }
-        bind "Alt a" { Run "mm" "agents" { floating true; close_on_exit true; }; }
-        bind "Alt f" { Run "mm" "sessions" { floating true; close_on_exit true; }; }
+        bind "Alt a" { Run "mm" "agents" { floating true; close_on_exit true; name "agents"; }; }
+        bind "Alt f" { Run "mm" "sessions" { floating true; close_on_exit true; name "sessions"; }; }
     }
     normal {
         bind "Enter" "Esc" { SwitchToMode "Locked"; }
