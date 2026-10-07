@@ -1,7 +1,8 @@
 {{ if eq .chezmoi.hostname "cominor" -}}
 #!/bin/bash
-# Restart the carpenter dev servers nightly so idle ones drop back to ~110 MB.
+# Stop the carpenter dev servers nightly, since an idle one grows to ~1.3 GB
+# and never shrinks back. `make` in a Code slot starts its server again.
 crontab - <<'EOF'
-0 4 * * * /mnt/ebs/home/mmcelvain/Code/Exec/pm2 restart all >/dev/null 2>&1
+0 4 * * * /mnt/ebs/home/mmcelvain/Code/Exec/pm2 stop all >/dev/null 2>&1
 EOF
 {{ end -}}
