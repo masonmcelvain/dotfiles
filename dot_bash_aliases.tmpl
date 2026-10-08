@@ -47,10 +47,6 @@ alias tp='mkdir -p ~/.notes && hx-theme.sh papercolor-light ~/.notes/$(date +%Y-
 alias np='hx-theme.sh papercolor-light ~/notepad.md'
 alias sss='ss -tlpn'
 
-btail() {
-    (tail -f "$@" | bat --decorations=never --paging=never -l log)
-}
-
 # alacritty compatibility with ssh
 # https://github.com/alacritty/alacritty/issues/3962#issuecomment-1006832313
 alias ssh='TERM=xterm-256color ssh'
