@@ -11,6 +11,7 @@ CLAUDE.md
 .ssh/config
 .config/xdg-terminals.list
 .local/bin/bat
+.local/bin/hx-theme.sh
 .local/share/gnome-shell
 {{ end -}}
 

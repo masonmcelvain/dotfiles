@@ -51,6 +51,10 @@ hunk() {
    command hunk "$@"
 }
 
+# Notes in papercolor rather than the everforest of everything else
+alias tp='mkdir -p ~/.notes && hx-theme.sh papercolor-light papercolor-dark ~/.notes/$(date +%Y-%m-%d_%H%M%S).md'
+alias np='hx-theme.sh papercolor-light papercolor-dark ~/notepad.md'
+
 {{ end -}}
 # Read the same changesets as a diff in hunk (unstaged, staged, and untracked)
 alias hk='hunk'
@@ -59,8 +63,6 @@ alias hkh='hunk diff --fast HEAD~1'
 hkr() {
    hunk diff --fast "$(_review_base "$1")"
 }
-alias tp='mkdir -p ~/.notes && hx-theme.sh papercolor-light ~/.notes/$(date +%Y-%m-%d_%H%M%S).md'
-alias np='hx-theme.sh papercolor-light ~/notepad.md'
 alias sss='ss -tlpn'
 
 # alacritty compatibility with ssh
