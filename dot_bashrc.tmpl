@@ -101,6 +101,11 @@ if [ -n "$_is_interactive" ] && [ -n "$ZELLIJ" ]; then
 		"'default'"|"'prefer-light'") zellij action set-light-theme >/dev/null 2>&1 ;;
 		*) zellij action set-dark-theme >/dev/null 2>&1 ;;
 	esac
+
+	# hx exits by setting the background it saw at startup (OSC 11) rather
+	# than resetting it (OSC 111), and zellij pins that color to the pane, so
+	# a pane hx ran in keeps the old theme. Reset it at every prompt.
+	PROMPT_COMMAND="printf '\e]111\a'${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
 fi
 
 #------------------------------------------------------------------------------
