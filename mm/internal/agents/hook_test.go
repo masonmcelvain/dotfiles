@@ -163,3 +163,18 @@ func TestSessionTitle(t *testing.T) {
 		t.Errorf("SessionTitle of a missing file = %q", got)
 	}
 }
+
+func TestStripGlyph(t *testing.T) {
+	for in, want := range map[string]string{
+		"- claude": "claude",
+		"● claude": "claude",
+		"○ claude": "claude",
+		"✓ claude": "claude",
+		"-x":       "-x",
+		"claude":   "claude",
+	} {
+		if got := StripGlyph(in); got != want {
+			t.Errorf("StripGlyph(%q) = %q, want %q", in, got, want)
+		}
+	}
+}

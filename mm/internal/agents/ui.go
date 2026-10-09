@@ -77,7 +77,7 @@ func glyph(status string) string {
 	case "done":
 		return picker.Green + "✓" + picker.FG
 	default:
-		return picker.Blue + "●" + picker.FG
+		return picker.Blue + "-" + picker.FG
 	}
 }
 
