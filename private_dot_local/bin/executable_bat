@@ -1,0 +1,12 @@
+#!/bin/bash
+# bat - follow the GNOME light/dark switch, which Ubuntu's batcat can't detect
+# itself: it's built without terminal color queries, so --theme=auto always
+# falls back to Monokai. Reading the setting per run catches man too, since
+# MANPAGER pipes through bat. The config file's theme covers light mode.
+
+if [ -z "${BAT_THEME:-}" ] &&
+	[ "$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null)" = "'prefer-dark'" ]; then
+	export BAT_THEME=gruvbox-dark
+fi
+
+exec batcat "$@"

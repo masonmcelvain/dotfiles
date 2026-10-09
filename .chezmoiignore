@@ -10,6 +10,7 @@ CLAUDE.md
 {{ if ne .chezmoi.hostname "masons-xps" -}}
 .ssh/config
 .config/xdg-terminals.list
+.local/bin/bat
 .local/share/gnome-shell
 {{ end -}}
 
