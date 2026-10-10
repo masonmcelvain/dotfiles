@@ -23,6 +23,7 @@ const usage = `usage: mm COMMAND
   sessions branch B   go to the session on branch B, or start one on it
   new [BRANCH]        start a session in the least recently used Code slot
   agent-status        Claude Code hook: record agent state, label its tab
+  agent-status name ID  ask Haiku for a descriptive name for agent ID's tab
 
 With stdout not a terminal, agents and sessions print a plain table.
 `
@@ -37,6 +38,14 @@ func main() {
 	case "agents":
 		runAgents()
 	case "agent-status":
+		if len(args) == 2 && args[0] == "name" {
+			// The hook starts this in the background; run by hand, it shows
+			// why a name didn't land.
+			if err := agents.RunNamer(args[1]); err != nil {
+				die("%v", err)
+			}
+			return
+		}
 		// A hook must never fail the agent.
 		agents.RunHook(os.Stdin)
 	case "sessions":

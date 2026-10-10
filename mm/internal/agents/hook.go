@@ -2,6 +2,7 @@ package agents
 
 import (
 	"bytes"
+	"cmp"
 	"encoding/json"
 	"io"
 	"maps"
@@ -34,6 +35,9 @@ type HookEnv struct {
 	Capture func() (tabID, name string, ok bool)
 	// Title is the session title from the transcript, or "".
 	Title string
+	// Explicit is whether Title is a name the user gave (claude -n, session
+	// rename) rather than Claude Code's generated one.
+	Explicit bool
 }
 
 // Rename is a tab rename the hook should make.
@@ -128,13 +132,14 @@ func Merge(old map[string]json.RawMessage, in HookInput, status string, env Hook
 		}
 	}
 
-	show := env.Title
-	if show == "" {
-		show = orig
+	// The user's own name beats the namer's label, which beats Claude Code's
+	// generated title.
+	label := stored(old, "label")
+	if env.Explicit {
+		label = ""
 	}
-	if r := []rune(show); len(r) > 50 {
-		show = string(r[:49]) + "…"
-	}
+	show := cmp.Or(label, env.Title, orig)
+	show = truncateName(show)
 
 	next := maps.Clone(old)
 	if next == nil {
@@ -152,6 +157,12 @@ func Merge(old map[string]json.RawMessage, in HookInput, status string, env Hook
 	set("updated_at", env.Now.Format(time.RFC3339))
 	if in.CWD != "" {
 		set("cwd", in.CWD)
+	}
+	if in.TranscriptPath != "" {
+		set("transcript_path", in.TranscriptPath)
+	}
+	if env.Explicit {
+		delete(next, "label")
 	}
 	if in.Event == "Notification" && in.Message != "" {
 		set("message", in.Message)
@@ -174,18 +185,31 @@ func Merge(old map[string]json.RawMessage, in HookInput, status string, env Hook
 	// name changes (the session title appears and updates mid-session).
 	var rename *Rename
 	if env.InZellij && tab != "" && (status != prevStatus || show != lastName) {
-		label := Glyph(status)
-		if show != "" {
-			label += " " + show
-		}
-		rename = &Rename{TabID: tab, Name: label}
+		rename = &Rename{TabID: tab, Name: tabLabel(status, show)}
 	}
 	return next, rename
+}
+
+// truncateName keeps a tab name to 50 characters.
+func truncateName(name string) string {
+	return clip(name, 50)
+}
+
+// tabLabel is a tab's full name: the status glyph, then the shown name.
+func tabLabel(status, show string) string {
+	label := Glyph(status)
+	if show != "" {
+		label += " " + show
+	}
+	return label
 }
 
 // RunHook handles one Claude Code hook event from stdin. It must be fast and
 // never fail the agent, so every error is swallowed.
 func RunHook(stdin io.Reader) {
+	if os.Getenv(NamerEnv) != "" {
+		return
+	}
 	var in HookInput
 	data, _ := io.ReadAll(stdin)
 	if json.Unmarshal(data, &in) != nil || in.Event == "" || in.SessionID == "" {
@@ -220,32 +244,32 @@ func RunHook(stdin io.Reader) {
 	}
 
 	pane := os.Getenv("ZELLIJ_PANE_ID")
-	next, rename := Merge(old, in, status, HookEnv{
+	title, explicit := SessionTitle(in.TranscriptPath)
+	env := HookEnv{
 		InZellij: inZellij,
 		Session:  session,
 		Pane:     pane,
 		Now:      time.Now(),
 		Capture:  func() (string, string, bool) { return captureTab(pane) },
-		Title:    SessionTitle(in.TranscriptPath),
-	})
-
-	out, err := json.MarshalIndent(next, "", "  ")
-	if err != nil {
-		return
+		Title:    title,
+		Explicit: explicit,
 	}
-	tmp, err := os.CreateTemp(dir, "."+in.SessionID+".*")
-	if err != nil {
-		return
+	next, rename := Merge(old, in, status, env)
+	// Claim the title before starting the namer, so the next Stop doesn't
+	// start another.
+	name := NeedsName(old, in, env) && next["zellij"] != nil
+	if name {
+		next["label_for"], _ = json.Marshal(title)
 	}
-	_, werr := tmp.Write(append(out, '\n'))
-	cerr := tmp.Close()
-	if werr != nil || cerr != nil || os.Rename(tmp.Name(), file) != nil {
-		_ = os.Remove(tmp.Name())
+	if writeState(dir, in.SessionID, next) != nil {
 		return
 	}
 
 	if rename != nil {
 		_, _ = zellij.Action(time.Second, "", "rename-tab", "--tab-id", rename.TabID, rename.Name)
+	}
+	if name {
+		StartNamer(in.SessionID)
 	}
 }
 
@@ -308,15 +332,16 @@ func StripGlyph(name string) string {
 // transcript: an explicit name (claude -n, session rename) lands as
 // "agent-name", the generated title as "ai-title", and the newest entry wins.
 // It reads backwards from the end, so it stays fast on large transcripts.
-// These entry types are undocumented internals: if they vanish, this returns
-// "" and the tab keeps its original name.
-func SessionTitle(path string) string {
+// explicit is whether the title is the user's own name. These entry types are
+// undocumented internals: if they vanish, this returns "" and the tab keeps
+// its original name.
+func SessionTitle(path string) (title string, explicit bool) {
 	if path == "" {
-		return ""
+		return "", false
 	}
 	f, err := os.Open(path)
 	if err != nil {
-		return ""
+		return "", false
 	}
 	defer func() { _ = f.Close() }()
 	line := lastLineMatching(f, func(line []byte) bool {
@@ -328,12 +353,12 @@ func SessionTitle(path string) string {
 		AITitle   string `json:"aiTitle"`
 	}
 	if line == nil || json.Unmarshal(line, &entry) != nil {
-		return ""
+		return "", false
 	}
 	if entry.AgentName != "" {
-		return entry.AgentName
+		return entry.AgentName, true
 	}
-	return entry.AITitle
+	return entry.AITitle, false
 }
 
 // lastLineMatching scans f backwards a chunk at a time for the last line that

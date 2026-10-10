@@ -30,6 +30,7 @@ type State struct {
 	UpdatedAt string      `json:"updated_at"`
 	CWD       string      `json:"cwd"`
 	Title     string      `json:"title"`
+	Label     string      `json:"label"`
 	Message   string      `json:"message"`
 	Zellij    *ZellijInfo `json:"zellij"`
 }
@@ -49,8 +50,8 @@ type ZellijInfo struct {
 type Agent struct {
 	State
 	Updated time.Time
-	// Name is the title, else the tab's original name, else the cwd's base
-	// name.
+	// Name is the namer's label, else the title, else the tab's original
+	// name, else the cwd's base name.
 	Name string
 }
 
@@ -80,7 +81,7 @@ func newAgent(s State) Agent {
 	}
 	a := Agent{State: s}
 	a.Updated, _ = time.Parse(time.RFC3339, s.UpdatedAt)
-	a.Name = s.Title
+	a.Name = cmp.Or(s.Label, s.Title)
 	if a.Name == "" && s.Zellij != nil {
 		a.Name = s.Zellij.OriginalTabName
 	}

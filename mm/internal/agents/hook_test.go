@@ -148,7 +148,7 @@ func TestSessionTitle(t *testing.T) {
 	if err := os.WriteFile(path, []byte(b.String()), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	if got := SessionTitle(path); got != "Named" {
+	if got, explicit := SessionTitle(path); got != "Named" || !explicit {
 		t.Errorf("SessionTitle = %q", got)
 	}
 
@@ -156,10 +156,10 @@ func TestSessionTitle(t *testing.T) {
 	if err := os.WriteFile(path, []byte(`{"type":"ai-title","aiTitle":"Only"}`), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	if got := SessionTitle(path); got != "Only" {
+	if got, explicit := SessionTitle(path); got != "Only" || explicit {
 		t.Errorf("SessionTitle = %q", got)
 	}
-	if got := SessionTitle(filepath.Join(t.TempDir(), "missing")); got != "" {
+	if got, _ := SessionTitle(filepath.Join(t.TempDir(), "missing")); got != "" {
 		t.Errorf("SessionTitle of a missing file = %q", got)
 	}
 }
