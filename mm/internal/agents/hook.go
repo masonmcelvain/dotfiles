@@ -237,7 +237,7 @@ func RunHook(stdin io.Reader) {
 	if in.Event == "SessionEnd" {
 		tab, orig := stored(old, "zellij", "tab_id"), stored(old, "zellij", "original_tab_name")
 		if inZellij && tab != "" && orig != "" {
-			_, _ = zellij.Action(time.Second, "", "rename-tab", "--tab-id", tab, orig)
+			_, _ = zellij.Action(time.Second, "", "rename-tab", "--tab-id", tab, "--", orig)
 		}
 		_ = os.Remove(file)
 		return
@@ -266,7 +266,7 @@ func RunHook(stdin io.Reader) {
 	}
 
 	if rename != nil {
-		_, _ = zellij.Action(time.Second, "", "rename-tab", "--tab-id", rename.TabID, rename.Name)
+		_, _ = zellij.Action(time.Second, "", "rename-tab", "--tab-id", rename.TabID, "--", rename.Name)
 	}
 	if name {
 		StartNamer(in.SessionID)
