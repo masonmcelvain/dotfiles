@@ -4,9 +4,11 @@ package zellij
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 
@@ -144,8 +146,51 @@ func Switch(name string, args ...string) error {
 }
 
 // Delete deletes session name, killing it first if it's live.
+//
+// `delete-session --force` can't be trusted with a live session: it removes
+// the session's cache right after asking the server to die, but the dying
+// server keeps rewriting that cache for a few milliseconds more, and a write
+// that lands after the removal recreates it, bringing the session back as an
+// exited one. The server's last write comes before it removes its socket, so
+// kill it, wait for the socket to go, and only then delete. Should the wait
+// time out, the forced delete still goes ahead.
+//
+// A killed session that never saved a layout leaves nothing to resurrect,
+// so there's nothing left to delete and zellij reports it as not found;
+// that's a success, as long as it's really gone.
 func Delete(name string) error {
-	return exec.Command("zellij", "delete-session", "--force", name).Run()
+	if socketExists(name) && exec.Command("zellij", "kill-session", name).Run() == nil {
+		for deadline := time.Now().Add(5 * time.Second); socketExists(name) && time.Now().Before(deadline); {
+			time.Sleep(20 * time.Millisecond)
+		}
+	}
+	err := exec.Command("zellij", "delete-session", "--force", name).Run()
+	if err != nil && !slices.ContainsFunc(ListSessions(), func(s Session) bool { return s.Name == name }) {
+		return nil
+	}
+	return err
+}
+
+// socketExists reports whether session name's server socket is still there,
+// in any contract version's directory. The sockets live where zellij puts
+// them: $ZELLIJ_SOCKET_DIR, else $XDG_RUNTIME_DIR/zellij, else
+// $TMPDIR/zellij-UID.
+func socketExists(name string) bool {
+	root := os.Getenv("ZELLIJ_SOCKET_DIR")
+	if root == "" {
+		if rt := os.Getenv("XDG_RUNTIME_DIR"); rt != "" {
+			root = filepath.Join(rt, "zellij")
+		} else {
+			root = filepath.Join(os.TempDir(), fmt.Sprintf("zellij-%d", os.Getuid()))
+		}
+	}
+	dirs, _ := filepath.Glob(filepath.Join(root, "*"))
+	for _, d := range dirs {
+		if fi, err := os.Stat(filepath.Join(d, name)); err == nil && fi.Mode()&os.ModeSocket != 0 {
+			return true
+		}
+	}
+	return false
 }
 
 // AttachArgv is the command that attaches this terminal to session name,
