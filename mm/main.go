@@ -1,12 +1,13 @@
 // mm is the zellij and Claude Code tooling from these dotfiles: pickers over
-// agents and sessions, fresh sessions in the Code/ slots, and the hook that
-// tracks agent status.
+// agents and sessions, fresh sessions in the Code/ slots, handing work to an
+// agent with ship, and the hook that tracks agent status.
 package main
 
 import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"syscall"
 
 	"github.com/charmbracelet/x/term"
@@ -14,6 +15,7 @@ import (
 	"github.com/masonmcelvain/dotfiles/mm/internal/agents"
 	"github.com/masonmcelvain/dotfiles/mm/internal/picker"
 	"github.com/masonmcelvain/dotfiles/mm/internal/sessions"
+	"github.com/masonmcelvain/dotfiles/mm/internal/ship"
 )
 
 const usage = `usage: mm COMMAND
@@ -22,6 +24,8 @@ const usage = `usage: mm COMMAND
   sessions            pick a zellij session by name, branch and directory
   sessions branch B   go to the session on branch B, or start one on it
   new [BRANCH]        start a session in the least recently used Code slot
+  ship TARGET         hand an issue, PR or task to a Claude agent in its own
+                      checkout and session; TARGET is a URL, a number, or words
   agent-status        Claude Code hook: record agent state, label its tab
   agent-status name ID  ask Haiku for a descriptive name for agent ID's tab
 
@@ -61,6 +65,16 @@ func main() {
 			fmt.Println("mm: " + msg)
 		}
 		finish(argv, err)
+	case "ship":
+		requireZellij()
+		if len(args) == 0 {
+			die("usage: mm ship ISSUE|PR|\"task in words\"")
+		}
+		msg, err := ship.Run(strings.Join(args, " "))
+		if err != nil {
+			die("%v", err)
+		}
+		fmt.Println("mm: " + msg)
 	case "-h", "--help", "help":
 		fmt.Print(usage)
 	default:

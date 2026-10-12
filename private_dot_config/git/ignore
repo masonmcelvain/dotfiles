@@ -1,0 +1,4 @@
+**/.claude/settings.local.json
+
+# mm ship and claude --worktree check work out here, inside the repo.
+.claude/worktrees/

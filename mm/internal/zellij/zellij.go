@@ -4,6 +4,7 @@ package zellij
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -197,4 +198,94 @@ func socketExists(name string) bool {
 // resurrecting it if it exited. Run it by replacing this process.
 func AttachArgv(name string) []string {
 	return []string{"zellij", "attach", name}
+}
+
+// Layout is the layout every session mm creates starts with: sh, hx and
+// claude tabs.
+const Layout = "sh-hx-claude"
+
+// Create starts session name in the background, rooted in dir, deleting an
+// exited session of that name first so it's created fresh rather than
+// resurrected. A live one is an error.
+func Create(name, dir string) error {
+	for _, s := range ListSessions() {
+		if s.Name != name {
+			continue
+		}
+		if !s.Exited {
+			return fmt.Errorf("session %s is already running", name)
+		}
+		if exec.Command("zellij", "delete-session", name).Run() != nil {
+			return fmt.Errorf("couldn't clear the old %s session", name)
+		}
+		break
+	}
+
+	// Inside zellij, these would point the new session's client at this
+	// one. Run from a Claude agent, its CLAUDE* variables would make every
+	// Claude in the new session think it's that agent's child session; a
+	// pane's shell re-sources any I set myself. The layout's `cwd "."`
+	// resolves against where zellij starts, hence the Dir.
+	cmd := exec.Command("zellij", "attach", "--create-background", name,
+		"options", "--default-layout", Layout)
+	cmd.Dir = dir
+	for _, kv := range os.Environ() {
+		k, _, _ := strings.Cut(kv, "=")
+		switch {
+		case k == "ZELLIJ" || k == "ZELLIJ_SESSION_NAME" || k == "ZELLIJ_PANE_ID":
+		case strings.HasPrefix(k, "CLAUDE") || k == "AI_AGENT":
+		default:
+			cmd.Env = append(cmd.Env, kv)
+		}
+	}
+	if cmd.Run() != nil {
+		return fmt.Errorf("couldn't create %s in %s", name, dir)
+	}
+	return nil
+}
+
+// pane is the part of `zellij action list-panes --json` RunInTab reads.
+type pane struct {
+	ID       int    `json:"id"`
+	IsPlugin bool   `json:"is_plugin"`
+	TabName  string `json:"tab_name"`
+}
+
+// FindTabPane picks the first terminal pane in tab out of list-panes JSON.
+func FindTabPane(data []byte, tab string) (id int, ok bool) {
+	var panes []pane
+	if json.Unmarshal(data, &panes) != nil {
+		return 0, false
+	}
+	for _, p := range panes {
+		if !p.IsPlugin && p.TabName == tab {
+			return p.ID, true
+		}
+	}
+	return 0, false
+}
+
+// RunInTab replaces the shell pane in session's tab with argv, run in dir.
+// It works on a background session with no client attached, where typing
+// into the focused pane doesn't. A session created a moment ago may not
+// have laid out its tabs yet, hence the retries.
+func RunInTab(session, tab, dir string, argv []string) error {
+	var id int
+	found := false
+	for range 15 {
+		out, err := Action(5*time.Second, session, "list-panes", "--json", "--tab")
+		if err == nil {
+			if id, found = FindTabPane(out, tab); found {
+				break
+			}
+		}
+		time.Sleep(200 * time.Millisecond)
+	}
+	if !found {
+		return fmt.Errorf("session %s has no %s tab", session, tab)
+	}
+	args := []string{"new-pane", "--in-place", "--close-replaced-pane",
+		"--pane-id", fmt.Sprintf("terminal_%d", id), "--cwd", dir, "--"}
+	_, err := Action(10*time.Second, session, append(args, argv...)...)
+	return err
 }

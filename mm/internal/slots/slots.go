@@ -23,8 +23,6 @@ import (
 	"github.com/masonmcelvain/dotfiles/mm/internal/zellij"
 )
 
-const layout = "sh-hx-claude"
-
 // Pattern is the glob the slots match, overridable with MM_SLOTS.
 func Pattern() string {
 	if p := os.Getenv("MM_SLOTS"); p != "" {
@@ -216,33 +214,36 @@ func Start(branch string) (name, dir string, err error) {
 		}
 		dir = free[0]
 	}
+	return start(dir)
+}
+
+// StartNew is Start for a branch that doesn't exist yet: it creates branch
+// from base in the least recently used clean free slot.
+func StartNew(branch, base string) (name, dir string, err error) {
+	free := Free()
+	if len(free) == 0 {
+		return "", "", errNoSlot
+	}
+	for _, s := range free {
+		if gitx.Dirty(s, true) {
+			continue
+		}
+		out, err := exec.Command("git", "-C", s, "switch", "-q", "-c", branch, base).CombinedOutput()
+		if err != nil {
+			msg, _, _ := strings.Cut(strings.TrimSpace(string(out)), "\n")
+			return "", "", fmt.Errorf("couldn't create %s in %s: %s", branch, s, msg)
+		}
+		return start(s)
+	}
+	return "", "", errors.New("every free Code slot has uncommitted changes")
+}
+
+// start creates slot dir's session. The slot has no live session, so an sN
+// still listed is an exited one, which Create clears rather than resurrects.
+func start(dir string) (name, _ string, err error) {
 	name = Name(dir)
-
-	// The slot has no live session, so an sN still listed is an exited one,
-	// which attach would resurrect instead of starting fresh.
-	for _, s := range zellij.ListSessions() {
-		if s.Name == name {
-			if exec.Command("zellij", "delete-session", name).Run() != nil {
-				return "", "", fmt.Errorf("couldn't clear the old %s session", name)
-			}
-			break
-		}
-	}
-
-	// Inside zellij, these would point the new session's client at this
-	// one. The layout's `cwd "."` resolves against where zellij starts,
-	// hence the Dir.
-	cmd := exec.Command("zellij", "attach", "--create-background", name,
-		"options", "--default-layout", layout)
-	cmd.Dir = dir
-	for _, kv := range os.Environ() {
-		k, _, _ := strings.Cut(kv, "=")
-		if k != "ZELLIJ" && k != "ZELLIJ_SESSION_NAME" && k != "ZELLIJ_PANE_ID" {
-			cmd.Env = append(cmd.Env, kv)
-		}
-	}
-	if cmd.Run() != nil {
-		return "", "", fmt.Errorf("couldn't create %s in %s", name, dir)
+	if err := zellij.Create(name, dir); err != nil {
+		return "", "", err
 	}
 	return name, dir, nil
 }

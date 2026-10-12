@@ -66,3 +66,18 @@ func TestServerSession(t *testing.T) {
 		t.Error("serverSession matched a non-zellij process")
 	}
 }
+
+func TestFindTabPane(t *testing.T) {
+	data := []byte(`[
+		{"id": 0, "is_plugin": false, "tab_name": "sh"},
+		{"id": 0, "is_plugin": true, "tab_name": "claude"},
+		{"id": 2, "is_plugin": false, "tab_name": "claude"},
+		{"id": 3, "is_plugin": false, "tab_name": "claude"}
+	]`)
+	if id, ok := FindTabPane(data, "claude"); !ok || id != 2 {
+		t.Errorf("FindTabPane = %d, %v; want 2, true", id, ok)
+	}
+	if _, ok := FindTabPane(data, "hx"); ok {
+		t.Error("FindTabPane found a pane in a tab that isn't there")
+	}
+}
