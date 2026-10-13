@@ -37,13 +37,13 @@ hxr() {
 }
 
 {{ if eq .chezmoi.hostname "masons-xps" -}}
-# hunk can't pair a light and dark theme, so pick everforest's dark variant at
-# launch when GNOME prefers dark; config.toml's everforest-light covers light
+# hunk can't pair a light and dark theme, so pick gruvbox's dark variant at
+# launch when GNOME prefers dark; config.toml's gruvbox-light-hard covers light
 hunk() {
    case "$1" in
    diff|show|log|patch|difftool)
       if [ "$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null)" = "'prefer-dark'" ]; then
-         command hunk "$1" --theme everforest-dark "${@:2}"
+         command hunk "$1" --theme gruvbox-dark-hard "${@:2}"
          return
       fi
       ;;

@@ -1,4 +1,4 @@
-theme = "everforest-light"
+theme = "gruvbox-light-hard"
 mode = "stack"
 sidebar = true
 watch = true
