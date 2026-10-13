@@ -16,6 +16,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/charmbracelet/x/ansi"
 	"github.com/masonmcelvain/dotfiles/mm/internal/gitx"
 	"github.com/masonmcelvain/dotfiles/mm/internal/zellij"
 )
@@ -275,7 +276,8 @@ func TabNames(listPanes []byte, except string) []string {
 // CleanLabel turns Haiku's reply into a tab label, or rejects it when it
 // plainly isn't one.
 func CleanLabel(out string) (string, bool) {
-	out = strings.TrimSpace(out)
+	// Some claude versions print a terminal title escape even with -p.
+	out = strings.TrimSpace(ansi.Strip(out))
 	if i := strings.IndexByte(out, '\n'); i >= 0 {
 		out = out[:i]
 	}

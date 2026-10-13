@@ -98,10 +98,11 @@ func TestBriefKeepsEnds(t *testing.T) {
 
 func TestCleanLabel(t *testing.T) {
 	for in, want := range map[string]string{
-		"Review #42 DHL split\n":        "Review #42 DHL split",
-		`"QA #1065 hunk wrap".`:         "QA #1065 hunk wrap",
-		"✓ GNOME dark mode\nbecause...": "GNOME dark mode",
-		strings.Repeat("a", 40):         strings.Repeat("a", 29) + "…",
+		"Review #42 DHL split\n":                  "Review #42 DHL split",
+		"\x1b]0;claude\aStore team request 64971": "Store team request 64971",
+		`"QA #1065 hunk wrap".`:                   "QA #1065 hunk wrap",
+		"✓ GNOME dark mode\nbecause...":           "GNOME dark mode",
+		strings.Repeat("a", 40):                   strings.Repeat("a", 29) + "…",
 	} {
 		if got, ok := CleanLabel(in); !ok || got != want {
 			t.Errorf("CleanLabel(%q) = %q, %v, want %q", in, got, ok, want)
