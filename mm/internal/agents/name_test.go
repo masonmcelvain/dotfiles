@@ -122,3 +122,10 @@ func TestTabNames(t *testing.T) {
 		t.Errorf("TabNames = %q", got)
 	}
 }
+
+func TestNameContextEndsWithAsk(t *testing.T) {
+	s := NameContext{Repo: "ifixit", Prompts: []string{"review this pr"}, Reply: "Done."}.String()
+	if !strings.HasPrefix(s, "<agent>\n") || !strings.HasSuffix(s, "at most 24 characters.") {
+		t.Errorf("NameContext.String() = %q, want the context tagged and the ask last", s)
+	}
+}

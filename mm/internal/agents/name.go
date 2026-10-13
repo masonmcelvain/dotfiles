@@ -28,7 +28,7 @@ const NamerEnv = "MM_TAB_NAMER"
 // namerPrompt explains the tab bar to Haiku. Claude Code's own ai-title only
 // sees the first prompt, so "review this pr" becomes "PR review"; the namer
 // adds the branch, the PR, the agent's own reply and the sibling tabs.
-const namerPrompt = `You name zellij terminal tabs. The user runs several Claude Code agents at once, one per tab, and glances at the tab bar to find the right one. Given what an agent is working on, reply with its tab label and nothing else.
+const namerPrompt = `You name zellij terminal tabs. The user runs several Claude Code agents at once, one per tab, and glances at the tab bar to find the right one. Given what an agent is working on, inside <agent> tags, reply with its tab label and nothing else.
 
 Rules:
 - At most 24 characters, about three words; count them. No quotes, no trailing punctuation.
@@ -141,7 +141,11 @@ type NameContext struct {
 }
 
 func (c NameContext) String() string {
+	// The context is wrapped in tags and the ask restated after it, or Haiku
+	// treats it as something to discuss: it explains its pick, or answers
+	// "Tab label: X".
 	var b strings.Builder
+	b.WriteString("<agent>\n")
 	line := func(k, v string) {
 		if v != "" {
 			fmt.Fprintf(&b, "%s: %s\n", k, v)
@@ -149,7 +153,7 @@ func (c NameContext) String() string {
 	}
 	line("Repo", c.Repo)
 	line("Branch", c.Branch)
-	line("Pull request", c.PR)
+	line("PR", c.PR)
 	line("Generic title", c.Title)
 	line("Other tabs", strings.Join(c.Siblings, ", "))
 	b.WriteString("\nUser's prompts:\n")
@@ -159,6 +163,7 @@ func (c NameContext) String() string {
 	if c.Reply != "" {
 		fmt.Fprintf(&b, "\nAgent's latest reply:\n%s\n", c.Reply)
 	}
+	b.WriteString("</agent>\n\nReply with only the tab label for this agent, at most 24 characters.")
 	return b.String()
 }
 
