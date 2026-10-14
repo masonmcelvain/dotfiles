@@ -1,0 +1,30 @@
+name: Dependabot merge
+
+# Turn on auto-merge for Dependabot's actions bumps. GitHub then squashes
+# each one once the checks main's ruleset requires (shellcheck, lint, test)
+# pass.
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR: ${{ github.event.pull_request.html_url }}
+    steps:
+      # Only workflow changes merge unattended, in case another ecosystem is
+      # added to dependabot.yml later.
+      - name: Check the PR only touches workflows
+        run: |
+          files=$(gh pr diff "$PR" --name-only)
+          echo "$files"
+          if grep -qv '^\.github/workflows/' <<<"$files"; then
+            echo "Touches more than workflows"
+            exit 1
+          fi
+      - run: gh pr merge "$PR" --auto --squash --delete-branch

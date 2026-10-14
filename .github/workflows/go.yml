@@ -1,7 +1,8 @@
 name: Go
 
-# Only mm is Go, so skip the toolchain install when nothing it builds from
-# changed.
+# Only mm is Go, so skip the toolchain install on pushes that change nothing
+# it builds from. PRs always run it, because lint and test are required
+# checks on main and a required check that never reports blocks the merge.
 on:
   push:
     branches: [main]
@@ -12,12 +13,6 @@ on:
       - .mise/tasks/test
       - .github/workflows/go.yml
   pull_request:
-    paths:
-      - mm/**
-      - .mise.toml
-      - .mise/tasks/lint/go
-      - .mise/tasks/test
-      - .github/workflows/go.yml
 
 env:
   # Only install what each job uses; mise would otherwise fetch every tool
