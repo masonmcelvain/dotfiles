@@ -129,9 +129,13 @@ often where the real understanding comes from. If I've spent three or more
 exchanges on something that doesn't bear on this PR, answer, then say briefly that
 we've drifted and name the next open item. Don't refuse and don't lecture.
 
-**Status line.** End every reply with one line on where the review stands, e.g.:
+**Status line.** End every reply with one line on where the review stands, and
+under it the review file's path, so I can open it in my editor. Put a bare `>`
+line between them, or markdown joins them into one line, e.g.:
 
 > 2 comments · open: rollback of the migration, cache invalidation · not yet read: `jobs/`
+>
+> `~/reviews/ifixit-ifixit-1234.md`
 
 ## 4. Record findings
 
@@ -158,7 +162,10 @@ into Comments only when I accept them.
 
 ## 5. Post the review
 
-When I say to post:
+When I say to post ("post it", "post the review"), that is the go-ahead. Run every
+step below in the same turn, through the API call, without asking me to confirm.
+The review is submitted, not left pending: the file is my last look, so what's
+above the line is what I mean to publish.
 
 1. **Re-read the file.** I've probably edited it. Use only what's above the bare
    `---` line.
@@ -169,8 +176,9 @@ When I say to post:
 3. **Check every anchor** against the diff's hunk headers (`gh pr diff <pr>`).
    GitHub rejects inline comments on lines outside the diff. Move any such comment
    into the review body as a `path:line` bullet, and tell me which ones you moved.
-4. **Show me the exact payload** in chat: verdict, body and each comment. Then wait
-   for a go-ahead, unless my "post it" already said to submit.
+4. **Stop only for a real problem.** If the head moved and a comment is now stale
+   or wrong, tell me and wait. Moving an off-diff comment into the body is not a
+   reason to stop; just report it afterwards.
 5. **Post** with one call, building the JSON with `jq` so quoting can't break it:
 
    ```
@@ -181,11 +189,11 @@ When I say to post:
    has `path`, `body`, `line` and `side` (`RIGHT`, or `LEFT` for `(old)`), plus
    `start_line`/`start_side` for a range.
 
-   **By default, omit `event`.** That creates a *pending* review that only I can
-   see, so I can submit it from GitHub with one last look. Include `event`
-   (`APPROVE`, `REQUEST_CHANGES` or `COMMENT`, from `verdict`) only when I say to
-   submit it. GitHub allows one pending review per PR. If one already exists, the
-   call fails: tell me, and don't delete mine.
+   Set `event` from `verdict` (`APPROVE`, `REQUEST_CHANGES` or `COMMENT`), so the
+   review is submitted and visible to the author. Leave `event` out, creating a
+   *pending* review only I can see, only when I ask for a draft or a pending
+   review. GitHub allows one pending review per PR, and a pending review of mine
+   can make the call fail: tell me, and don't delete it.
 
 6. Give me the review's URL. Record the posted head in the frontmatter as
    `head:`. Move what you posted below the line, under `### Posted <date>: <url>`,
