@@ -52,13 +52,14 @@ Read the ledger first. Its `last-seen` is where the previous tick stopped.
 
 Who wrote it decides how much latitude you have. `gh api user --jq .login` is me.
 
-- **Me** (my login, no `🤖`): an instruction. Do it, the way `/resolve` would:
-  questions get answers, change requests get verified and then fixed or pushed
-  back on with `file:line`, direct instructions get done.
+- **Me** (my login, no `🤖`): an instruction. Do it: questions get answers,
+  change requests get verified and then fixed or pushed back on with
+  `file:line`, direct instructions get done.
 - **Review bots** (Copilot, CodeRabbit, Bugbot, Sentry and the like): a review
-  finding of unknown quality. Triage it like `/triage`: restate the mechanism,
-  check that it's reachable here, then fix or decline. Bots are often right
-  about the bug and wrong about the fix.
+  finding of unknown quality. Triage it: restate the mechanism (this state,
+  this path, this wrong result), check that it's reachable here given the
+  callers, guards and types, and that it matters, then fix or decline. Bots
+  are often right about the bug and wrong about the fix.
 - **Other people**: fix clear, verified change requests and reply with what
   changed. A question, a design objection, or anything you'd push back on, you
   don't answer in my name: write your proposed reply in the ledger under

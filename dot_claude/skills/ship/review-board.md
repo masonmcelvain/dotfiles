@@ -2,8 +2,7 @@
 
 A board of specialist reviewers looks at the changeset, a skeptic tries to refute
 their serious findings, the builder fixes what survives, and the reviewers
-re-check, round after round until they converge. It's my `review-loop` with more
-than one reviewer and a verification step in the middle.
+re-check, round after round until they converge.
 
 ## The changeset
 

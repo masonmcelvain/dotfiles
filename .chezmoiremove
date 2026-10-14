@@ -5,3 +5,9 @@
 .local/bin/picker.sh
 .local/bin/zellij-new
 .local/bin/zellij-sessions
+{{/* Review commands and skills that review-pr replaced. */}}
+.claude/agents/code-reviewer.md
+.claude/commands/triage.md
+.claude/skills/build-context
+.claude/skills/explain-diff-html
+.claude/skills/review-loop
