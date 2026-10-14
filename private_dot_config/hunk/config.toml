@@ -1,4 +1,4 @@
-theme = "gruvbox-light-hard"
+theme = "solarized-light"
 mode = "stack"
 sidebar = true
 watch = true
