@@ -96,7 +96,7 @@ signing: ok | unsigned since <sha>
 | AC | result | evidence |
 ## Escalations
 ## Aftercare
-last-seen: <timestamp of the newest comment handled>   cron: <job id>
+last-seen: <createdAt of the newest comment handled; empty means since the PR opened>   cron: <job id>
 ## Log
 <one line per event, newest last>
 ```
@@ -212,6 +212,11 @@ run the lens reviewers in parallel, have a `finding-verifier` try to refute each
 serious finding, send the survivors to the builder, then have the reviewers
 re-check, and repeat until the board converges.
 
+The draft PR has been open since phase 4, and review bots comment on drafts.
+Before each round, read the PR's comments as in [aftercare.md](aftercare.md) and fold
+any bot findings into the round under the closest lens, so they get the same
+verification as the board's own.
+
 ## Phase 6: QA
 
 Follow [qa.md](qa.md). A `qa-engineer` that didn't write the code runs the phase
@@ -224,28 +229,34 @@ failed.
 1. Make sure the gate is green, the tree is clean, and the branch is pushed.
    Wait for CI (`gh pr checks --watch`) and handle failures as in
    [aftercare.md](aftercare.md).
-2. Rewrite the PR body (`gh pr edit --body-file`) to my conventions: what changed
+2. Sweep the PR. Run aftercare's comments step with `last-seen` empty, so it
+   covers everything since the PR opened, and handle all of it as aftercare
+   would. Your own board and QA reports aren't the only reviews; bots and
+   people have been commenting since phase 4. Set `last-seen` per aftercare's
+   closing rule.
+3. Rewrite the PR body (`gh pr edit --body-file`) to my conventions: what changed
    and why, `## Assumptions`, and `## QA` with what was verified, pointing at the
    evidence comment, plus any manual steps QA couldn't do. Leave the agent
    machinery out of the body; it's for the humans who'll review it.
-3. Post one `🤖 Review board` comment: lenses run, rounds, each finding once with
+4. Post one `🤖 Review board` comment: lenses run, rounds, each finding once with
    its outcome (fixed, declined with why), and any stalemates with both sides.
-4. Leave it a draft. Notify me with the link and one line on anything I need to
+5. Leave it a draft. Notify me with the link and one line on anything I need to
    decide:
 
    ```
    ~/.local/bin/notify -a claude -n claude-desktop "ship: <repo>#<n> ready" "<pr url> - <one line>"
    ```
 
-5. Append a retro to `~/.claude/ship-retros.md` (create it if missing): date,
+6. Append a retro to `~/.claude/ship-retros.md` (create it if missing): date,
    repo, PR, what the board and QA caught that the builder should have, setup
    friction, and the run recipe if you had to work it out. This is how repeated
    mistakes become rules.
 
 ## Phase 8: aftercare
 
-Set the ledger's phase to `aftercare`, then schedule the watch with `CronCreate`
-(load it with `ToolSearch` if needed): recurring, every 20 minutes, with the
+Set the ledger's phase to `aftercare`, leaving `last-seen` as the hand-off sweep
+set it, then schedule the watch with `CronCreate` (load it with `ToolSearch` if
+needed): recurring, every 20 minutes, with the
 prompt `Use the ship skill: aftercare <pr url>`. Record the job id in the ledger.
 Each tick follows [aftercare.md](aftercare.md) until the PR merges or closes,
 which deletes the job. It only fires while this session is running, so tell me

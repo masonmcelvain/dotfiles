@@ -27,7 +27,7 @@ Read the ledger first. Its `last-seen` is where the previous tick stopped.
 4. **Conflicts.** If `mergeable` is `CONFLICTING`: on a draft, rebase onto
    `origin/<base>`, resolve, gate, and `git push --force-with-lease`. Once I've
    marked it ready, don't rewrite history: notify me instead.
-5. **Comments.** Collect everything newer than `last-seen`:
+5. **Comments.** Fetch them all:
 
    ```
    gh api graphql -F owner=<owner> -F repo=<name> -F pr=<n> -f query='
@@ -45,8 +45,17 @@ Read the ledger first. Its `last-seen` is where the previous tick stopped.
      }'
    ```
 
-   Skip anything starting with `🤖`; that's yours. Skip resolved threads unless
-   someone replied after they were resolved.
+   What needs handling:
+
+   - **Review threads**: every unresolved one whose last comment doesn't start
+     with `🤖`, however old, unless the ledger's Escalations already holds it.
+     Thread state lives on GitHub, so this catches anything a bad `last-seen`
+     would miss. Resolved threads only when someone replied after resolving.
+   - **Top-level comments and review bodies**: those created after `last-seen`,
+     or all of them when it's empty. They have no resolved state, so this is the
+     only place the watermark matters.
+
+   Skip anything starting with `🤖`; that's yours.
 
 ## Handling a comment
 
@@ -90,6 +99,9 @@ items, posting a new evidence comment for them.
 
 ## Closing the tick
 
-Set `last-seen` to the newest comment you handled, add a log line, and notify me
-only if you escalated something or pushed a change after I'd marked the PR
-ready. A tick that only fixed bot nits and CI on a draft doesn't need me.
+Set `last-seen` to the `createdAt` of the newest comment you handled, never the
+current time: a comment that landed while you worked would fall behind the
+watermark unread. If you handled nothing, leave it as it was. Add a log line,
+and notify me only if you escalated something or pushed a change after I'd
+marked the PR ready. A tick that only fixed bot nits and CI on a draft doesn't
+need me.
