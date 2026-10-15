@@ -204,7 +204,7 @@ func Run(arg string) (string, error) {
 	if err := zellij.RunInTab(session, "claude", dir, argv); err != nil {
 		return "", fmt.Errorf("created %s but couldn't start Claude in it: %v", session, err)
 	}
-	return fmt.Sprintf("shipping %s in %s (%s, on %s); mm agents to check in", arg, session, dir, branch), nil
+	return fmt.Sprintf("shipping %s in %s (%s, on %s)", arg, session, dir, branch), nil
 }
 
 // prHead is the head branch of PR num, if num is a PR. The PR has to live in
