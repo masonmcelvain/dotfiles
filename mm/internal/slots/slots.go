@@ -189,14 +189,32 @@ func branchSlot(branch string) (string, error) {
 		if gitx.Dirty(s, true) {
 			continue
 		}
-		out, err := exec.Command("git", "-C", s, "switch", "-q", branch).CombinedOutput()
-		if err != nil {
-			msg, _, _ := strings.Cut(strings.TrimSpace(string(out)), "\n")
-			return "", fmt.Errorf("couldn't check out %s in %s: %s", branch, s, msg)
+		if err := switchTo(s, branch); err != nil {
+			return "", fmt.Errorf("couldn't check out %s in %s: %v", branch, s, err)
 		}
 		return s, nil
 	}
 	return "", errors.New("every free Code slot has uncommitted changes")
+}
+
+// switchTo runs git switch in slot dir with args, then brings its submodules
+// along. With submodule.recurse set, git switch checks submodules out itself
+// but never fetches them, so it fails outright when the new commit points a
+// submodule at a commit the slot's own clone of it hasn't seen yet;
+// submodule update fetches what's missing.
+func switchTo(dir string, args ...string) error {
+	steps := [][]string{
+		append([]string{"-c", "submodule.recurse=false", "switch", "-q"}, args...),
+		{"submodule", "update", "-q", "--init", "--recursive"},
+	}
+	for _, step := range steps {
+		out, err := exec.Command("git", append([]string{"-C", dir}, step...)...).CombinedOutput()
+		if err != nil {
+			msg, _, _ := strings.Cut(strings.TrimSpace(string(out)), "\n")
+			return errors.New(msg)
+		}
+	}
+	return nil
 }
 
 // Start creates a background session in the least recently used free slot,
@@ -228,10 +246,8 @@ func StartNew(branch, base string) (name, dir string, err error) {
 		if gitx.Dirty(s, true) {
 			continue
 		}
-		out, err := exec.Command("git", "-C", s, "switch", "-q", "-c", branch, base).CombinedOutput()
-		if err != nil {
-			msg, _, _ := strings.Cut(strings.TrimSpace(string(out)), "\n")
-			return "", "", fmt.Errorf("couldn't create %s in %s: %s", branch, s, msg)
+		if err := switchTo(s, "-c", branch, base); err != nil {
+			return "", "", fmt.Errorf("couldn't create %s in %s: %v", branch, s, err)
 		}
 		return start(s)
 	}
