@@ -72,10 +72,8 @@ func (s *Source) sessionLabel(a Agent) (string, bool) {
 
 func glyph(status string) string {
 	switch status {
-	case "waiting":
+	case "waiting", "done":
 		return picker.Orange + "○" + picker.FG
-	case "done":
-		return picker.Green + "✓" + picker.FG
 	default:
 		return picker.Blue + "-" + picker.FG
 	}

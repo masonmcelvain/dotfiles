@@ -40,7 +40,7 @@ func TestMergePrefersLabel(t *testing.T) {
 		"tab_id":3,"original_tab_name":"claude","last_name":"PR review"}}`)
 	env := HookEnv{InZellij: true, Session: "s1", Pane: "7", Now: now, Title: "PR review"}
 	next, rename := Merge(old, HookInput{Event: "Stop", SessionID: "abc"}, "done", env)
-	if want := (&Rename{TabID: "3", Name: "✓ Review #42 DHL"}); !reflect.DeepEqual(rename, want) {
+	if want := (&Rename{TabID: "3", Name: "○ Review #42 DHL"}); !reflect.DeepEqual(rename, want) {
 		t.Errorf("rename = %+v, want %+v", rename, want)
 	}
 	if field(t, next, "label") != "Review #42 DHL" {
@@ -50,7 +50,7 @@ func TestMergePrefersLabel(t *testing.T) {
 	// A name the user gives beats the label, and retires it.
 	env.Title, env.Explicit = "mine", true
 	next, rename = Merge(old, HookInput{Event: "Stop", SessionID: "abc"}, "done", env)
-	if rename == nil || rename.Name != "✓ mine" {
+	if rename == nil || rename.Name != "○ mine" {
 		t.Errorf("rename = %+v", rename)
 	}
 	if _, ok := next["label"]; ok {

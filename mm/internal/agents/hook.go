@@ -67,10 +67,8 @@ func Glyph(status string) string {
 	switch status {
 	case "working":
 		return "-"
-	case "waiting":
+	case "waiting", "done":
 		return "○"
-	case "done":
-		return "✓"
 	}
 	return ""
 }
@@ -315,7 +313,8 @@ func FindTab(listPanes []byte, paneID string) (string, string, bool) {
 
 // StripGlyph removes a leading status glyph, and the space after it. The
 // hyphen needs its space, so a tab really named "-x" keeps it; "●" was the
-// working glyph before "-", and still marks tabs renamed by an older mm.
+// working glyph before "-" and "✓" the done glyph before "○", and both still
+// mark tabs renamed by an older mm.
 func StripGlyph(name string) string {
 	if rest, ok := strings.CutPrefix(name, "- "); ok {
 		return rest

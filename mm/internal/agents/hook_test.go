@@ -118,7 +118,7 @@ func TestMergeTruncatesName(t *testing.T) {
 		InZellij: true, Now: now, Title: long,
 		Capture: func() (string, string, bool) { return "1", "tab", true },
 	})
-	if rename == nil || rename.Name != "✓ "+strings.Repeat("é", 49)+"…" {
+	if rename == nil || rename.Name != "○ "+strings.Repeat("é", 49)+"…" {
 		t.Errorf("rename = %+v", rename)
 	}
 }
