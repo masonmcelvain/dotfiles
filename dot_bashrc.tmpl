@@ -143,7 +143,15 @@ fi
 FNM_PATH="$HOME/.local/share/fnm"
 if [ -d "$FNM_PATH" ]; then
   export PATH="$FNM_PATH:$PATH"
-  [ -n "$_is_interactive" ] && eval "$(fnm env --use-on-cd --log-level quiet --shell bash)"
+  if [ -n "$_is_interactive" ]; then
+    # Drop multishell dirs inherited from a parent shell (e.g. the zellij
+    # server); a stale one earlier in PATH shadows the one `fnm use` updates.
+    PATH=$(echo "$PATH" | tr ':' '\n' | grep -v fnm_multishells | paste -sd:)
+    # mise rebuilds PATH from this inherited copy on every prompt, which
+    # would bring the stale dirs back; let `mise activate` recapture it.
+    unset __MISE_ORIG_PATH
+    eval "$(fnm env --use-on-cd --log-level quiet --shell bash)"
+  fi
 fi
 
 [ -n "$_is_interactive" ] && eval "$(zoxide init bash)"
