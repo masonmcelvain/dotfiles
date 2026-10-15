@@ -28,16 +28,22 @@ const NamerEnv = "MM_TAB_NAMER"
 // namerPrompt explains the tab bar to Haiku. Claude Code's own ai-title only
 // sees the first prompt, so "review this pr" becomes "PR review"; the namer
 // adds the branch, the PR, the agent's own reply and the sibling tabs.
-const namerPrompt = `You name zellij terminal tabs. The user runs several Claude Code agents at once, one per tab, and glances at the tab bar to find the right one. Given what an agent is working on, inside <agent> tags, reply with its tab label and nothing else.
+const namerPrompt = `You name zellij terminal tabs. The user runs several Claude Code agents at once, one per tab, and glances at the tab bar to find the right one. You'll be told what an agent is working on, inside <agent> tags.
+
+Your reply is used verbatim as the tab's name, so it must be the label alone: one line, no prefix like "Tab label:", no quotes, no explanation.
 
 Rules:
-- At most 24 characters, about three words; count them. No quotes, no trailing punctuation.
+- At most 24 characters, about three words; count them. No trailing punctuation.
 - Lead with what distinguishes this work: a PR or issue number (#N), the feature, component or file.
-- Add a short verb (QA, review, fix) only when it adds meaning. Never a generic label like "PR review", "Fix bug" or "Code changes".
+- Add a short verb (QA, review, fix) only when it adds meaning. Never a generic label like PR review, Fix bug or Code changes.
 - Never include the repo name (given below); the session name already shows it.
 - Make it easy to tell apart from the other tabs listed.
 
-Good: "Review #64980 DHL split", "QA #1065 hunk wrap", "GNOME dark mode", "Picker scroll bug".`
+Example replies, one per line:
+Review #64980 DHL split
+QA #1065 hunk wrap
+GNOME dark mode
+Picker scroll bug`
 
 // NeedsName reports whether a hook event should start the namer: at the end
 // of a turn, once Claude Code has titled the session, and again whenever that
@@ -163,7 +169,7 @@ func (c NameContext) String() string {
 	if c.Reply != "" {
 		fmt.Fprintf(&b, "\nAgent's latest reply:\n%s\n", c.Reply)
 	}
-	b.WriteString("</agent>\n\nReply with only the tab label for this agent, at most 24 characters.")
+	b.WriteString("</agent>\n\nReply with the label alone, at most 24 characters.")
 	return b.String()
 }
 
