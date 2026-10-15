@@ -10,6 +10,8 @@ keybinds {
         bind "Alt z" { ToggleFocusFullscreen; }
         bind "Alt a" { Run "mm" "agents" { floating true; close_on_exit true; name "agents"; }; }
         bind "Alt f" { Run "mm" "sessions" { floating true; close_on_exit true; name "sessions"; }; }
+        // Dumps the screen first, while the pane the paths are in still has focus.
+        bind "Alt o" { DumpScreen "{{ .chezmoi.homeDir }}/.cache/hx-open-screen"; Run "hx-open" "{{ .chezmoi.homeDir }}/.cache/hx-open-screen" { floating true; close_on_exit true; name "hx-open"; }; }
     }
     normal {
         bind "Enter" "Esc" { SwitchToMode "Locked"; }

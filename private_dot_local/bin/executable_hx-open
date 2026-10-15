@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+# hx-open -- open a file path that's on screen in helix, without retyping it.
+# Bound to Alt o in zellij, which dumps the focused pane's screen to a file
+# and runs this on it in a floating pane:
+#
+#   hx-open SCREEN_FILE
+#
+# The dump has to happen in the keybind: once this pane opens it has focus,
+# and zellij can't say which floating pane had it before.
+#
+# It collects every absolute or ~/ path in the dump that names an existing
+# file and opens it in helix. One path opens straight away, keeping a
+# trailing :line:col; several open helix on a directory of symlinks named
+# after them, so they're listed in helix's own file picker over a scratch
+# buffer. Saving writes through the symlink.
+
+set -uo pipefail
+
+die() {
+    printf '%s\n' "$*"
+    read -rsn1 -p 'press any key to close'
+    exit 1
+}
+
+[ $# -eq 1 ] || die 'usage: hx-open SCREEN_FILE'
+screen=$1
+[ -r "$screen" ] || die "hx-open: can't read $screen"
+
+# A path starts at / or ~/ and runs to whitespace or a quote or bracket. The
+# lookbehind skips the // and /path of a URL. Trailing sentence punctuation
+# is dropped, then a :line or :line:col suffix is split off and kept.
+declare -A seen=()
+paths=()
+targets=()
+while IFS= read -r match; do
+    while [[ $match == *[.,:] ]]; do
+        match=${match%?}
+    done
+    path=$match
+    suffix=
+    if [[ $match =~ ^(.*[^:0-9])(:[0-9]+(:[0-9]+)?)$ ]]; then
+        path=${BASH_REMATCH[1]}
+        suffix=${BASH_REMATCH[2]}
+    fi
+    path=${path/#\~/$HOME}
+    [ -f "$path" ] || continue
+    [ -z "${seen[$path]:-}" ] || continue
+    seen[$path]=1
+    paths+=("$path")
+    targets+=("$path$suffix")
+done < <(grep -oP '(?<![\w/:.~-])(~/|/)[^\s'\''"`<>()\[\]{}|,;]+' "$screen")
+rm -f "$screen"
+
+case ${#targets[@]} in
+    0) die 'hx-open: no file paths on screen' ;;
+    1) exec hx "${targets[0]}" ;;
+esac
+
+dir=$(mktemp -d "${TMPDIR:-/tmp}/hx-open.XXXXXX")
+trap 'rm -rf "$dir"' EXIT
+for path in "${paths[@]}"; do
+    mkdir -p "$dir${path%/*}"
+    ln -s "$path" "$dir$path"
+done
+
+# The picker hides dotfiles and gitignored paths by default, which would drop
+# ~/.bashrc or anything under ~/.claude. helix 25.07 doesn't read a workspace
+# config.toml, so this hands it a copy of the user config with the filters
+# off. The copy lives outside $dir so the picker doesn't list it, and a user
+# config that already has an [editor.file-picker] table goes in unchanged,
+# since a second one wouldn't parse.
+config=$(mktemp "${TMPDIR:-/tmp}/hx-open-config.XXXXXX")
+trap 'rm -rf "$dir" "$config"' EXIT
+user_config=${XDG_CONFIG_HOME:-$HOME/.config}/helix/config.toml
+cat "$user_config" >"$config" 2>/dev/null
+if ! grep -q '^\[editor\.file-picker\]' "$config"; then
+    printf '\n[editor.file-picker]\nhidden = false\ngit-ignore = false\ngit-global = false\ngit-exclude = false\n' >>"$config"
+fi
+
+hx -c "$config" "$dir"
