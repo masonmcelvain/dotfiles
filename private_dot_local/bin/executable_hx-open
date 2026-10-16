@@ -51,10 +51,14 @@ while IFS= read -r match; do
 done < <(grep -oP '(?<![\w/:.~-])(~/|/)[^\s'\''"`<>()\[\]{}|,;]+' "$screen")
 rm -f "$screen"
 
-case ${#targets[@]} in
-    0) die 'hx-open: no file paths on screen' ;;
-    1) exec hx "${targets[0]}" ;;
-esac
+[ ${#targets[@]} -gt 0 ] || die 'hx-open: no file paths on screen'
+
+# Fullscreen rather than sized full in the keybind, so Alt z can shrink it
+# back to a normal floating pane. Done here because a ToggleFocusFullscreen
+# after Run in the keybind races the pane's spawn.
+zellij action toggle-fullscreen --pane-id "$ZELLIJ_PANE_ID"
+
+[ ${#targets[@]} -eq 1 ] && exec hx "${targets[0]}"
 
 dir=$(mktemp -d "${TMPDIR:-/tmp}/hx-open.XXXXXX")
 trap 'rm -rf "$dir"' EXIT
