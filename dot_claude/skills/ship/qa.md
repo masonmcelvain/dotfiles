@@ -43,12 +43,18 @@ Spawn a `qa-engineer` with:
   post anything
 
 It comes back with a report: per AC `PASS`, `FAIL` or `BLOCKED`, the evidence
-files, and for each failure the steps, the expected and actual results, and its
-best guess at where the bug is.
+files, for each failure the steps, the expected and actual results, and its
+best guess at where the bug is, and any other findings: a failed regression
+check, a new console error, a broken neighbor it noticed on the way.
 
-- **FAIL**: send the failure to the builder, run the gate, commit, give the fix a
-  mini review (see [review-board.md](review-board.md)), then continue the same
-  QA agent with `SendMessage` to re-run what failed and spot-check its
+Record each failure and finding in the ledger's QA results as `open`. A
+finding is addressed once it's `fixed` (QA re-ran it and it passes) or
+`declined` with a reason (out of scope, already broken on the base branch).
+
+- **FAIL** or a finding worth fixing: send it to the builder, run the gate,
+  commit, give the fix a mini review (see [review-board.md](review-board.md)),
+  then continue the same QA agent with `SendMessage` (or a fresh one, with this
+  round's report, if it's gone) to re-run what failed and spot-check its
   neighbors. Three failures on the same AC is an escalation.
 - **BLOCKED** (it can't get the app running, or the data the AC needs doesn't
   exist locally): try once yourself to fix the setup. If that doesn't work, the

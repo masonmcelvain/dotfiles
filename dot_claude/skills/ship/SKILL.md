@@ -81,7 +81,7 @@ read it first and resume from its `phase`; don't redo finished phases.
 
 ```
 # Ship ledger: <target>
-phase: setup | intake | spec | build | review | qa | handoff | aftercare | done
+phase: setup | intake | spec | build | review | qa | handoff | aftercare | settled | done
 repo: <owner/name>   branch: <branch>   base: <base>   pr: <url or none>
 signing: ok | unsigned since <sha>
 
@@ -93,7 +93,7 @@ signing: ok | unsigned since <sha>
 ## Review board
 | id | lens | severity | where | status | note |
 ## QA results
-| AC | result | evidence |
+| AC or finding | result | evidence |
 ## Escalations
 ## Aftercare
 last-seen: <createdAt of the newest comment handled; empty means since the PR opened>   cron: <job id>
@@ -259,9 +259,11 @@ set it, then schedule the watch with `CronCreate` (load it with `ToolSearch` if
 needed): recurring, every 20 minutes, with the
 prompt `Use the ship skill: aftercare <pr url>`. Record the job id in the ledger.
 Each tick follows [aftercare.md](aftercare.md) until the PR merges or closes,
-which deletes the job. It only fires while this session is running, so tell me
-in the hand-off that closing this tab ends aftercare, and that
-`mm ship <pr>` restarts it.
+or settles (CI green, no unaddressed reviews or QA findings), either of which
+deletes the job. It only fires while this session is running, so tell me in the
+hand-off that closing this tab ends aftercare, and that `mm ship <pr>` restarts
+it. Resuming with the phase at `aftercare` or `settled` means running one tick
+now and scheduling the job again.
 
 ## Report
 

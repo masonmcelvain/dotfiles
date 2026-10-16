@@ -95,7 +95,8 @@ Other people resolve their own threads. Top-level PR comments and review bodies
 get one `🤖` reply comment per tick that covers them, not one each.
 
 If a fix changes what the PR does, update the PR body and re-run the affected QA
-items, posting a new evidence comment for them.
+items as a new round of [qa.md](qa.md), fixing what it finds the same way, then
+post a new evidence comment for them.
 
 ## Closing the tick
 
@@ -105,3 +106,27 @@ watermark unread. If you handled nothing, leave it as it was. Add a log line,
 and notify me only if you escalated something or pushed a change after I'd
 marked the PR ready. A tick that only fixed bot nits and CI on a draft doesn't
 need me.
+
+## Settling
+
+Once there's nothing left to do, stop the watch. The PR is settled when all of
+these hold at the end of a tick:
+
+- **CI is green**: `gh pr checks <pr>` on the current head has nothing failing
+  or pending, apart from checks the ledger records as broken on the base
+  branch. A tick that pushed is never settled, since its CI is still running.
+- **No unaddressed reviews**: step 5 finds nothing to handle, and the ledger's
+  Escalations has nothing still waiting on me.
+- **No unaddressed QA findings**: every AC in the ledger's QA results is `PASS`
+  or a manual step, and no failure or finding is still `open`.
+
+Then delete the cron job (`CronDelete` with the ledger's id), clear `cron` in
+the ledger, set the phase to `settled`, log it, and notify me once:
+
+```
+~/.local/bin/notify -a claude -n claude-desktop "ship: <repo>#<n> settled" "<pr url> - aftercare stopped"
+```
+
+End the turn there; the session stays open. New comments after this go
+unwatched until `mm ship <pr>` resumes, which runs a tick and schedules the
+watch again.
