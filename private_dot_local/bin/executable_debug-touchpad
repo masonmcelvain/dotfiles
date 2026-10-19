@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# debug-touchpad -- capture why the touchpad stopped moving the cursor. Run it
+# while the touchpad is dead, before trying reset-touchpad or the toggle:
+#
+#   debug-touchpad [SECONDS]
+#
+# For SECONDS (default 15) it records the touchpad while you drag a finger on
+# it and then move the external mouse, and saves everything to
+# ~/touchpad-debug/<timestamp>/. Each layer says where touches get lost:
+#
+#   irq.txt          the pad's interrupt count; flat means the pad itself went
+#                    quiet (hardware or firmware)
+#   record.yml       raw evdev events from the pad (libinput record), showing
+#                    stuck contacts, palms and jumps; replay with
+#                    `libinput replay`
+#   debug-events.txt what a fresh libinput makes of every device; touches but
+#                    no POINTER_MOTION means libinput discards them, motion
+#                    while the cursor sits still means GNOME dropped it
+#   state.txt        GNOME's touchpad settings (send-events), lid and power state
+#   kernel.log, journal.log  the last hour, minus audit noise
+
+set -uo pipefail
+
+seconds=${1:-15}
+out=~/touchpad-debug/$(date +%Y%m%d-%H%M%S)
+
+# The touchpad's event node, and the I2C device behind it, whose name is the
+# label on its interrupt line in /proc/interrupts.
+touchpad=
+for sys in /sys/class/input/event*; do
+    if [[ $(cat "$sys/device/name" 2>/dev/null) == *Touchpad ]]; then
+        touchpad=/dev/input/${sys##*/}
+        i2c=$(readlink -f "$sys" | grep -o 'i2c-[^/]*:[0-9]*' | tail -1)
+        break
+    fi
+done
+if [ -z "$touchpad" ]; then
+    echo 'debug-touchpad: no touchpad among /sys/class/input; the kernel lost it' >&2
+fi
+irq_label=${i2c#i2c-}
+
+irqs() {
+    grep -F -- "$irq_label" /proc/interrupts | awk '{ for (i = 2; i <= NF; i++) if ($i ~ /^[0-9]+$/) n += $i } END { print n + 0 }'
+}
+
+sudo -v || exit 1
+mkdir -p "$out"
+
+{
+    date
+    uptime
+    uname -r
+    echo
+    echo "touchpad: ${touchpad:-missing} ($i2c)"
+    echo "runtime pm: $(cat "/sys/bus/i2c/devices/$i2c/power/runtime_status" 2>/dev/null)"
+    cat /proc/acpi/button/lid/*/state 2>/dev/null
+    echo
+    gsettings list-recursively org.gnome.desktop.peripherals.touchpad
+} >"$out/state.txt" 2>&1
+cp /proc/bus/input/devices "$out/input-devices.txt"
+sudo libinput list-devices >"$out/libinput-devices.txt" 2>&1
+
+if [ -n "$touchpad" ]; then
+    before=$(irqs)
+    # timeout runs under sudo so its SIGINT reaches the root-owned libinput,
+    # which writes out its recording on SIGINT like on Ctrl+C.
+    sudo timeout -s INT "$seconds" libinput record -o "$out/record.yml" "$touchpad" >/dev/null 2>&1 &
+    sudo timeout -s INT "$seconds" libinput debug-events >"$out/debug-events.txt" 2>&1 &
+    sleep 1
+    echo "Recording for $seconds seconds: drag a finger around the touchpad, then move the external mouse."
+    wait
+    after=$(irqs)
+    printf 'irq %s (%s) before: %s\nafter: %s\n' "$irq_label" "$touchpad" "$before" "$after" >"$out/irq.txt"
+fi
+
+sudo journalctl -k --since -60min -o short-precise --no-pager | grep -v 'audit\|dbus-daemon' >"$out/kernel.log"
+sudo journalctl --since -60min -o short-precise --no-pager | grep -v 'audit\|dbus-daemon' >"$out/journal.log"
+sudo chown -R "$USER:" "$out"
+
+echo
+echo "Saved to $out"
+grep -h send-events "$out/state.txt"
+if [ -n "$touchpad" ]; then
+    node=${touchpad##*/}
+    pad_motion=$(grep -cE "^.$node +POINTER_MOTION" "$out/debug-events.txt")
+    other_motion=$(grep -E ' POINTER_MOTION' "$out/debug-events.txt" | grep -cvE "^.$node ")
+    echo "touchpad interrupts: $((after - before))"
+    echo "touchpad motion events: $pad_motion"
+    echo "other pointer motion events: $other_motion"
+    if [ $((after - before)) -eq 0 ]; then
+        echo 'The pad sent no interrupts: it went quiet, so suspect hardware or firmware.'
+    elif [ "$pad_motion" -eq 0 ]; then
+        echo 'The pad sent data but libinput made no motion of it: check record.yml for stuck or palm contacts.'
+    else
+        echo 'libinput turned touches into motion: if the cursor sat still, GNOME dropped it.'
+    fi
+fi
