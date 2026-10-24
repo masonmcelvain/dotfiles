@@ -1,21 +1,25 @@
 #!/usr/bin/env bash
-# debug-touchpad -- capture why the touchpad stopped moving the cursor. Run it
-# while the touchpad is dead, before trying reset-touchpad or the toggle:
+# debug-touchpad -- capture why the touchpad stopped moving the cursor or
+# clicking. Run it while the touchpad is dead, before trying reset-touchpad or
+# the toggle:
 #
 #   debug-touchpad [SECONDS]
 #
 # For SECONDS (default 15) it records the touchpad while you drag a finger on
-# it and then move the external mouse, and saves everything to
-# ~/touchpad-debug/<timestamp>/. Each layer says where touches get lost:
+# it, press it down to click a few times and then move the external mouse,
+# and saves everything to ~/touchpad-debug/<timestamp>/. Each layer says where
+# touches and clicks get lost:
 #
 #   irq.txt          the pad's interrupt count; flat means the pad itself went
 #                    quiet (hardware or firmware)
 #   record.yml       raw evdev events from the pad (libinput record), showing
 #                    stuck contacts, palms and jumps; replay with
-#                    `libinput replay`
+#                    `libinput replay`. No BTN_LEFT after pressing the pad
+#                    means its click switch or firmware went quiet
 #   debug-events.txt what a fresh libinput makes of every device; touches but
-#                    no POINTER_MOTION means libinput discards them, motion
-#                    while the cursor sits still means GNOME dropped it
+#                    no POINTER_MOTION (or BTN_LEFT but no POINTER_BUTTON)
+#                    means libinput discards them, motion or buttons while
+#                    nothing happens on screen means GNOME dropped them
 #   state.txt        GNOME's touchpad settings (send-events), lid and power state
 #   kernel.log, journal.log  the last hour, minus audit noise
 
@@ -58,6 +62,8 @@ mkdir -p "$out"
     gsettings list-recursively org.gnome.desktop.peripherals.touchpad
 } >"$out/state.txt" 2>&1
 cp /proc/bus/input/devices "$out/input-devices.txt"
+# The redirects below are meant to run as me, so the files are mine.
+# shellcheck disable=SC2024
 sudo libinput list-devices >"$out/libinput-devices.txt" 2>&1
 
 if [ -n "$touchpad" ]; then
@@ -65,9 +71,10 @@ if [ -n "$touchpad" ]; then
     # timeout runs under sudo so its SIGINT reaches the root-owned libinput,
     # which writes out its recording on SIGINT like on Ctrl+C.
     sudo timeout -s INT "$seconds" libinput record -o "$out/record.yml" "$touchpad" >/dev/null 2>&1 &
+    # shellcheck disable=SC2024
     sudo timeout -s INT "$seconds" libinput debug-events >"$out/debug-events.txt" 2>&1 &
     sleep 1
-    echo "Recording for $seconds seconds: drag a finger around the touchpad, then move the external mouse."
+    echo "Recording for $seconds seconds: drag a finger around the touchpad, press it down to click a few times, then move the external mouse."
     wait
     after=$(irqs)
     printf 'irq %s (%s) before: %s\nafter: %s\n' "$irq_label" "$touchpad" "$before" "$after" >"$out/irq.txt"
@@ -87,11 +94,25 @@ if [ -n "$touchpad" ]; then
     echo "touchpad interrupts: $((after - before))"
     echo "touchpad motion events: $pad_motion"
     echo "other pointer motion events: $other_motion"
+    pad_clicks=$(grep -cE 'BTN_LEFT +1$' "$out/record.yml")
+    pad_buttons=$(grep -cE "^.$node +POINTER_BUTTON .* pressed" "$out/debug-events.txt")
+    echo "touchpad clicks: $pad_clicks"
+    echo "touchpad button presses (libinput): $pad_buttons"
     if [ $((after - before)) -eq 0 ]; then
         echo 'The pad sent no interrupts: it went quiet, so suspect hardware or firmware.'
     elif [ "$pad_motion" -eq 0 ]; then
         echo 'The pad sent data but libinput made no motion of it: check record.yml for stuck or palm contacts.'
     else
         echo 'libinput turned touches into motion: if the cursor sat still, GNOME dropped it.'
+    fi
+    # With no interrupts at all, the verdict above already covers clicks.
+    if [ $((after - before)) -eq 0 ]; then
+        :
+    elif [ "$pad_clicks" -eq 0 ]; then
+        echo 'The pad reported no clicks: if you pressed it down, its click switch or firmware is failing, so suspect hardware or firmware.'
+    elif [ "$pad_buttons" -eq 0 ]; then
+        echo 'The pad reported clicks but libinput made no button presses of them: check libinput-devices.txt for its click method.'
+    else
+        echo 'libinput turned clicks into button presses: if nothing clicked, GNOME dropped them.'
     fi
 fi
