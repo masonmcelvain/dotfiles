@@ -1,6 +1,6 @@
 # Is this an interactive shell? Non-interactive shells (scripts, Claude's tool
 # calls) skip the slow initializers below, while the cheap PATH exports stay so
-# pnpm/node/etc. still resolve.
+# node, pnpm, etc. still resolve.
 case $- in
 	*i*) _is_interactive=1 ;;
 	*) _is_interactive= ;;
@@ -179,10 +179,12 @@ if [ -n "$_is_interactive" ] && [ -x ~/.local/bin/mise ]; then
 fi
 
 # pnpm
+# Newer pnpm installs globals into $PNPM_HOME/bin, but ones installed before
+# that (helix's language servers) still sit in $PNPM_HOME itself.
 export PNPM_HOME="$HOME/.local/share/pnpm"
 case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
+  *":$PNPM_HOME/bin:"*) ;;
+  *) export PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
 
