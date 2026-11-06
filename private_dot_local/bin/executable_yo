@@ -6,8 +6,7 @@
 #   yo -c 'pnpm build | tee build.log'     # a whole shell line
 #   yo -w 31337                            # attach to something already running
 #
-# Delivery is `notify`'s problem -- desktop popup on a machine with a session
-# bus, ntfy push on one without. What yo adds on top is the terminal bell,
+# Delivery is `notify`'s problem. What yo adds on top is the terminal bell,
 # which zellij renders as a [!] flag on the tab the command ran in.
 #
 # yo exits with the status of the command it ran, so it composes:
@@ -34,7 +33,6 @@ Run a command and send a notification when it finishes.
   -w PID    don't run anything; wait for an existing process to exit
   -m LABEL  label the notification with LABEL instead of the command
   -t SECS   only notify if the command ran at least SECS seconds
-  -p        push to ntfy even when a desktop notification also went out
   -q        no terminal bell
   -h        this help
 
@@ -64,17 +62,14 @@ truncate_label() {
     fi
 }
 
-# push holds the flag itself rather than a boolean, so it can be spliced into
-# the notify call as either "-p" or nothing at all.
-shell_line='' wait_pid='' label='' threshold=0 push='' bell=1
+shell_line='' wait_pid='' label='' threshold=0 bell=1
 
-while getopts ':c:w:m:t:pqh' opt; do
+while getopts ':c:w:m:t:qh' opt; do
     case $opt in
         c) shell_line=$OPTARG ;;
         w) wait_pid=$OPTARG ;;
         m) label=$OPTARG ;;
         t) threshold=$OPTARG ;;
-        p) push=-p ;;
         q) bell=0 ;;
         h)
             usage
@@ -140,19 +135,17 @@ where="$(hostname -s):${PWD/#$HOME/\~}"
 if [ -n "$wait_pid" ]; then
     # Nothing to report but the fact that it's over: the exit status of a
     # process this shell didn't spawn isn't ours to read.
-    glyph='✓' urgency=normal tags=white_check_mark
+    glyph='✓' urgency=normal
     detail="finished after $duration · $where"
 elif [ "$status" -eq 0 ]; then
-    glyph='✓' urgency=normal tags=white_check_mark
+    glyph='✓' urgency=normal
     detail="$duration · $where"
 else
-    glyph='✗' urgency=critical tags=x
+    glyph='✗' urgency=critical
     detail="exit $status · $duration · $where"
 fi
 
-# $push is deliberately unquoted: empty must expand to no argument at all.
-# shellcheck disable=SC2086
-"$notify" $push -a "$prog" -n Alacritty -u "$urgency" -t "$tags" \
+"$notify" -a "$prog" -n Alacritty -u "$urgency" \
     "$glyph $(truncate_label "$label")" "$detail"
 
 [ "$bell" = 1 ] && printf '\a' >/dev/tty 2>/dev/null

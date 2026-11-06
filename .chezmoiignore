@@ -1,11 +1,5 @@
 CLAUDE.md
 
-{{/* The ntfy subscriber only earns its keep on a host that has both a desktop
-     session to raise notifications on and a topic to listen to. */}}
-{{ if or (not (hasKey . "ntfy")) (ne .chezmoi.hostname "masons-xps") -}}
-.config/ntfy/client.yml
-{{ end -}}
-
 {{ if ne .chezmoi.hostname "masons-xps" -}}
 .config/xdg-terminals.list
 .local/bin/bat
