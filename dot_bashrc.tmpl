@@ -57,21 +57,6 @@ fi
 #------------------------------------------------------------------------------
 {{- end }}
 
-{{ if eq .chezmoi.hostname "cominor" -}}
-#------------------------------------------------------------------------------
-# Cominor
-#------------------------------------------------------------------------------
-# Source global definitions
-if [ -f /etc/bashrc  ]; then
-      . /etc/bashrc
-fi
-
-# https://github.com/twpayne/chezmoi/issues/1332#issuecomment-927367673
-export LESS=-FRX
-[ -n "$_is_interactive" ] && ssh-use-gpg
-#------------------------------------------------------------------------------
-{{- end }}
-
 {{ if eq .chezmoi.hostname "masons-xps" -}}
 #------------------------------------------------------------------------------
 # Local
@@ -191,11 +176,6 @@ esac
 # wasmtime
 export WASMTIME_HOME="$HOME/.wasmtime"
 export PATH="$WASMTIME_HOME/bin:$PATH"
-
-{{ if eq .chezmoi.hostname "cominor" -}}
-# https://github.com/direnv/direnv
-[ -n "$_is_interactive" ] && eval "$(direnv hook bash)"
-{{- end }}
 
 {{ if eq .chezmoi.hostname "masons-xps" -}}
 export ANDROID_HOME="$HOME/Android/Sdk"

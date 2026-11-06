@@ -44,10 +44,6 @@
 	rebase = false
 [push]
 	autoSetupRemote = true
-{{- if eq .chezmoi.hostname "cominor" }}
-[submodule]
-	recurse = true
-{{- end }}
 
 # https://github.com/dandavison/delta
 [core]

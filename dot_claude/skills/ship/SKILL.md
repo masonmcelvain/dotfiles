@@ -20,7 +20,7 @@ report rather than a transcript.
 - `aftercare <PR>` - a scheduled tick from phase 8; go straight to
   [aftercare.md](aftercare.md)
 
-`mm ship` usually launched you, in a fresh worktree or Code slot with a branch
+`mm ship` usually launched you, in a fresh worktree with a branch
 already checked out (`ship/<n>` or `ship/<slug>`, or the PR's own branch). You may
 also have been started by hand in an ordinary checkout; work out where you are
 either way.
@@ -112,7 +112,7 @@ last-seen: <createdAt of the newest comment handled; empty means since the PR op
    entry is the main checkout), copy over the main checkout's untracked env files
    (`.env`, `.env.local`, and the like, the ones `.gitignore` covers) and
    install dependencies with the lockfile's own tool (`npm ci`, `pnpm install
-   --frozen-lockfile`, `composer install`, ...). A Code slot is already set up.
+   --frozen-lockfile`, `composer install`, ...).
 4. Note how this repo is checked: lint, typecheck, test, build, and how to run
    the app. Look in this order: a project skill about running or verifying
    (`.claude/skills/`), CLAUDE.md or AGENTS.md, `mise` tasks, `package.json`

@@ -7,7 +7,7 @@
 #
 # Both hook commands are host-agnostic: mm agent-status works out its own
 # zellij context, and notify picks a transport based on what the machine can
-# reach (desktop popup on masons-xps, ntfy push on cominor). That indirection
+# reach (desktop popup with a session bus, ntfy push without). That indirection
 # is what keeps the ntfy topic -- a bearer secret -- out of settings.json,
 # which lives unencrypted in $HOME and is rewritten by Claude Code at will.
 

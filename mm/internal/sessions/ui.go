@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/masonmcelvain/dotfiles/mm/internal/picker"
-	"github.com/masonmcelvain/dotfiles/mm/internal/slots"
 	"github.com/masonmcelvain/dotfiles/mm/internal/text"
 	"github.com/masonmcelvain/dotfiles/mm/internal/zellij"
 )
@@ -13,22 +12,14 @@ import (
 // Source is the sessions picker. It attaches from a plain shell and switches
 // from inside a session, so it works either way.
 type Source struct {
-	rows   []Row
-	hasNew bool
+	rows []Row
 }
 
-// NewSource builds the picker, offering n only where there are Code slots
-// for `mm new` to use.
+// NewSource builds the picker.
 func NewSource() (*Source, picker.Config) {
-	s := &Source{hasNew: slots.Available()}
-	help := "1-9 jump · j/k move · enter open · b branch"
-	if s.hasNew {
-		help += " · n new"
-	}
-	help += " · d delete · q quit"
-	return s, picker.Config{
+	return &Source{}, picker.Config{
 		Title:       "sessions",
-		Help:        help,
+		Help:        "1-9 jump · j/k move · enter open · b branch · d delete · q quit",
 		Empty:       "no other sessions",
 		DetailLines: 2,
 	}
@@ -94,8 +85,7 @@ func open(name string) picker.Action {
 	return picker.Action{Quit: true, Exec: argv}
 }
 
-// Key implements picker.Source: b goes to a branch, d deletes a session, and
-// n starts a fresh one.
+// Key implements picker.Source: b goes to a branch and d deletes a session.
 func (s *Source) Key(key string, sel int) picker.Action {
 	switch key {
 	case "b":
@@ -105,10 +95,6 @@ func (s *Source) Key(key string, sel int) picker.Action {
 			return picker.Action{}
 		}
 		return s.confirmDelete(s.rows[sel])
-	case "n":
-		if s.hasNew {
-			return s.start("", "")
-		}
 	}
 	return picker.Action{}
 }
@@ -132,29 +118,12 @@ func (s *Source) branch(answer string) picker.Action {
 	if branch == "" {
 		return picker.Action{}
 	}
-	if name, ok := FindBranch(s.rows, branch); ok {
-		if current, _ := zellij.InCurrent(); name == current {
-			return picker.Action{Flash: fmt.Sprintf("already in %s, on %s", name, branch)}
-		}
-		return open(name)
-	}
-	if !s.hasNew {
+	name, ok := FindBranch(s.rows, branch)
+	if !ok {
 		return picker.Action{Flash: "no session has " + branch + " checked out"}
 	}
-	// Checking the branch can mean a fetch; say so rather than look hung.
-	return s.start(branch, "starting a session on "+branch+"…")
-}
-
-// start runs `mm new` off the UI loop, flashing busy meanwhile.
-func (s *Source) start(branch, busy string) picker.Action {
-	if busy == "" {
-		busy = "starting a session…"
+	if current, _ := zellij.InCurrent(); name == current {
+		return picker.Action{Flash: fmt.Sprintf("already in %s, on %s", name, branch)}
 	}
-	return picker.Action{Busy: busy, Run: func() picker.Action {
-		argv, _, err := New(branch)
-		if err != nil {
-			return picker.Action{Flash: err.Error()}
-		}
-		return picker.Action{Quit: true, Exec: argv}
-	}}
+	return open(name)
 }

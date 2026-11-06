@@ -3,13 +3,13 @@
 # no desktop to send it to.
 #
 #   notify 'Claude Code' 'Task completed'
-#   notify -u critical -t x '✗ cargo build' 'exit 1 · 4m12s · cominor:~/Code'
+#   notify -u critical -t x '✗ cargo build' 'exit 1 · 4m12s · masons-xps:~/Code'
 #   notify -n claude-desktop 'Claude Code' 'Task completed'
 #
 # Transports, in order:
 #   notify-send   GNOME popup, when a session bus is reachable (masons-xps),
 #                 sent through notify-relay when it's running so they stack
-#   ntfy.sh       phone/browser push, when a topic is configured (cominor)
+#   ntfy.sh       phone/browser push, when a topic is configured
 #
 # ntfy only fires when notify-send didn't, so a message isn't delivered twice
 # when you're sitting at the desktop; -p forces both.

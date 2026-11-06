@@ -1,6 +1,6 @@
 // mm is the zellij and Claude Code tooling from these dotfiles: pickers over
-// agents and sessions, fresh sessions in the Code/ slots, handing work to an
-// agent with ship, and the hook that tracks agent status.
+// agents and sessions, handing work to an agent with ship, and the hook that
+// tracks agent status.
 package main
 
 import (
@@ -22,8 +22,7 @@ const usage = `usage: mm COMMAND
 
   agents              jump to a Claude Code agent's zellij tab
   sessions            pick a zellij session by name, branch and directory
-  sessions branch B   go to the session on branch B, or start one on it
-  new [BRANCH]        start a session in the least recently used Code slot
+  sessions branch B   go to the session on branch B
   ship TARGET         hand an issue, PR or task to a Claude agent in its own
                       checkout and session; TARGET is a URL, a number, or words
   agent-status        Claude Code hook: record agent state, label its tab
@@ -54,17 +53,6 @@ func main() {
 		agents.RunHook(os.Stdin)
 	case "sessions":
 		runSessions(args)
-	case "new":
-		requireZellij()
-		branch := ""
-		if len(args) > 0 {
-			branch = args[0]
-		}
-		argv, msg, err := sessions.New(branch)
-		if msg != "" {
-			fmt.Println("mm: " + msg)
-		}
-		finish(argv, err)
 	case "ship":
 		requireZellij()
 		if len(args) == 0 {

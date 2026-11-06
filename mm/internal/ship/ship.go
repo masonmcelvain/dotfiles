@@ -3,10 +3,8 @@
 // words. It prepares the branch and a zellij session for it, starts Claude
 // in the session's claude tab, and leaves it running in the background.
 //
-// Where the repo has Code slots (iFixit on cominor), the work goes in the
-// least recently used free slot, since a slot comes with a dev environment
-// already set up. Any other repo gets a git worktree under
-// .claude/worktrees/, where Claude Code puts its own.
+// The work goes in a git worktree under .claude/worktrees/, where Claude Code
+// puts its own.
 package ship
 
 import (
@@ -20,7 +18,6 @@ import (
 	"strings"
 
 	"github.com/masonmcelvain/dotfiles/mm/internal/gitx"
-	"github.com/masonmcelvain/dotfiles/mm/internal/slots"
 	"github.com/masonmcelvain/dotfiles/mm/internal/zellij"
 )
 
@@ -175,21 +172,12 @@ func Run(arg string) (string, error) {
 		return "", fmt.Errorf("couldn't fetch origin/%s", base)
 	}
 
-	var session, dir string
-	if hasSlots(top) {
-		if existing {
-			session, dir, err = slots.Start(branch)
-		} else {
-			session, dir, err = slots.StartNew(branch, "origin/"+base)
-		}
-	} else {
-		dir, err = worktree(top, branch, "origin/"+base, existing)
-		if err == nil {
-			session = Session(filepath.Base(repo), t)
-			err = zellij.Create(session, dir)
-		}
-	}
+	dir, err := worktree(top, branch, "origin/"+base, existing)
 	if err != nil {
+		return "", err
+	}
+	session := Session(filepath.Base(repo), t)
+	if err := zellij.Create(session, dir); err != nil {
 		return "", err
 	}
 
@@ -238,16 +226,6 @@ func defaultBranch(dir string) (string, error) {
 		return b, nil
 	}
 	return "", errors.New("couldn't tell origin's default branch")
-}
-
-// hasSlots reports whether dir is a checkout of the repo the Code slots are
-// worktrees of.
-func hasSlots(dir string) bool {
-	all := slots.All()
-	if len(all) == 0 {
-		return false
-	}
-	return commonDir(dir) != "" && commonDir(dir) == commonDir(all[0])
 }
 
 func commonDir(dir string) string {

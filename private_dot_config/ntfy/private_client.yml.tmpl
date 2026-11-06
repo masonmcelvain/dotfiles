@@ -3,7 +3,7 @@
 #   systemctl --user status ntfy-client
 #
 # This is the other half of ~/.local/bin/notify. A machine with no desktop
-# session (cominor) can't raise a notification itself, so it publishes to
+# session can't raise a notification itself, so it publishes to
 # ntfy.sh instead; this holds a long-lived stream to that topic and replays
 # each message through notify-send here. A phone subscribed to the same topic
 # is an independent second subscriber.
@@ -26,7 +26,7 @@ subscribe:
     # There's no body icon, to match GNOME 50's Chrome-style popups, so the
     # glyph is what marks a failure. A high-priority push still stays normal
     # urgency: GNOME Shell never times out a critical banner, so a failed
-    # build on cominor would sit on screen until clicked.
+    # build elsewhere would sit on screen until clicked.
     #
     # The header icon is notify's -n, which a push doesn't carry -- ntfy only
     # forwards tags, and a non-emoji tag shows up as text on the phone. So
