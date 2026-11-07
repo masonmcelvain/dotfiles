@@ -69,8 +69,6 @@ set -g @dracula-cpu-usage-label "cpu"
 set -g status-justify centre
 {{- if eq .chezmoi.hostname "masons-xps" }}
 set -g @dracula-plugins "cpu-usage spotify-tui"
-{{- else if eq .chezmoi.hostname "cominor" }}
-set -g @dracula-plugins "ram-usage"
 {{- end }}
 
 {{ if eq .chezmoi.hostname "masons-xps" -}}

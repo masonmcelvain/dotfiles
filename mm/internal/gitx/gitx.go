@@ -69,15 +69,10 @@ func Git(dir string, args ...string) (string, error) {
 	return strings.TrimSpace(string(out)), err
 }
 
-// Dirty reports whether dir has uncommitted changes, counting untracked files
-// unless trackedOnly. --no-optional-locks keeps status from refreshing, and
-// so touching, the index.
-func Dirty(dir string, trackedOnly bool) bool {
-	args := []string{"--no-optional-locks", "-C", dir, "status", "--porcelain"}
-	if trackedOnly {
-		args = append(args, "-uno")
-	}
-	out, _ := exec.Command("git", args...).Output()
+// Dirty reports whether dir has uncommitted changes, counting untracked files.
+// --no-optional-locks keeps status from refreshing, and so touching, the index.
+func Dirty(dir string) bool {
+	out, _ := exec.Command("git", "--no-optional-locks", "-C", dir, "status", "--porcelain").Output()
 	return len(strings.TrimSpace(string(out))) > 0
 }
 

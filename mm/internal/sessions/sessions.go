@@ -13,7 +13,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"slices"
 	"text/tabwriter"
 	"time"
@@ -163,9 +162,7 @@ func SwitchTo(name string) (argv []string, err error) {
 // if it didn't.
 //
 // A dirty tree keeps its branch: detaching would strand the uncommitted work
-// away from the branch it belongs to. The index mtime is put back afterwards
-// because `mm new` reads it as the slot's last use, and an abandoned slot
-// shouldn't look like the freshest one.
+// away from the branch it belongs to.
 func releaseBranch(rows []Row, name, cwd, branch string) string {
 	if branch == "" {
 		return ""
@@ -188,21 +185,12 @@ func releaseBranch(rows []Row, name, cwd, branch string) string {
 	if _, err := gitx.Git(cwd, "symbolic-ref", "-q", "HEAD"); err != nil {
 		return ""
 	}
-	if gitx.Dirty(cwd, false) {
+	if gitx.Dirty(cwd) {
 		return branch + " still checked out (uncommitted changes)"
 	}
 
-	gitdir, err := gitx.Git(cwd, "rev-parse", "--absolute-git-dir")
-	if err != nil {
-		return ""
-	}
-	index := filepath.Join(gitdir, "index")
-	fi, statErr := os.Stat(index)
 	if _, err := gitx.Git(cwd, "switch", "-q", "--detach"); err != nil {
 		return "couldn't release " + branch
-	}
-	if statErr == nil {
-		_ = os.Chtimes(index, time.Time{}, fi.ModTime())
 	}
 	return ""
 }

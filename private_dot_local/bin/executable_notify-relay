@@ -10,7 +10,7 @@ without a desktop-entry hint gets the source keyed by its sender's pid and
 app name (notificationDaemon.js, _getSourceForPidAndName). Every notify-send
 is a new pid, so every popup lands in a group of its own. Chrome stacks
 because it's one process; this makes our notifications one process too.
-Each app name still gets its own stack, so claude, yo and ntfy stay apart.
+Each app name still gets its own stack, so claude and yo stay apart.
 
 The desktop-entry hint would group by app instead, but GNOME destroys an
 app's notifications once the sender that created its source leaves the bus.

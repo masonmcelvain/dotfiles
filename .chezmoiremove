@@ -5,6 +5,10 @@
 .local/bin/picker.sh
 .local/bin/zellij-new
 .local/bin/zellij-sessions
+{{/* The ssh config only ever held the host these dotfiles no longer manage. */}}
+.ssh/config
+{{/* The ntfy subscriber's config, which holds the topic. */}}
+.config/ntfy/client.yml
 {{/* Review commands and skills that review-pr replaced. */}}
 .claude/agents/code-reviewer.md
 .claude/commands/triage.md

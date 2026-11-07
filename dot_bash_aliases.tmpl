@@ -12,9 +12,6 @@ alias g=git
 alias pn=pnpm
 alias ag="mm agents"
 
-{{ if eq .chezmoi.hostname "cominor" -}}
-alias hx='cd -P . && hx'
-{{- end }}
 # The commit this branch diverged from the default branch at. Reviewing from
 # here rather than the branch tip keeps upstream drift out of the changeset.
 _review_base() {
@@ -74,12 +71,8 @@ alias zj="zellij"
 alias zjn="zellij --layout ~/.config/zellij/layout.kdl"
 # Pick a session by name, git branch and directory; also bound to Alt+f
 alias zf="mm sessions"
-# Go to the session on a branch, or start one on it
+# Go to the session on a branch
 alias zb="mm sessions branch"
-{{- if eq .chezmoi.hostname "cominor" }}
-# Start a fresh sN session in the least recently used Code slot
-alias zn="mm new"
-{{- end }}
 
 # Show timestamp next to commands in `history`
 # https://www.linuxuprising.com/2019/07/bash-history-how-to-show-timestamp-when.html
@@ -108,11 +101,7 @@ export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
   --border="rounded" --border-label="" --preview-window="border-rounded" --prompt="> "
   --marker=">" --pointer="◆" --separator="─" --scrollbar="│"'
 if type fd &> /dev/null; then
-{{ if eq .chezmoi.hostname "masons-xps" }}
    export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --follow --exclude .git --color=always'
-{{ else }}
-   export FZF_DEFAULT_COMMAND='fd --type f --follow --exclude .git --color=always'
-{{- end }}
 fi
 
 {{ if eq .chezmoi.hostname "masons-xps" -}}
@@ -126,7 +115,6 @@ alias update="
    sudo flatpak update --assumeyes
    mise self-update --yes
    sudo apt autoremove --yes"
-alias work="ssh -A cominor"
 alias gg="git grep -I --line-number --color=always"
 
 alias malware-scan="sudo clamscan --max-filesize=3999M --max-scansize=3999M --exclude-dir=/sys/* -i -r /"
@@ -134,28 +122,5 @@ alias which-clam="ps ax | grep [c]lamd"
 
 # Enable fzf for bash
 source /usr/share/doc/fzf/examples/key-bindings.bash
-#------------------------------------------------------------------------------
-{{- end }}
-
-{{ if eq .chezmoi.hostname "cominor" -}}
-#------------------------------------------------------------------------------
-# Cominor
-#------------------------------------------------------------------------------
-alias code='cd ~/Code'
-alias psalm='ionice -c Idle nice -n 19 psalm --threads=$(($(nproc)/2))'
-alias psalmset="psalm --set-baseline=psalm-baseline.xml"
-alias list-prime='list-machines | rg worker-prime | rg --color=never -o "ec2-\S*"'
-xbug() {
-   XDEBUG_SESSION=1 "$@"
-}
-
-lmg () {
-   live_ssh "$(list-machines | rg "$1" | awk 'NR==1 {print $11}')"
-}
-
-# Enable fzf for bash
-if [[ ! (-z "$PS1")  ]] && [ -f ~/.fzf-key-bindings.bash  ]; then
-   source "$HOME/.fzf-key-bindings.bash"
-fi
 #------------------------------------------------------------------------------
 {{- end }}

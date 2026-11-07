@@ -80,10 +80,6 @@ type Action struct {
 	// Read reads a line of text in place of the hint. An empty answer is the
 	// way to back out, and esc gives one.
 	Read *Prompt
-	// Run does slow work off the UI loop, showing Busy meanwhile, and then
-	// carries out the Action it returns.
-	Run  func() Action
-	Busy string
 }
 
 // Prompt asks for an answer and continues with it.
@@ -98,7 +94,6 @@ const (
 	normal mode = iota
 	asking
 	reading
-	busy
 )
 
 type model struct {
@@ -118,8 +113,6 @@ type model struct {
 }
 
 type tickMsg struct{}
-
-type doneMsg struct{ action Action }
 
 // Run shows the picker until it quits, and returns the command an Action
 // asked to exec, if any.
@@ -164,10 +157,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.reload()
 		}
 		return m, tick()
-	case doneMsg:
-		m.mode = normal
-		m.flash = ""
-		return m, m.apply(msg.action)
 	case tea.KeyPressMsg:
 		return m, m.key(msg)
 	}
@@ -182,11 +171,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *model) key(msg tea.KeyPressMsg) tea.Cmd {
 	key := msg.String()
 	switch m.mode {
-	case busy:
-		if key == "ctrl+c" {
-			return tea.Quit
-		}
-		return nil
 	case asking:
 		m.mode = normal
 		m.flash = ""
@@ -278,13 +262,6 @@ func (m *model) apply(a Action) tea.Cmd {
 		m.input.Prompt = ""
 		m.input.SetWidth(max(m.width-text.Width(a.Read.Text)-5, 1))
 		return m.input.Focus()
-	case a.Run != nil:
-		m.mode = busy
-		if a.Busy != "" {
-			m.flash = a.Busy
-		}
-		run := a.Run
-		return func() tea.Msg { return doneMsg{run()} }
 	}
 	return nil
 }

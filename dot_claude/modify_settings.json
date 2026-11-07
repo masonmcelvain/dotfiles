@@ -6,10 +6,7 @@
 # Receives the current target contents on stdin; prints the new contents.
 #
 # Both hook commands are host-agnostic: mm agent-status works out its own
-# zellij context, and notify picks a transport based on what the machine can
-# reach (desktop popup on masons-xps, ntfy push on cominor). That indirection
-# is what keeps the ntfy topic -- a bearer secret -- out of settings.json,
-# which lives unencrypted in $HOME and is rewritten by Claude Code at will.
+# zellij context, and notify works out how to reach the desktop.
 
 set -euo pipefail
 
@@ -42,13 +39,13 @@ current=$(cat)
 [ -n "$current" ] || current='{}'
 
 # For each managed event: drop any entry we own, then append the current set.
-# "Ours" covers the notify-send and curl-to-ntfy commands this script replaced,
+# "Ours" covers the notify-send commands this script replaced,
 # and the agent-status.sh that mm replaced, so applying it migrates the old
 # hooks rather than duplicating them. Idempotent; every other hook and setting is left untouched.
 jq --argjson managed "$managed" '
     def is_managed:
         (.hooks // []) | any(
-            (.command // "") | test("agent-status\\.sh|/mm agent-status$|notify-send|ntfy\\.sh|/notify( |$)")
+            (.command // "") | test("agent-status\\.sh|/mm agent-status$|notify-send|/notify( |$)")
         );
     .hooks = (
         reduce ($managed | to_entries[]) as $e (.hooks // {};

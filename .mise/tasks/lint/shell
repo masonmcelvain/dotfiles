@@ -6,7 +6,7 @@
 # <file>@<host>; line numbers in those findings are the rendered file's.
 set -euo pipefail
 
-hosts=(masons-xps cominor)
+hosts=(masons-xps)
 rc=$PWD/.shellcheckrc
 # A regex in a variable, since [[ =~ ]] would read an inline \b as a plain b.
 sh_shebang='^#!.*[/ ](ba)?sh([[:space:]]|$)'
