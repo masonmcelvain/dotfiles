@@ -14,6 +14,11 @@ CLAUDE.md
 .bash_profile
 {{ end -}}
 
+{{/* gpg-agent.conf points at pinentry-mac, which only exists on the Mac. */}}
+{{ if ne .chezmoi.os "darwin" -}}
+.gnupg
+{{ end -}}
+
 {{/* The Mac is an allowlist: it only gets what's named here, so new Linux files
      never reach it by default. A directory has to be un-ignored before anything
      inside it can be. */}}
@@ -22,12 +27,15 @@ CLAUDE.md
 .config/*
 .local/*
 .local/bin/*
+.gnupg/*
 !.bashrc
 !.bash_profile
 !.bash_aliases
 !.bash_keybindings
 !.gitconfig
 !.gitmessage
+!.gnupg
+!.gnupg/gpg-agent.conf
 !.config
 !.config/git
 !.config/helix
