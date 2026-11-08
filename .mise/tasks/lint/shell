@@ -3,10 +3,12 @@
 # Plain scripts are found by shebang rather than extension, since most of
 # them have none. Templates aren't shell until chezmoi renders them, so each
 # shell template is rendered once per host and the output is checked as
-# <file>@<host>; line numbers in those findings are the rendered file's.
+# <file>@<host>; line numbers in those findings are the rendered file's. The
+# Mac's hostname isn't templated on, so it's rendered as "mac".
 set -euo pipefail
 
-hosts=(masons-xps)
+# host:os pairs, since templates branch on both
+hosts=(masons-xps:linux mac:darwin)
 rc=$PWD/.shellcheckrc
 # A regex in a variable, since [[ =~ ]] would read an inline \b as a plain b.
 sh_shebang='^#!.*[/ ](ba)?sh([[:space:]]|$)'
@@ -32,10 +34,11 @@ rendered=$(mktemp -d)
 trap 'rm -rf "$rendered"' EXIT
 names=()
 for f in "${templates[@]}"; do
-	for h in "${hosts[@]}"; do
+	for pair in "${hosts[@]}"; do
+		h=${pair%%:*} os=${pair#*:}
 		out=$rendered/${f//\//__}@$h
 		chezmoi execute-template --source "$PWD" \
-			--override-data "{\"chezmoi\":{\"hostname\":\"$h\"}}" <"$f" >"$out"
+			--override-data "{\"chezmoi\":{\"hostname\":\"$h\",\"os\":\"$os\"}}" <"$f" >"$out"
 		# A template can render to nothing on a host it doesn't apply to.
 		[ -s "$out" ] && names+=("${out##*/}")
 	done

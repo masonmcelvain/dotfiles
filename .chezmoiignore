@@ -8,6 +8,42 @@ CLAUDE.md
 .local/share/gnome-shell
 {{ end -}}
 
+{{/* Mac terminals start login shells, which read ~/.bash_profile and never
+     ~/.bashrc. On Ubuntu one would shadow ~/.profile. */}}
+{{ if ne .chezmoi.os "darwin" -}}
+.bash_profile
+{{ end -}}
+
+{{/* The Mac is an allowlist: it only gets what's named here, so new Linux files
+     never reach it by default. A directory has to be un-ignored before anything
+     inside it can be. */}}
+{{ if eq .chezmoi.os "darwin" -}}
+*
+.config/*
+.local/*
+.local/bin/*
+!.bashrc
+!.bash_profile
+!.bash_aliases
+!.bash_keybindings
+!.gitconfig
+!.gitmessage
+!.config
+!.config/git
+!.config/helix
+!.config/zellij
+!.config/alacritty
+!.config/starship.toml
+!.claude
+!.claude/**
+!.local
+!.local/bin
+!.local/bin/hx-fmt
+!.local/bin/git-blame-trace.sh
+!.local/bin/git-line-commit.sh
+!.local/bin/notify
+{{ end -}}
+
 {{/* The skill symlink resolves its target by running `hunk skill path`, which
      would fail the whole apply on a host that hasn't installed hunk yet. */}}
 {{ if not (lookPath "hunk") -}}

@@ -39,7 +39,7 @@
 [core]
 	editor = hx
 [gpg]
-   program = gpg2
+   program = {{ if eq .chezmoi.os "darwin" }}gpg{{ else }}gpg2{{ end }}
 [pull]
 	rebase = false
 [push]

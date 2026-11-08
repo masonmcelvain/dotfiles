@@ -10,7 +10,9 @@ alias resource="source ~/.bashrc"
 
 alias g=git
 alias pn=pnpm
+{{ if ne .chezmoi.os "darwin" -}}
 alias ag="mm agents"
+{{- end }}
 
 # The commit this branch diverged from the default branch at. Reviewing from
 # here rather than the branch tip keeps upstream drift out of the changeset.
@@ -69,10 +71,12 @@ alias ssh='TERM=xterm-256color ssh'
 # Zellij
 alias zj="zellij"
 alias zjn="zellij --layout ~/.config/zellij/layout.kdl"
+{{ if ne .chezmoi.os "darwin" -}}
 # Pick a session by name, git branch and directory; also bound to Alt+f
 alias zf="mm sessions"
 # Go to the session on a branch
 alias zb="mm sessions branch"
+{{- end }}
 
 # Show timestamp next to commands in `history`
 # https://www.linuxuprising.com/2019/07/bash-history-how-to-show-timestamp-when.html
@@ -122,5 +126,20 @@ alias which-clam="ps ax | grep [c]lamd"
 
 # Enable fzf for bash
 source /usr/share/doc/fzf/examples/key-bindings.bash
+#------------------------------------------------------------------------------
+{{- end }}
+{{- if eq .chezmoi.os "darwin" }}
+
+#------------------------------------------------------------------------------
+# macOS
+#------------------------------------------------------------------------------
+alias update="
+   brew update
+   brew upgrade
+   brew cleanup"
+alias gg="git grep -I --line-number --color=always"
+
+# Enable fzf for bash
+[[ $- == *i* ]] && eval "$(fzf --bash)"
 #------------------------------------------------------------------------------
 {{- end }}

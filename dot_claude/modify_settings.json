@@ -6,14 +6,19 @@
 # Receives the current target contents on stdin; prints the new contents.
 #
 # Both hook commands are host-agnostic: mm agent-status works out its own
-# zellij context, and notify works out how to reach the desktop.
+# zellij context, and notify works out how to reach the desktop. The
+# agent-status hooks are only registered where mm is installed, since it isn't
+# built on macOS; run_onchange_before_build-mm.sh builds it before this runs.
 
 set -euo pipefail
 
 status_cmd="$HOME/.local/bin/mm agent-status"
 notify_cmd="$HOME/.local/bin/notify"
 
-managed=$(jq -n --arg status "$status_cmd" --arg notify "$notify_cmd" '
+has_mm=false
+[ -x "${status_cmd%% *}" ] && has_mm=true
+
+managed=$(jq -n --arg status "$status_cmd" --arg notify "$notify_cmd" --argjson has_mm "$has_mm" '
     {type: "command", command: $status, timeout: 10} as $agent |
     # Messages are single-quoted for the shell; keep them apostrophe-free.
     def say($msg): {
@@ -33,7 +38,12 @@ managed=$(jq -n --arg status "$status_cmd" --arg notify "$notify_cmd" '
         PostToolUse:      [{matcher: "*", hooks: [$agent]}],
         Stop:             [{hooks: [say("Task completed")]}, {hooks: [$agent]}],
         SessionEnd:       [{hooks: [$agent]}]
-    }')
+    }
+    # Without mm, drop the agent-status entries and the events left empty.
+    | if $has_mm then . else
+        map_values(map(select(.hooks | any(.command == $status) | not)))
+        | with_entries(select(.value != []))
+      end')
 
 current=$(cat)
 [ -n "$current" ] || current='{}'

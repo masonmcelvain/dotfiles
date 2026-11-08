@@ -1,0 +1,3 @@
+# Mac terminals start login shells, which read this file and never ~/.bashrc.
+# shellcheck source=/dev/null
+[ -f ~/.bashrc ] && . ~/.bashrc
