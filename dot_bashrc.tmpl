@@ -17,7 +17,8 @@ PATH="/opt/homebrew/opt/grep/libexec/gnubin:$PATH"
 
 # A short socket dir for zellij: macOS caps socket paths at 103 bytes, and a
 # terminal launched through Shortcuts inherits a TMPDIR long enough to pass it
-export ZELLIJ_SOCKET_DIR="/tmp/zellij-$(id -u)"
+ZELLIJ_SOCKET_DIR="/tmp/zellij-$(id -u)"
+export ZELLIJ_SOCKET_DIR
 
 # pinentry needs to know which terminal to prompt in when git signs a commit
 GPG_TTY=$(tty)
