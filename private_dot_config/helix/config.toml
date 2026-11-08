@@ -1,7 +1,5 @@
-{{ if eq .chezmoi.hostname "masons-xps" }}
 # https://github.com/helix-editor/helix/issues/13281
 theme = { dark = "everforest_dark", light = "everforest_light", fallback = "everforest_light" }
-{{- end }}
 
 [editor]
 bufferline = "multiple"
@@ -36,8 +34,6 @@ P = "copy_between_registers"
 b = ":sh git log -L '%{selection_line_start},%{selection_line_start}:%{buffer_name}' --no-patch -20"
 t = ":sh git-blame-trace.sh '%{buffer_name}' %{selection_line_start} %{selection_line_end}"
 "D" = [":insert-output git diff -- '%{buffer_name}'", "delete_selection", "undo", "undo", ":hnew", "paste_before", "goto_file_start", ":set-language diff"]
-{{ if eq .chezmoi.hostname "masons-xps" }}
 O = ":sh gh browse '%{buffer_name}:%{selection_line_start}-%{selection_line_end}' > /dev/null"
 "B" = ":sh gh browse --blame '%{buffer_name}:%{selection_line_start}-%{selection_line_end}' > /dev/null"
 "C" = ":sh git-line-commit.sh '%{buffer_name}' %{selection_line_start} > /dev/null"
-{{- end }}

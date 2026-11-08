@@ -6,7 +6,8 @@
 #   notify -n claude-desktop 'Claude Code' 'Task completed'
 #
 # Sent through notify-relay when it's running, so popups stack in GNOME, and
-# through notify-send when it isn't.
+# through notify-send when it isn't. On macOS it goes through osascript, and
+# only the title and body are used.
 #
 # Callers: `yo` (slow-command notifications) and the Claude Code hooks
 # registered by dot_claude/modify_settings.json.
@@ -78,6 +79,17 @@ fi
 
 title=$1
 body=${2:-}
+
+# macOS. The notification is attributed to Script Editor, which needs
+# notifications allowed in System Settings the first time.
+if command -v osascript >/dev/null; then
+    osascript \
+        -e 'on run argv' \
+        -e 'display notification (item 2 of argv) with title (item 1 of argv)' \
+        -e 'end run' \
+        "$title" "$body" >/dev/null 2>&1
+    exit
+fi
 
 if ! has_desktop; then
     printf '%s: no desktop session to notify\n' "$prog" >&2

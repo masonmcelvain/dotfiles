@@ -1,5 +1,11 @@
 [general]
+{{ if eq .chezmoi.os "darwin" -}}
+# Nothing on the Mac swaps theme.toml with the system appearance the way
+# theme-monitor.sh does under GNOME, so import a theme directly.
+import = ["{{ .chezmoi.homeDir }}/.config/alacritty/everforest_light.toml"]
+{{- else -}}
 import = ["{{ .chezmoi.homeDir }}/.config/alacritty/theme.toml"]
+{{- end }}
 
 [[keyboard.bindings]]
 action = "Quit"
@@ -26,6 +32,11 @@ save_to_clipboard = true
 [window]
 dynamic_title = false
 title = ""
+{{- if eq .chezmoi.os "darwin" }}
+# Send Option as Alt rather than typing characters like å, so zellij's and
+# helix's Alt bindings work as they do on Linux.
+option_as_alt = "Both"
+{{- end }}
 
 [window.dimensions]
 columns = 80

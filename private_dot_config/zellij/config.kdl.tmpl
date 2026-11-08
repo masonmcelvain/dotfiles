@@ -8,8 +8,10 @@ keybinds {
         bind "Alt m" { ToggleFloatingPanes; }
         bind "Alt p" { TogglePanePinned; }
         bind "Alt z" { ToggleFocusFullscreen; }
+        {{- if ne .chezmoi.os "darwin" }}
         bind "Alt a" { Run "mm" "agents" { floating true; close_on_exit true; name "agents"; }; }
         bind "Alt f" { Run "mm" "sessions" { floating true; close_on_exit true; name "sessions"; }; }
+        {{- end }}
         // Dumps the screen first, while the pane the paths are in still has focus.
         bind "Alt o" { DumpScreen "{{ .chezmoi.homeDir }}/.cache/hx-open-screen"; Run "hx-open" "{{ .chezmoi.homeDir }}/.cache/hx-open-screen" { floating true; close_on_exit true; name "hx-open"; }; }
     }
@@ -369,6 +371,9 @@ default_mode "locked"
 // copy_command "xclip -selection clipboard" // x11
 // copy_command "wl-copy"                    // wayland
 // copy_command "pbcopy"                     // osx
+{{- if eq .chezmoi.os "darwin" }}
+copy_command "pbcopy"
+{{- end }}
 
 // Choose the destination for copied text
 // Allows using the primary selection buffer (on x11/wayland) instead of the system clipboard.
