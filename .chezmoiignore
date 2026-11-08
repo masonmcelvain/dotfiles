@@ -4,7 +4,6 @@ CLAUDE.md
 .config/xdg-terminals.list
 .local/bin/bat
 .local/bin/debug-touchpad
-.local/bin/hx-theme.sh
 .local/share/gnome-shell
 {{ end -}}
 
@@ -48,6 +47,7 @@ CLAUDE.md
 !.local/bin
 !.local/bin/hx-fmt
 !.local/bin/hx-open
+!.local/bin/hx-theme.sh
 !.local/bin/git-blame-trace.sh
 !.local/bin/git-line-commit.sh
 !.local/bin/notify
