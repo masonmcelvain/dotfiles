@@ -40,6 +40,13 @@
 	editor = hx
 [gpg]
    program = {{ if eq .chezmoi.os "darwin" }}gpg{{ else }}gpg2{{ end }}
+{{- if eq .chezmoi.os "darwin" }}
+# Push over HTTPS with gh's login. The empty helper skips Homebrew git's
+# osxkeychain, which has no GitHub token and would prompt for a username.
+[credential "https://github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+{{- end }}
 [pull]
 	rebase = false
 [push]
