@@ -14,8 +14,9 @@ rc=$PWD/.shellcheckrc
 sh_shebang='^#!.*[/ ](ba)?sh([[:space:]]|$)'
 files=() templates=()
 while IFS= read -r -d '' f; do
-	# tr keeps the fonts' null bytes out of the command substitution.
-	first=$(head -c 128 "$f" | tr -d '\0')
+	# tr keeps the fonts' null bytes out of the command substitution. LC_ALL=C
+	# has it read bytes, since macOS's tr rejects the fonts' invalid UTF-8.
+	first=$(head -c 128 "$f" | LC_ALL=C tr -d '\0')
 	first=${first%%$'\n'*}
 	case "$f" in
 	*.tmpl)
