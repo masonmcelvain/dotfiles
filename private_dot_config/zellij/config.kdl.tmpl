@@ -11,9 +11,9 @@ keybinds {
         {{- if ne .chezmoi.os "darwin" }}
         bind "Alt a" { Run "mm" "agents" { floating true; close_on_exit true; name "agents"; }; }
         bind "Alt f" { Run "mm" "sessions" { floating true; close_on_exit true; name "sessions"; }; }
+        {{- end }}
         // Dumps the screen first, while the pane the paths are in still has focus.
         bind "Alt o" { DumpScreen "{{ .chezmoi.homeDir }}/.cache/hx-open-screen"; Run "hx-open" "{{ .chezmoi.homeDir }}/.cache/hx-open-screen" { floating true; close_on_exit true; name "hx-open"; }; }
-        {{- end }}
     }
     normal {
         bind "Enter" "Esc" { SwitchToMode "Locked"; }

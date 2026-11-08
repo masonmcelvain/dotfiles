@@ -39,6 +39,7 @@ CLAUDE.md
 !.local
 !.local/bin
 !.local/bin/hx-fmt
+!.local/bin/hx-open
 !.local/bin/git-blame-trace.sh
 !.local/bin/git-line-commit.sh
 !.local/bin/notify

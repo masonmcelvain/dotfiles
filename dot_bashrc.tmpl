@@ -12,6 +12,8 @@ esac
 #------------------------------------------------------------------------------
 # First, so everything below finds Homebrew's binaries (bash, hx, starship...)
 eval "$(/opt/homebrew/bin/brew shellenv)"
+# GNU grep as plain grep: hx-open needs its -P, which macOS's grep lacks
+PATH="/opt/homebrew/opt/grep/libexec/gnubin:$PATH"
 
 # pinentry needs to know which terminal to prompt in when git signs a commit
 GPG_TTY=$(tty)
