@@ -3,6 +3,9 @@
 #MISE dir="{{config_root}}/mm"
 # Every check runs even after one fails, so a single run reports them all.
 set -uo pipefail
+# mm only builds for Linux (internal/zellij reads /proc and Stat_t.Atim), so
+# check it as Linux code even from the Mac.
+export GOOS=linux
 
 status=0
 unformatted=$(gofmt -l .)
