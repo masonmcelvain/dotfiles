@@ -13,6 +13,12 @@ CLAUDE.md
 .bash_profile
 {{ end -}}
 
+{{/* skhd is a macOS hotkey daemon. */}}
+{{ if ne .chezmoi.os "darwin" -}}
+.config/skhd
+.claude/skills/skhd
+{{ end -}}
+
 {{/* gpg-agent.conf points at pinentry-mac, which only exists on the Mac. */}}
 {{ if ne .chezmoi.os "darwin" -}}
 .gnupg
@@ -40,6 +46,7 @@ CLAUDE.md
 !.config/helix
 !.config/zellij
 !.config/alacritty
+!.config/skhd
 !.config/starship.toml
 !.claude
 !.claude/**

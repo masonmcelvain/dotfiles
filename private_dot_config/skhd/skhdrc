@@ -1,0 +1,10 @@
+# skhd hotkeys (Mac only). skhd consumes a bound key in every app, so Cmd+A no
+# longer selects all anywhere. `skhd -o` prints the keysym for a keypress.
+
+# New Alacritty window. It goes through the newest Alacritty's IPC socket, so
+# windows share one process and Dock icon; when none is running, msg fails and
+# open starts one. The socket is named by pid, so a stale one left by a dead
+# instance never gets picked.
+cmd - a : /Applications/Alacritty.app/Contents/MacOS/alacritty msg \
+          --socket "$(getconf DARWIN_USER_TEMP_DIR)Alacritty-$(pgrep -nx alacritty).sock" \
+          create-window || open -na /Applications/Alacritty.app
