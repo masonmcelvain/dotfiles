@@ -1,0 +1,17 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+# Copy Liga SF Mono Nerd Font into ~/Library/Fonts, so Alacritty on the Mac can
+# draw starship's and helix's Nerd Font glyphs. Linux gets it from ~/.fonts via
+# fontconfig instead, which macOS doesn't read. chezmoi re-runs this whenever
+# the hash below changes, which is whenever the fonts do.
+{{- $fonts := joinPath .chezmoi.sourceDir "dot_fonts/liga-sf-mono" }}
+{{- $sums := list }}
+{{- range glob (joinPath $fonts "*.otf") }}
+{{-   $sums = append $sums (include . | sha256sum) }}
+{{- end }}
+# fonts: {{ $sums | join "\n" | sha256sum }}
+set -euo pipefail
+
+mkdir -p ~/Library/Fonts
+cp {{ $fonts | quote }}/*.otf ~/Library/Fonts/
+{{ end -}}

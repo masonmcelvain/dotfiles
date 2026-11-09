@@ -7,6 +7,13 @@ import = ["{{ .chezmoi.homeDir }}/.config/alacritty/everforest_light.toml"]
 import = ["{{ .chezmoi.homeDir }}/.config/alacritty/theme.toml"]
 {{- end }}
 
+{{ if eq .chezmoi.os "darwin" -}}
+# Linux reaches this font through fontconfig's monospace alias, which macOS
+# doesn't have, so name it here. run_onchange_install-mac-fonts.sh installs it.
+[font]
+normal = { family = "Liga SFMono Nerd Font" }
+
+{{ end -}}
 [[keyboard.bindings]]
 action = "Quit"
 key = "W"

@@ -58,6 +58,7 @@ CLAUDE.md
 !.local/bin/git-blame-trace.sh
 !.local/bin/git-line-commit.sh
 !.local/bin/notify
+!install-mac-fonts.sh
 {{ end -}}
 
 {{/* The skill symlink resolves its target by running `hunk skill path`, which
