@@ -13,3 +13,11 @@
 .claude/skills/build-context
 .claude/skills/explain-diff-html
 .claude/skills/review-loop
+{{/* Ship and its agents went Mac-only; clear what Linux already had. */}}
+{{ if ne .chezmoi.os "darwin" -}}
+.claude/skills/ship
+.claude/agents/builder.md
+.claude/agents/finding-verifier.md
+.claude/agents/qa-engineer.md
+.claude/agents/review-*.md
+{{ end -}}

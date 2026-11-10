@@ -4,6 +4,9 @@
 
 - Use the GitHub CLI (`gh`) for all GitHub-related tasks when possible
 - Be sure to typecheck and lint when you’re done making a series of code changes
+{{- if eq .chezmoi.os "darwin" }}
+- In a repo whose origin is in the `nordicnaturals` Bitbucket workspace, load the `nordic` skill before naming a branch, committing, or opening a PR. Its conventions (the Jira key as the branch name and at the start of every commit and PR title) override the commit and PR guidelines below
+{{- end }}
 
 When importing types in React, prefer `import { type TypeName } from React;` over using `React.TypeName` in the code.
 

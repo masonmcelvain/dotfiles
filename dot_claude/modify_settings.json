@@ -7,8 +7,9 @@
 #
 # Both hook commands are host-agnostic: mm agent-status works out its own
 # zellij context, and notify works out how to reach the desktop. The
-# agent-status hooks are only registered where mm is installed, since it isn't
-# built on macOS; run_onchange_before_build-mm.sh builds it before this runs.
+# agent-status hooks are only registered where mm is installed, so a host
+# without Go still gets the notify ones; run_onchange_before_build-mm.sh builds
+# it before this runs.
 
 set -euo pipefail
 

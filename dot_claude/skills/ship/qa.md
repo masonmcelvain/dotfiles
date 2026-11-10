@@ -1,10 +1,11 @@
 # QA
 
 QA proves the acceptance criteria hold in the running software, and leaves
-evidence I can check in a minute without re-running anything. A `qa-engineer`
-that didn't write the code runs the plan from phase 2. The point is
-independence: the builder's tests show the code does what the builder thought;
-QA shows it does what the issue asked.
+evidence I can check in a minute without re-running anything. It all stays
+local: the evidence feeds the PR description's QA section and its attachments,
+and is never posted as a comment. A `qa-engineer` that didn't write the code
+runs the plan from phase 2. The point is independence: the builder's tests show
+the code does what the builder thought; QA shows it does what the issue asked.
 
 ## What QA looks like
 
@@ -40,7 +41,7 @@ Spawn a `qa-engineer` with:
   setup taught you
 - the evidence directory: `$(git rev-parse --git-dir)/ship/qa/round-<n>/`
 - the ground rules: it doesn't edit the repo, doesn't commit, and doesn't
-  post anything
+  push or post anything to Bitbucket or Jira
 
 It comes back with a report: per AC `PASS`, `FAIL` or `BLOCKED`, the evidence
 files, for each failure the steps, the expected and actual results, and its
@@ -58,26 +59,19 @@ finding is addressed once it's `fixed` (QA re-ran it and it passes) or
   neighbors. Three failures on the same AC is an escalation.
 - **BLOCKED** (it can't get the app running, or the data the AC needs doesn't
   exist locally): try once yourself to fix the setup. If that doesn't work, the
-  AC becomes a manual QA step in the PR, with exact instructions, and the retro
+  AC becomes a manual QA step in the PR description, with exact instructions,
+  and the retro
   records what was missing. Building a project "verify" skill for this repo is
   the long-term fix; suggest it to me.
 
-## Posting the evidence
+## Writing it up
 
-Once every AC is `PASS` or explicitly manual, post the evidence to the PR as one
-comment. `gh pr comment --attach` uploads images and rewrites references to them
-in the body. Run it from the evidence directory so relative references
-resolve:
-
-```
-cd "$(git rev-parse --git-dir)/ship/qa/round-<n>"
-gh pr comment <pr> --body-file qa-comment.md \
-  --attach './ac1-picker.png#Picker without unpublished locales' \
-  --attach './ac2-mobile.png#Narrow viewport'
-```
-
-`qa-comment.md` starts with `🤖 QA`, then a table of ACs with result and method,
-the screenshots placed under the AC they prove (`![alt](./ac1-picker.png)`),
-and the transcripts that matter in collapsed `<details>` blocks. Keep it
-scannable: I want to verify it at a glance, not read a log. Never attach
-anything that shows secrets, tokens or personal data; crop or redact first.
+Once every AC is `PASS` or explicitly manual, write
+`$(git rev-parse --git-dir)/ship/qa/summary.md` for me and for the PR: a table
+of ACs with result and method, the screenshot that proves each one, and the
+transcripts that matter. Phase 7 turns it into the description's `## QA`
+section, which says what was verified and how in plain steps a reviewer could
+repeat, and copies the decisive screenshots into the attachments folder, named
+after the AC they prove (`ac1-card-alt-text.png`). Keep it scannable: I want to
+verify it at a glance, not read a log. Never keep anything for the PR that shows
+secrets, tokens or personal data; crop or redact first.

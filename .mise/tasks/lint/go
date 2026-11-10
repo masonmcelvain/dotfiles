@@ -3,16 +3,17 @@
 #MISE dir="{{config_root}}/mm"
 # Every check runs even after one fails, so a single run reports them all.
 set -uo pipefail
-# mm only builds for Linux (internal/zellij reads /proc and Stat_t.Atim), so
-# check it as Linux code even from the Mac.
-export GOOS=linux
-
+# mm builds for Linux and macOS, which read processes differently
+# (internal/zellij's input_linux.go and input_darwin.go), so vet both from
+# either host.
 status=0
 unformatted=$(gofmt -l .)
 if [ -n "$unformatted" ]; then
 	printf 'gofmt: needs formatting: %s\n' "$unformatted"
 	status=1
 fi
-go vet ./... || status=1
-staticcheck ./... || status=1
+for goos in linux darwin; do
+	GOOS=$goos go vet ./... || status=1
+	GOOS=$goos staticcheck ./... || status=1
+done
 exit $status

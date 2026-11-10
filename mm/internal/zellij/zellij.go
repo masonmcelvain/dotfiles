@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 	"time"
@@ -57,15 +58,25 @@ func InCurrent() (session string, inside bool) {
 	return os.Getenv("ZELLIJ_SESSION_NAME"), os.Getenv("ZELLIJ") != ""
 }
 
+// cacheDir is zellij's cache directory: ~/Library/Caches/<bundle id> on
+// macOS, which ignores XDG_CACHE_HOME, and $XDG_CACHE_HOME/zellij elsewhere.
+func cacheDir() string {
+	home := os.Getenv("HOME")
+	if runtime.GOOS == "darwin" {
+		return filepath.Join(home, "Library", "Caches", "org.Zellij-Contributors.Zellij")
+	}
+	cache := os.Getenv("XDG_CACHE_HOME")
+	if cache == "" {
+		cache = filepath.Join(home, ".cache")
+	}
+	return filepath.Join(cache, "zellij")
+}
+
 // InfoDir is where zellij keeps per-session layout and metadata. Its parent
 // is a contract version ("contract_version_1") that was a plain zellij
 // version in earlier releases, so take the freshest rather than hardcode it.
 func InfoDir() string {
-	cache := os.Getenv("XDG_CACHE_HOME")
-	if cache == "" {
-		cache = filepath.Join(os.Getenv("HOME"), ".cache")
-	}
-	dirs, _ := filepath.Glob(filepath.Join(cache, "zellij", "*", "session_info"))
+	dirs, _ := filepath.Glob(filepath.Join(cacheDir(), "*", "session_info"))
 	var best string
 	var newest time.Time
 	for _, d := range dirs {

@@ -1,122 +1,106 @@
 # Aftercare
 
-The PR is up, and now it lives in the world: CI runs, review bots and colleagues
-comment, I leave notes, and the base branch moves. Each aftercare tick finds
-what's new since the last one and handles it. Most ticks find nothing; when
-that's the case, end the turn with a single line and don't notify anyone.
+The PR is up, and now it lives in the world: pipelines run, colleagues comment,
+I leave notes, and the target branch moves. Each aftercare tick finds what's new
+since the last one and gets it handled locally. The go-ahead rule still holds:
+you fix and commit here, then ask me before anything is pushed. You never reply
+to, resolve or react to comments; the fix speaks, and I do the talking. Most
+ticks find nothing; when that's the case, end the turn with a single line and
+don't notify anyone.
 
 ## Each tick
 
-Read the ledger first. Its `last-seen` is where the previous tick stopped.
+Read the ledger first. Its `last-seen` is where the previous tick stopped, and
+its **Go-ahead** section says whether fixes are already waiting on me.
 
-1. **State.** `gh pr view <pr> --json state,isDraft,mergeable,headRefOid,baseRefName`.
-   If the PR is merged or closed: delete the cron job (`CronDelete` with the
-   ledger's id), set the phase to `done`, write a last log line, and stop.
+1. **State.** `bkt pr view <n> --json`: state, draft, source commit, target
+   branch. If the PR is merged or declined: delete the cron job (`CronDelete`
+   with the ledger's id), set the phase to `done`, write a last log line, and
+   stop.
 2. **Sync.** `git fetch origin`. If the remote branch has commits that aren't
    local, someone (probably me) pushed: `git pull --rebase`, and if that
    conflicts, abort and notify me. Never push over commits you haven't pulled.
-3. **CI.** `gh pr checks <pr>`. For each failing check, read the failed log
-   (`gh run view <run-id> --log-failed`) and decide:
+3. **Pipelines.** `bkt pr checks <n>`. For each failing build, find its run
+   (`bkt pipeline list`) and read the failed step's log (`bkt pipeline logs
+   <build number> --step <uuid>`), then decide:
    - caused by this branch: fix it (builder or yourself if it's trivial), gate,
-     commit, push
+     commit
    - flaky (passes locally, unrelated to the diff, a timeout or a network
-     blip): re-run it once with `gh run rerun <run-id> --failed`; if it fails
-     again, it's not flaky
-   - broken on the base branch too: leave it, note it in the ledger and the
-     hand-off, don't fix it here
-4. **Conflicts.** If `mergeable` is `CONFLICTING`: on a draft, rebase onto
-   `origin/<base>`, resolve, gate, and `git push --force-with-lease`. Once I've
-   marked it ready, don't rewrite history: notify me instead.
-5. **Comments.** Fetch them all:
-
-   ```
-   gh api graphql -F owner=<owner> -F repo=<name> -F pr=<n> -f query='
-     query($owner: String!, $repo: String!, $pr: Int!) {
-       repository(owner: $owner, name: $repo) {
-         pullRequest(number: $pr) {
-           reviewThreads(first: 100) { nodes {
-             id isResolved isOutdated path line
-             comments(first: 50) { nodes { id databaseId author { login } body createdAt url } }
-           } }
-           reviews(last: 50) { nodes { id author { login } state body submittedAt } }
-           comments(last: 100) { nodes { id author { login } body createdAt url } }
-         }
-       }
-     }'
-   ```
-
-   What needs handling:
-
-   - **Review threads**: every unresolved one whose last comment doesn't start
-     with `🤖`, however old, unless the ledger's Escalations already holds it.
-     Thread state lives on GitHub, so this catches anything a bad `last-seen`
-     would miss. Resolved threads only when someone replied after resolving.
-   - **Top-level comments and review bodies**: those created after `last-seen`,
-     or all of them when it's empty. They have no resolved state, so this is the
-     only place the watermark matters.
-
-   Skip anything starting with `🤖`; that's yours.
+     blip): a re-run is a write to Bitbucket, so ask for it in the go-ahead
+     request rather than running it
+   - broken on the target branch too: leave it, note it in the ledger and the
+     report, don't fix it here
+4. **Conflicts.** If `bkt pr mergeability <n>` says it conflicts, rebase onto
+   `origin/<target>` locally, resolve, and gate. Pushing that is a force-push,
+   so the go-ahead request says so.
+5. **Comments.** `bkt pr comments <n> --details --json`. What needs handling:
+   - **Unresolved inline threads** whose last comment isn't from me answering
+     myself, however old, unless the ledger's Escalations already holds them.
+     Thread state lives on Bitbucket, so this catches anything a bad
+     `last-seen` would miss.
+   - **Top-level comments** created after `last-seen`, or all of them when it's
+     empty. They have no resolved state, so this is the only place the
+     watermark matters.
 
 ## Handling a comment
 
-Who wrote it decides how much latitude you have. `gh api user --jq .login` is me.
+Who wrote it decides how much latitude you have. `bkt auth status` names me.
 
-- **Me** (my login, no `🤖`): an instruction. Do it: questions get answers,
-  change requests get verified and then fixed or pushed back on with
-  `file:line`, direct instructions get done.
-- **Review bots** (Copilot, CodeRabbit, Bugbot, Sentry and the like): a review
+- **Me**: an instruction. Do it: change requests get verified and then fixed;
+  a question or anything you'd push back on goes in your report with
+  `file:line`, since you don't reply on the PR.
+- **Bots** (Bitbucket's code insights, security scanners and the like): a
   finding of unknown quality. Triage it: restate the mechanism (this state,
   this path, this wrong result), check that it's reachable here given the
-  callers, guards and types, and that it matters, then fix or decline. Bots
-  are often right about the bug and wrong about the fix.
-- **Other people**: fix clear, verified change requests and reply with what
-  changed. A question, a design objection, or anything you'd push back on, you
-  don't answer in my name: write your proposed reply in the ledger under
-  Escalations and notify me with the comment's URL.
+  callers, guards and types, and that it matters, then fix or decline.
+- **Other people**: fix clear, verified change requests. A question, a design
+  objection, or anything you'd push back on: write your proposed reply in the
+  ledger under Escalations for me to post, and include the comment's link.
 
 Batch the tick's fixes: builder (continued via `SendMessage` if it's still alive,
 otherwise a fresh `builder` with the spec and the comments), gate, a mini review
 when the fix is more than a line or two (see [review-board.md](review-board.md)),
-commit, push. Then reply on each thread you handled, starting with `🤖`:
+commit, following the commit conventions. If a fix changes what the PR does,
+re-run the affected QA items as a new round of [qa.md](qa.md) and update
+`pr.md`.
+
+## Asking to push
+
+When a tick leaves unpushed commits, or wants a pipeline re-run, fill the
+ledger's **Go-ahead** section and notify me once:
 
 ```
-gh api repos/<owner>/<name>/pulls/<n>/comments/<databaseId>/replies \
-  -f body='🤖 Fixed in <sha>: <one line>'
+~/.local/bin/notify -a claude -n claude-desktop "ship: <key> fixes ready" "<pr url> - <n> commits for <what>"
 ```
 
-Resolve the threads that are fixed, but only mine and the bots':
+End the turn with the request, as in phase 7: each commit and the comment or
+build it answers, whether it's a force-push, whether the PR description should
+change (show the new `pr.md` diff), and any proposed replies for me to post.
+Later ticks keep watching but don't notify again while the same request is
+waiting; new fixes join it.
 
-```
-gh api graphql -F id=<thread id> -f query='
-  mutation($id: ID!) { resolveReviewThread(input: {threadId: $id}) { thread { isResolved } } }'
-```
-
-Other people resolve their own threads. Top-level PR comments and review bodies
-get one `🤖` reply comment per tick that covers them, not one each.
-
-If a fix changes what the PR does, update the PR body and re-run the affected QA
-items as a new round of [qa.md](qa.md), fixing what it finds the same way, then
-post a new evidence comment for them.
+When I say go, push (`--force-with-lease` if it rewrote), run any re-run I
+approved, update the description with `bkt pr edit` if I approved that, record
+the sha in `pushed`, clear the Go-ahead section and log it. Anything else I say
+is feedback, handled as in [The go-ahead](SKILL.md#the-go-ahead).
 
 ## Closing the tick
 
-Set `last-seen` to the `createdAt` of the newest comment you handled, never the
-current time: a comment that landed while you worked would fall behind the
-watermark unread. If you handled nothing, leave it as it was. Add a log line,
-and notify me only if you escalated something or pushed a change after I'd
-marked the PR ready. A tick that only fixed bot nits and CI on a draft doesn't
-need me.
+Set `last-seen` to the creation time of the newest comment you handled, never
+the current time: a comment that landed while you worked would fall behind the
+watermark unread. If you handled nothing, leave it as it was. Add a log line.
 
 ## Settling
 
 Once there's nothing left to do, stop the watch. The PR is settled when all of
 these hold at the end of a tick:
 
-- **CI is green**: `gh pr checks <pr>` on the current head has nothing failing
-  or pending, apart from checks the ledger records as broken on the base
-  branch. A tick that pushed is never settled, since its CI is still running.
-- **No unaddressed reviews**: step 5 finds nothing to handle, and the ledger's
-  Escalations has nothing still waiting on me.
+- **Pipelines are green**: `bkt pr checks <n>` on the current head has nothing
+  failing or pending, apart from builds the ledger records as broken on the
+  target branch. A tick right after a push is never settled, since its builds
+  are still running.
+- **Nothing is waiting**: no unpushed commits, no pending go-ahead, step 5
+  finds nothing to handle, and Escalations has nothing still waiting on me.
 - **No unaddressed QA findings**: every AC in the ledger's QA results is `PASS`
   or a manual step, and no failure or finding is still `open`.
 
@@ -124,7 +108,7 @@ Then delete the cron job (`CronDelete` with the ledger's id), clear `cron` in
 the ledger, set the phase to `settled`, log it, and notify me once:
 
 ```
-~/.local/bin/notify -a claude -n claude-desktop "ship: <repo>#<n> settled" "<pr url> - aftercare stopped"
+~/.local/bin/notify -a claude -n claude-desktop "ship: <key> settled" "<pr url> - aftercare stopped"
 ```
 
 End the turn there; the session stays open. New comments after this go

@@ -73,7 +73,8 @@ Record every finding and its status in the ledger's board table.
 
 Send the builder that wrote the code the fix list with `SendMessage`: each
 finding's id, location, mechanism and suggested fix. Then run the gate and commit
-(`fix: ...` style messages, grouped sensibly; not one commit per finding).
+(`fix:` messages under my commit conventions, grouped sensibly; not one commit
+per finding).
 
 ## Re-review
 
@@ -106,8 +107,9 @@ The board is done when one of these holds:
   the same facts. Freeze it; no third exchange
 - four rounds have run
 
-Stalemates and anything left open after round four go in the `🤖 Review board`
-PR comment with both positions, and in the notification to me.
+Stalemates and anything left open after round four go in the ledger and the
+go-ahead report with both positions, so I can settle them before anything is
+pushed. The board's work is never posted to the PR.
 
 ## Mini review
 

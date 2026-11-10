@@ -74,6 +74,7 @@ Library/LaunchAgents/*
 !.local/bin/git-line-commit.sh
 !.local/bin/notify
 !install-mac-fonts.sh
+!build-mm.sh
 !configure-mac-screencapture.sh
 !Library
 !Library/LaunchAgents
@@ -89,6 +90,17 @@ Library/LaunchAgents/*
 {{/* The Jira skill drives acli, Atlassian's CLI, which only the Mac has. */}}
 {{ if not (lookPath "acli") -}}
 .claude/skills/jira
+{{ end -}}
+
+{{/* Nordic Naturals is the work on the Mac, and ship, with its agent roster,
+     only ships to its Jira and Bitbucket. */}}
+{{ if ne .chezmoi.os "darwin" -}}
+.claude/skills/nordic
+.claude/skills/ship
+.claude/agents/builder.md
+.claude/agents/finding-verifier.md
+.claude/agents/qa-engineer.md
+.claude/agents/review-*.md
 {{ end -}}
 
 {{/* Only a host with a Bitbucket address in chezmoi.toml gets its git identity. */}}

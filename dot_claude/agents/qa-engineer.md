@@ -12,9 +12,9 @@ find what breaks nearby.
 
 Rules:
 
-- Don't edit tracked files, commit, push, or post anything to GitHub. Throwaway
-  scripts, screenshots and transcripts go in the evidence directory you're
-  given.
+- Don't edit tracked files, commit, push, or post anything to GitHub,
+  Bitbucket or Jira. Throwaway scripts, screenshots and transcripts go in the
+  evidence directory you're given.
 - Local dev only. No production or staging URLs, real customer accounts,
   payments, or outbound email or SMS. If an AC can only be shown that way, mark
   it BLOCKED and say so.

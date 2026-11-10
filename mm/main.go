@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 	"syscall"
 
@@ -23,8 +24,9 @@ const usage = `usage: mm COMMAND
   agents              jump to a Claude Code agent's zellij tab
   sessions            pick a zellij session by name, branch and directory
   sessions branch B   go to the session on branch B
-  ship TARGET         hand an issue, PR or task to a Claude agent in its own
-                      checkout and session; TARGET is a URL, a number, or words
+  ship TARGET         hand a Jira issue, Bitbucket PR or task to a Claude agent
+                      in its own checkout and session; TARGET is an issue key
+                      or link, a PR number or link, or words (Mac only)
   agent-status        Claude Code hook: record agent state, label its tab
   agent-status name ID  ask Haiku for a descriptive name for agent ID's tab
 
@@ -54,9 +56,13 @@ func main() {
 	case "sessions":
 		runSessions(args)
 	case "ship":
+		// The ship skill and its agents only reach the Mac, where the work is.
+		if runtime.GOOS != "darwin" {
+			die("ship only runs on the Mac")
+		}
 		requireZellij()
 		if len(args) == 0 {
-			die("usage: mm ship ISSUE|PR|\"task in words\"")
+			die("usage: mm ship ISSUE-KEY|PR|\"task in words\"")
 		}
 		msg, err := ship.Run(strings.Join(args, " "))
 		if err != nil {
