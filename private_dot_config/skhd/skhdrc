@@ -20,3 +20,6 @@ cmd - q [
                   touch "$f"; "$HOME/.local/bin/notify" Alacritty 'Press ⌘Q again to quit'; \
                 fi
 ]
+
+# Swallow Cmd+H, which hides the focused app in nearly every app.
+cmd - h : true
