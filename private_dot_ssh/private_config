@@ -1,0 +1,9 @@
+Host bitbucket.org
+HostName bitbucket.org
+User git
+IdentityFile ~/.ssh/id_ed25519_bitbucket
+IdentitiesOnly yes
+AddKeysToAgent yes
+UseKeychain yes
+Ciphers aes256-ctr,aes128-ctr,aes192-ctr
+MACs hmac-sha2-256,hmac-sha1,hmac-sha2-512

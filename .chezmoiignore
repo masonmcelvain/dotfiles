@@ -19,6 +19,11 @@ CLAUDE.md
 .claude/skills/skhd
 {{ end -}}
 
+{{/* The ssh config uses UseKeychain, which only macOS's ssh understands. */}}
+{{ if ne .chezmoi.os "darwin" -}}
+.ssh
+{{ end -}}
+
 {{/* gpg-agent.conf points at pinentry-mac, which only exists on the Mac. */}}
 {{ if ne .chezmoi.os "darwin" -}}
 .gnupg
@@ -33,6 +38,7 @@ CLAUDE.md
 .local/*
 .local/bin/*
 .gnupg/*
+.ssh/*
 !.bashrc
 !.bash_profile
 !.bash_aliases
@@ -41,6 +47,8 @@ CLAUDE.md
 !.gitmessage
 !.gnupg
 !.gnupg/gpg-agent.conf
+!.ssh
+!.ssh/config
 !.config
 !.config/git
 !.config/helix
