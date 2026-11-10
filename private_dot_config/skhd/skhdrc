@@ -8,3 +8,15 @@
 cmd - a : /Applications/Alacritty.app/Contents/MacOS/alacritty msg \
           --socket "$(getconf DARWIN_USER_TEMP_DIR)Alacritty-$(pgrep -nx alacritty).sock" \
           create-window || open -na /Applications/Alacritty.app
+
+# Quit Alacritty only on a second Cmd+Q within about a second, since one stray
+# press closes every window. The first press leaves a marker and a reminder;
+# other apps get Cmd+Q unchanged.
+cmd - q [
+  "alacritty" : f="$(getconf DARWIN_USER_TEMP_DIR)skhd-alacritty-quit"; \
+                if [ -f "$f" ] && [ $(( $(date +%s) - $(/usr/bin/stat -f %m "$f") )) -le 1 ]; then \
+                  rm -f "$f"; osascript -e 'quit app "Alacritty"'; \
+                else \
+                  touch "$f"; "$HOME/.local/bin/notify" Alacritty 'Press ⌘Q again to quit'; \
+                fi
+]
