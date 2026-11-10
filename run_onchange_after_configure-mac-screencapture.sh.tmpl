@@ -1,0 +1,17 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+# Save screenshots to ~/Pictures/screenshots instead of the Desktop, and load
+# the launchd agent that moves screen recordings, which macOS saves to the same
+# place, on to ~/Movies/screencasts. chezmoi re-runs this whenever the agent
+# changes, so it's reloaded.
+# agent: {{ include "private_Library/private_LaunchAgents/local.move-screencasts.plist.tmpl" | sha256sum }}
+set -euo pipefail
+
+mkdir -p ~/Pictures/screenshots ~/Movies/screencasts
+defaults write com.apple.screencapture location ~/Pictures/screenshots
+killall SystemUIServer
+
+agent=~/Library/LaunchAgents/local.move-screencasts.plist
+launchctl bootout "gui/$(id -u)" "$agent" 2>/dev/null || true
+launchctl bootstrap "gui/$(id -u)" "$agent"
+{{ end -}}

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- macOS saves screenshots and screen recordings to one location, so this
+     moves recordings out of the screenshots folder whenever it changes.
+     run_onchange_after_configure-mac-screencapture.sh loads it. -->
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>local.move-screencasts</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/bin/find</string>
+		<string>{{ .chezmoi.homeDir }}/Pictures/screenshots</string>
+		<string>-maxdepth</string>
+		<string>1</string>
+		<string>-name</string>
+		<string>*.mov</string>
+		<string>-exec</string>
+		<string>/bin/mv</string>
+		<string>-n</string>
+		<string>{}</string>
+		<string>{{ .chezmoi.homeDir }}/Movies/screencasts/</string>
+		<string>;</string>
+	</array>
+	<key>WatchPaths</key>
+	<array>
+		<string>{{ .chezmoi.homeDir }}/Pictures/screenshots</string>
+	</array>
+</dict>
+</plist>

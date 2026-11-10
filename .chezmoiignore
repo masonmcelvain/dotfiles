@@ -24,6 +24,11 @@ CLAUDE.md
 .ssh
 {{ end -}}
 
+{{/* The screencast mover is a launchd agent. */}}
+{{ if ne .chezmoi.os "darwin" -}}
+Library
+{{ end -}}
+
 {{/* gpg-agent.conf points at pinentry-mac, which only exists on the Mac. */}}
 {{ if ne .chezmoi.os "darwin" -}}
 .gnupg
@@ -39,6 +44,8 @@ CLAUDE.md
 .local/bin/*
 .gnupg/*
 .ssh/*
+Library/*
+Library/LaunchAgents/*
 !.bashrc
 !.bash_profile
 !.bash_aliases
@@ -67,6 +74,10 @@ CLAUDE.md
 !.local/bin/git-line-commit.sh
 !.local/bin/notify
 !install-mac-fonts.sh
+!configure-mac-screencapture.sh
+!Library
+!Library/LaunchAgents
+!Library/LaunchAgents/local.move-screencasts.plist
 {{ end -}}
 
 {{/* The skill symlink resolves its target by running `hunk skill path`, which
