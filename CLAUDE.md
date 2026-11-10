@@ -49,6 +49,7 @@ The Mac is an allowlist: on darwin, `.chezmoiignore` ignores everything and then
 Custom data variables live in `~/.config/chezmoi/chezmoi.toml`, which is *not* in this repo — the repo is public, so secrets belong there:
 
 - `.gitconfig.email`, `.gitconfig.signingkey`
+- `.gitconfig.bitbucketEmail` (optional): the address commits to Bitbucket remotes use, which the signing key also carries as a UID; without it a host gets no Bitbucket identity
 
 ## Architecture
 
