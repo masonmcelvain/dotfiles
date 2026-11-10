@@ -1,0 +1,5 @@
+# Commits to Bitbucket remotes use the work address, because Bitbucket only
+# verifies a signed commit whose email is confirmed on the account. The signing
+# key carries it as a second UID.
+[user]
+	email = {{ .gitconfig.bitbucketEmail | quote }}

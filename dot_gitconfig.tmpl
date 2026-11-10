@@ -31,6 +31,16 @@
 	name = Mason McElvain
    email = {{ .gitconfig.email | quote }}
    useConfigOnly = true
+{{- if hasKey .gitconfig "bitbucketEmail" }}
+[includeIf "hasconfig:remote.*.url:git@ssh.bitbucket.org:*/**"]
+	path = ~/.config/git/bitbucket.gitconfig
+[includeIf "hasconfig:remote.*.url:git@bitbucket.org:*/**"]
+	path = ~/.config/git/bitbucket.gitconfig
+[includeIf "hasconfig:remote.*.url:https://*@bitbucket.org/**"]
+	path = ~/.config/git/bitbucket.gitconfig
+[includeIf "hasconfig:remote.*.url:https://bitbucket.org/**"]
+	path = ~/.config/git/bitbucket.gitconfig
+{{- end }}
 [init]
 	defaultBranch = main
 [commit]

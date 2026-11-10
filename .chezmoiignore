@@ -72,6 +72,11 @@ CLAUDE.md
 .claude/skills/jira
 {{ end -}}
 
+{{/* Only a host with a Bitbucket address in chezmoi.toml gets its git identity. */}}
+{{ if not (hasKey .gitconfig "bitbucketEmail") -}}
+.config/git/bitbucket.gitconfig
+{{ end -}}
+
 {{/* mm's Go source; run_onchange_before_build-mm.sh builds it into
      ~/.local/bin instead. */}}
 mm
