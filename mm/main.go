@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
-	"strings"
 	"syscall"
 
 	"github.com/charmbracelet/x/term"
@@ -27,6 +26,7 @@ const usage = `usage: mm COMMAND
   ship TARGET         hand a Jira issue, Bitbucket PR or task to a Claude agent
                       in its own checkout and session; TARGET is an issue key
                       or link, a PR number or link, or words (Mac only)
+  ship TARGET NOTE    the same, passing NOTE to the agent as an instruction
   agent-status        Claude Code hook: record agent state, label its tab
   agent-status name ID  ask Haiku for a descriptive name for agent ID's tab
 
@@ -62,9 +62,9 @@ func main() {
 		}
 		requireZellij()
 		if len(args) == 0 {
-			die("usage: mm ship ISSUE-KEY|PR|\"task in words\"")
+			die("usage: mm ship ISSUE-KEY|PR [NOTE...] | TASK IN WORDS")
 		}
-		msg, err := ship.Run(strings.Join(args, " "))
+		msg, err := ship.Run(ship.SplitArgs(args))
 		if err != nil {
 			die("%v", err)
 		}

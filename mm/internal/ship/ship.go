@@ -56,8 +56,13 @@ var (
 
 // Parse reads a target: a Jira issue key or link, a Bitbucket PR link or
 // number (with or without #), or anything else as a task description.
+// Anything with a space in it is a task, so a link followed by more words
+// never parses as the link alone.
 func Parse(arg string) Target {
 	arg = strings.TrimSpace(arg)
+	if strings.ContainsAny(arg, " \t\n") {
+		return Target{Kind: Task, Text: arg}
+	}
 	if keyRE.MatchString(arg) {
 		return Target{Kind: Issue, Key: strings.ToUpper(arg)}
 	}
@@ -72,6 +77,16 @@ func Parse(arg string) Target {
 		return Target{Kind: PR, Num: n}
 	}
 	return Target{Kind: Task, Text: arg}
+}
+
+// SplitArgs splits mm ship's arguments into the target and a note for the
+// agent. When the first argument is an issue or PR, the rest is the note;
+// otherwise the whole line is a task in words, so it needn't be quoted.
+func SplitArgs(args []string) (target, note string) {
+	if len(args) > 1 && Parse(args[0]).Kind != Task {
+		return args[0], strings.TrimSpace(strings.Join(args[1:], " "))
+	}
+	return strings.Join(args, " "), ""
 }
 
 var remoteRE = regexp.MustCompile(`bitbucket\.org[:/]([^/]+/[^/]+?)(\.git)?/?$`)
@@ -122,8 +137,9 @@ func Session(name string, t Target) string {
 
 // Prompt is what Claude starts with. It names the skill rather than typing
 // /ship, because Claude Code leaves a command-line prompt that starts with a
-// slash in the input box instead of sending it.
-func Prompt(arg string, t Target, branch string) string {
+// slash in the input box instead of sending it. A note from me goes last,
+// as my words.
+func Prompt(arg string, t Target, branch, note string) string {
 	what := arg
 	switch t.Kind {
 	case Task:
@@ -133,12 +149,16 @@ func Prompt(arg string, t Target, branch string) string {
 	case PR:
 		what = fmt.Sprintf("Bitbucket PR %d", t.Num)
 	}
-	return fmt.Sprintf("Use the ship skill on %s. mm ship already checked out %s here for it.", what, branch)
+	p := fmt.Sprintf("Use the ship skill on %s. mm ship already checked out %s here for it.", what, branch)
+	if note != "" {
+		p += " My note on it: " + note
+	}
+	return p
 }
 
 // Run is `mm ship TARGET`, run from inside a checkout of the target's repo.
-// It returns a line to report.
-func Run(arg string) (string, error) {
+// note is passed to the agent with the target. It returns a line to report.
+func Run(arg, note string) (string, error) {
 	cwd, _ := os.Getwd()
 	top, err := gitx.Git(cwd, "rev-parse", "--show-toplevel")
 	if err != nil {
@@ -202,7 +222,7 @@ func Run(arg string) (string, error) {
 		shell = "bash"
 	}
 	argv := []string{shell, "-ic", `claude --permission-mode auto "$1"; exec "$0" -i`,
-		shell, Prompt(arg, t, branch)}
+		shell, Prompt(arg, t, branch, note)}
 	if err := zellij.RunInTab(session, "claude", dir, argv); err != nil {
 		return "", fmt.Errorf("created %s but couldn't start Claude in it: %v", session, err)
 	}

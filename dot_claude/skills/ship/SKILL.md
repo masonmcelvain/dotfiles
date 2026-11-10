@@ -22,6 +22,16 @@ transcript.
 - `aftercare <PR>` - a scheduled tick from phase 9; go straight to
   [aftercare.md](aftercare.md)
 
+Either of the first two may come with **my note on it** (`mm ship US-1234
+"verify it's a problem first"` puts it at the end of your prompt after "My note
+on it:"). A note is an instruction from me, and it outranks the issue's own
+framing: if it says to verify before building, the spec waits on that answer.
+Record it verbatim under **Notes** in the ledger in phase 0, so it outlives
+compaction, and follow it in every phase it bears on. If the note needs my input
+partway through ("check with me before building"), that's an interruption I've
+asked for: notify me there and wait, as at the go-ahead. A resumed run with a
+new note adds it to the ledger beside the old ones; it doesn't replace them.
+
 `mm ship` usually launched you, in a fresh worktree with a branch already
 checked out: the issue key (`US-1234`), `ship/<slug>` for a task, or the PR's
 own branch. You may also have been started by hand in an ordinary checkout;
@@ -93,6 +103,8 @@ repo: <workspace/slug>   branch: <branch>   base: <base>   target: <PR target br
 issue: <key or none>   pr: <url or none>   pushed: <sha or never>
 signing: ok | unsigned since <sha>
 
+## Notes
+<my notes from mm ship, verbatim, oldest first>
 ## Spec
 <problem, acceptance criteria AC1.., non-goals>
 ## Assumptions
