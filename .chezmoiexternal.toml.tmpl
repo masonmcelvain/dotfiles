@@ -1,0 +1,12 @@
+{{/* bkt's agent skill, from the release tag matching the installed bkt, so
+     its command reference tracks the binary across `brew upgrade`s. Homebrew's
+     build doesn't ship the skill. */}}
+{{ if lookPath "bkt" -}}
+{{ $bkt := output "bkt" "--version" | trim | replace "bkt version " "" -}}
+[".claude/skills/bkt"]
+type = "archive"
+url = "https://github.com/avivsinai/bitbucket-cli/archive/refs/tags/v{{ $bkt }}.tar.gz"
+exact = true
+stripComponents = 3
+include = ["*/skills/bkt", "*/skills/bkt/**"]
+{{ end -}}

@@ -67,6 +67,11 @@ CLAUDE.md
 .claude/skills/hunk-review
 {{ end -}}
 
+{{/* The Jira skill drives acli, Atlassian's CLI, which only the Mac has. */}}
+{{ if not (lookPath "acli") -}}
+.claude/skills/jira
+{{ end -}}
+
 {{/* mm's Go source; run_onchange_before_build-mm.sh builds it into
      ~/.local/bin instead. */}}
 mm
