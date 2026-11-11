@@ -2,12 +2,16 @@
 name = "php"
 language-servers = ["psalm", "intelephense"]
 auto-format = false
+{{ if ne .chezmoi.os "darwin" -}}
 indent = { tab-width = 3, unit = "   " }
+{{ end -}}
 
 [[language]]
 name = "sql"
 auto-format = false
+{{ if ne .chezmoi.os "darwin" -}}
 indent = { tab-width = 3, unit = "   " }
+{{ end -}}
 
 # https://github.com/helix-editor/helix/wiki/External-formatter-configuration#prettier
 [[language]]
@@ -28,18 +32,27 @@ formatter = { command = 'hx-fmt', args = ["css"] }
 auto-format = true
 
 [[language]]
+name = "scss"
+formatter = { command = 'hx-fmt', args = ["scss"] }
+auto-format = true
+
+[[language]]
 name = "javascript"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
 formatter = { command = 'hx-fmt', args = ["js"] }
 auto-format = true
+{{ if ne .chezmoi.os "darwin" -}}
 indent = { tab-width = 3, unit = "   " }
+{{ end -}}
 
 [[language]]
 name = "jsx"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
 formatter = { command = 'hx-fmt', args = ["jsx"] }
 auto-format = true
+{{ if ne .chezmoi.os "darwin" -}}
 indent = { tab-width = 3, unit = "   " }
+{{ end -}}
 
 [[language]]
 name = "liquid"
@@ -56,14 +69,18 @@ name = "typescript"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
 formatter = { command = 'hx-fmt', args = ["ts"] }
 auto-format = true
+{{ if ne .chezmoi.os "darwin" -}}
 indent = { tab-width = 3, unit = "   " }
+{{ end -}}
 
 [[language]]
 name = "tsx"
 language-servers = ["typescript-language-server", "eslint", "tailwindcss-ls"]
 formatter = { command = 'hx-fmt', args = ["tsx"] }
 auto-format = true
+{{ if ne .chezmoi.os "darwin" -}}
 indent = { tab-width = 3, unit = "   " }
+{{ end -}}
 
 [[language]]
 name = "toml"
@@ -87,7 +104,6 @@ args = ["--stdio"]
 # https://github.com/helix-editor/helix/issues/3231
 [language-server.eslint.config]
 validate = "on"
-experimental = { useFlatConfig = false }
 rulesCustomizations = []
 run = "onType"
 problems = { shortenToSingleLine = false }
@@ -98,9 +114,13 @@ command = "tailwindcss-language-server"
 args = ["--stdio"]
 [language-server.tailwindcss-ls.config.tailwindCSS]
 classFunctions = ["tw", "clsx", "cn", "tw\\.[a-z-]+"]
+{{- if ne .chezmoi.os "darwin" }}
+# Setting configFile stops the server finding Tailwind configs on its own, so
+# keep it off the Mac, whose repos it doesn't name.
 [language-server.tailwindcss-ls.config.tailwindCSS.experimental.configFile]
 "packages/shared/ui/src/styles/globals.css" = ["apps/nextjs/**", "packages/shared/ui/**"]
 "carpenter-frontend/Shared/tailwind.css" = "carpenter-frontend/Shared/**"
+{{- end }}
 
 [language-server.liquid]
 command = "shopify"
