@@ -55,7 +55,7 @@ Custom data variables live in `~/.config/chezmoi/chezmoi.toml`, which is *not* i
 
 ## Architecture
 
-- **Shell**: `dot_bashrc.tmpl`, `dot_bash_aliases.tmpl`, `dot_bash_keybindings` - hostname-conditional shell setup with fnm, zoxide, starship, fzf
+- **Shell**: `dot_bashrc.tmpl`, `dot_bash_aliases.tmpl` - hostname-conditional shell setup with fnm, zoxide, starship, and fzf's CTRL-R history search (its CTRL-T and ALT-C bindings are turned off)
 - **Git**: `dot_gitconfig.tmpl`, `dot_gitmessage` - templated for the GPG key and email
 - **Editors**: `private_dot_config/helix/` (primary editor), `dot_vimrc.tmpl` (fallback)
 - **Terminals**: `private_dot_config/alacritty/` (emulator, made the GNOME default by `private_dot_config/xdg-terminals.list`, which `xdg-terminal-exec` reads; masons-xps only), `private_dot_config/zellij/` (multiplexer), `dot_tmux.conf.tmpl` (alt multiplexer)

@@ -13,6 +13,8 @@
 .claude/skills/build-context
 .claude/skills/explain-diff-html
 .claude/skills/review-loop
+{{/* Held only fzf's CTRL-E binding. */}}
+.bash_keybindings
 {{/* Ship and its agents went Mac-only; clear what Linux already had. */}}
 {{ if ne .chezmoi.os "darwin" -}}
 .claude/skills/ship

@@ -49,7 +49,6 @@ Library/LaunchAgents/*
 !.bashrc
 !.bash_profile
 !.bash_aliases
-!.bash_keybindings
 !.gitconfig
 !.gitmessage
 !.gnupg

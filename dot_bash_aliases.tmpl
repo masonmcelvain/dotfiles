@@ -103,6 +103,11 @@ export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
 if type fd &> /dev/null; then
    export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --follow --exclude .git --color=always'
 fi
+# Keep only fzf's CTRL-R history search: empty commands skip CTRL-T and ALT-C
+# shellcheck disable=SC2034 # read by fzf's key bindings, sourced below
+FZF_CTRL_T_COMMAND=''
+# shellcheck disable=SC2034
+FZF_ALT_C_COMMAND=''
 
 {{ if eq .chezmoi.hostname "masons-xps" -}}
 #------------------------------------------------------------------------------
