@@ -3,5 +3,6 @@
 !.claude/
 !.env*
 !.github/
+!.shopify/
 !.gitignore
 !.gitattributes
