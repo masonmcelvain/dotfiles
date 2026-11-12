@@ -39,8 +39,9 @@ cmd - q [
                 fi
 ]
 
-# Swallow Cmd+H, which hides the focused app in nearly every app.
-cmd - h : true
+# Open a Finder window at home. This takes Cmd+H from every app, where it would
+# hide the focused app.
+cmd - h : open ~
 
 # Fill the screen without a full-screen Space, and shrink back. These take
 # Cmd+Up and Cmd+Down from every app, where text fields use them to jump to the
