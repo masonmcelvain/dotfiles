@@ -329,9 +329,13 @@ pane_frames false
 // Choose the theme that is specified in the themes section.
 // Default: default
 
+// The Mac's Alacritty imports a fixed light theme rather than following the
+// system appearance, so zellij stays on the static theme there too.
 theme "everforest-light"
+{{- if ne .chezmoi.os "darwin" }}
 theme_light "everforest-light"
 theme_dark "everforest-dark"
+{{- end }}
 
 // The name of the default layout to load on startup
 // Default: "default"
