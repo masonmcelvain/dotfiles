@@ -11,12 +11,19 @@ the code does what the builder thought; QA shows it does what the issue asked.
 
 Match the method to the change; most web changes use more than one.
 
-- **Browser**: drive the dev app through the AC's path with the
-  `agent-browser` skill (a Chrome or Playwright tool if that's what's
-  available). Screenshot the states that matter, check the console for new
-  errors and the network panel for failed requests, try a narrow viewport and
-  keyboard navigation when the change is UI. Capture a "before" from the base
-  branch only when the dev setup makes that cheap; otherwise describe it.
+- **Browser**: drive the dev app through the AC's path with `agent-browser`,
+  which runs a headless Chromium that never takes my screen's focus, in a
+  session named after the branch (`--session US-1234`) so parallel runs stay
+  apart. Screenshot the states that matter, check the console for new errors
+  and the network panel for failed requests, try a narrow viewport and keyboard
+  navigation when the change is UI. Capture a "before" from the base branch
+  only when the dev setup makes that cheap; otherwise describe it.
+- **My Chrome profile** (Claude in Chrome, or agent-browser's `--profile`
+  pointing at my Chrome profile or `--auto-connect`) only with my permission,
+  asked for each run: it uses my real browser and sign-ins, and the extension
+  steals focus from whatever I'm doing. Reach for it only when an AC can't be
+  shown in a fresh agent-browser session, such as a page behind an SSO login
+  that local dev can't fake.
 - **HTTP**: `curl -i` the endpoints with the cases from the spec, plus the error
   and auth-failure cases. Keep the transcripts.
 - **Script**: a one-off script that sets up state and asserts on the outcome,
@@ -63,6 +70,12 @@ finding is addressed once it's `fixed` (QA re-ran it and it passes) or
   and the retro
   records what was missing. Building a project "verify" skill for this repo is
   the long-term fix; suggest it to me.
+- **BLOCKED on my Chrome profile**: notify me with what it needs and why
+  (`"ship: US-1234" "QA needs my Chrome profile for the admin login (AC3)"`),
+  record the question in the ledger, and carry on with everything else. Only
+  my yes in the session lets a QA agent use it, for that run and the ACs I
+  agreed to; tell the agent so when you re-run them. A no, or no answer by
+  phase 7, makes those ACs manual QA steps.
 
 ## Writing it up
 

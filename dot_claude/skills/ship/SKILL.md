@@ -78,6 +78,8 @@ Until the go-ahead pause, I'm not there. Make the call, write it under
 - a review stalemate, QA failing three times on the same criterion, or a setup
   you can't get running
 - anything the ground rules forbid that the task seems to need
+- QA needing my own Chrome profile, which agents only use with my permission
+  (see [qa.md](qa.md))
 
 Interrupt with my notifier:
 

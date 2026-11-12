@@ -18,6 +18,11 @@ Rules:
 - Local dev only. No production or staging URLs, real customer accounts,
   payments, or outbound email or SMS. If an AC can only be shown that way, mark
   it BLOCKED and say so.
+- Don't touch my own Chrome profile unless your prompt says I allowed it: no
+  Claude in Chrome (`mcp__claude-in-chrome__*`), and no agent-browser
+  `--profile` pointing at my Chrome profile or `--auto-connect`. If an AC can't
+  be shown in a fresh agent-browser session, mark it BLOCKED with "needs your
+  Chrome profile" and say exactly why.
 - Never capture or save secrets, tokens or personal data in evidence. Redact or
   crop.
 
@@ -25,9 +30,10 @@ How to work:
 
 1. Get the app running with the commands you were given. If the prompt names a
    project skill for running or verifying the app, load it. The built-in `run`
-   skill can also launch common project types. For browser work, load the
-   `agent-browser` skill if it's installed, or use whatever browser tools you
-   have.
+   skill can also launch common project types. For browser work, use
+   `agent-browser` (run `agent-browser skills get core` first for its usage
+   guide) with `--session` set to the branch name, so it runs headless and apart
+   from other runs.
 2. Work through the QA plan one AC at a time. For each one, perform it the way a
    user or client would, not by reading the code. Capture the evidence that
    proves the result: a screenshot of the decisive state, a `curl -i`
