@@ -309,36 +309,67 @@ func commonDir(dir string) string {
 
 // worktree returns the worktree for branch under the main checkout's
 // .claude/worktrees/, adding it if it isn't there: on the existing branch,
-// fetched from origin when it isn't local, or as a new branch off base.
+// fetched from origin when it isn't local, or as a new branch off base. A
+// clean worktree already at that path but on another branch or a detached
+// HEAD, as deleting its session in `mm sessions` leaves it, is switched to
+// branch in place.
 func worktree(top, branch, base string, existing bool) (string, error) {
 	if held, ok := gitx.Worktrees(top)[branch]; ok {
 		return held, nil
 	}
 	main := filepath.Dir(commonDir(top))
 	dir := filepath.Join(main, ".claude", "worktrees", strings.ReplaceAll(branch, "/", "-"))
+	reuse := false
 	if _, err := os.Stat(dir); err == nil {
-		return "", fmt.Errorf("%s exists but doesn't hold %s", dir, branch)
+		if !isWorktree(top, dir) {
+			return "", fmt.Errorf("%s exists but isn't a worktree of this repo", dir)
+		}
+		if gitx.Dirty(dir) {
+			return "", fmt.Errorf("%s has uncommitted changes, so ship won't switch it to %s", dir, branch)
+		}
+		reuse = true
 	}
 
-	args := []string{"worktree", "add", "-q"}
+	// The same three cases either way: `worktree add` makes the directory,
+	// and `switch` moves the one that's there.
+	add := []string{"-C", top, "worktree", "add", "-q"}
+	sw := []string{"-C", dir, "switch", "-q"}
 	switch {
 	case !existing:
-		args = append(args, "-b", branch, dir, base)
+		add = append(add, "-b", branch, dir, base)
+		sw = append(sw, "-c", branch, base)
 	default:
 		if _, err := gitx.Git(top, "show-ref", "-q", "--verify", "refs/heads/"+branch); err != nil {
 			refspec := fmt.Sprintf("+refs/heads/%s:refs/remotes/origin/%s", branch, branch)
 			if _, err := gitx.Git(top, "fetch", "-q", "origin", refspec); err != nil {
 				return "", fmt.Errorf("couldn't fetch %s", branch)
 			}
-			args = append(args, "--track", "-b", branch, dir, "origin/"+branch)
+			add = append(add, "--track", "-b", branch, dir, "origin/"+branch)
+			sw = append(sw, "--track", "-c", branch, "origin/"+branch)
 		} else {
-			args = append(args, dir, branch)
+			add = append(add, dir, branch)
+			sw = append(sw, branch)
 		}
 	}
-	out, err := exec.Command("git", append([]string{"-C", top}, args...)...).CombinedOutput()
+	cmd, verb := add, "add a worktree"
+	if reuse {
+		cmd, verb = sw, "switch "+dir
+	}
+	out, err := exec.Command("git", cmd...).CombinedOutput()
 	if err != nil {
 		msg, _, _ := strings.Cut(strings.TrimSpace(string(out)), "\n")
-		return "", fmt.Errorf("couldn't add a worktree for %s: %s", branch, msg)
+		return "", fmt.Errorf("couldn't %s for %s: %s", verb, branch, msg)
 	}
 	return dir, nil
+}
+
+// isWorktree reports whether dir is the top of a worktree of the repo at top.
+func isWorktree(top, dir string) bool {
+	t, err := gitx.Git(dir, "rev-parse", "--show-toplevel")
+	if err != nil {
+		return false
+	}
+	rt, err1 := filepath.EvalSymlinks(t)
+	rd, err2 := filepath.EvalSymlinks(dir)
+	return err1 == nil && err2 == nil && rt == rd && commonDir(dir) == commonDir(top)
 }
