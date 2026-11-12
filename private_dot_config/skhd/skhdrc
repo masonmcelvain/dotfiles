@@ -2,12 +2,30 @@
 # longer selects all anywhere. `skhd -o` prints the keysym for a keypress.
 
 # New Alacritty window. It goes through the newest Alacritty's IPC socket, so
-# windows share one process and Dock icon; when none is running, msg fails and
-# open starts one. The socket is named by pid, so a stale one left by a dead
-# instance never gets picked.
-cmd - a : /Applications/Alacritty.app/Contents/MacOS/alacritty msg \
-          --socket "$(getconf DARWIN_USER_TEMP_DIR)Alacritty-$(pgrep -nx alacritty).sock" \
-          create-window || open -na /Applications/Alacritty.app
+# windows share one process and Dock icon; only when none is running does open
+# start one. The socket is named by pid, so a stale one left by a dead instance
+# never gets picked, and the pgrep pattern matches the bare binary, so an
+# in-flight `alacritty msg` isn't mistaken for an instance.
+#
+# msg is retried because Alacritty 0.17 on macOS drops some messages: its
+# listener is nonblocking, macOS's accept() hands that on to the connection,
+# and when the server reads before msg has finished writing, the read fails
+# with EAGAIN and the connection is closed unread. msg then fails with
+# BrokenPipe or NotConnected, and no window was made, so a retry is safe.
+# Falling back to open on that failure is what used to start a second
+# instance. open -n is left for when the socket file itself is gone.
+cmd - a : a=/Applications/Alacritty.app; \
+          p="$(pgrep -nf "^$a/Contents/MacOS/alacritty\$")"; \
+          s="$(getconf DARWIN_USER_TEMP_DIR)Alacritty-$p.sock"; \
+          if [ -z "$p" ]; then \
+            open -a "$a"; \
+          elif [ ! -S "$s" ]; then \
+            open -na "$a"; \
+          else \
+            for _ in 1 2 3 4 5; do \
+              "$a/Contents/MacOS/alacritty" msg --socket "$s" create-window && break; \
+            done; \
+          fi
 
 # Quit Alacritty only on a second Cmd+Q within about a second, since one stray
 # press closes every window. The first press leaves a marker and a reminder;
