@@ -1,0 +1,109 @@
+#!/usr/bin/osascript -l JavaScript
+// window-size fill|restore - resize the focused window (Mac only, run by skhd).
+//
+// fill covers the screen's visible area (minus the menu bar and Dock) without
+// making the window a full-screen app in its own Space. restore puts a window
+// that fill grew back where it was; any other window shrinks to a centered
+// two-thirds of the screen. macOS's own Window > Fill can't do this, since only
+// apps with a Window menu have it and Alacritty has none, so the window is
+// resized through the Accessibility API, which skhd's Accessibility access
+// covers.
+//
+// The frame from before a fill is kept in a temp file named for the window's
+// CGWindowID, which unlike its title or index stays fixed for its lifetime.
+
+ObjC.import('AppKit');
+ObjC.import('CoreGraphics');
+
+function run(argv) {
+  const mode = argv[0];
+  if (mode !== 'fill' && mode !== 'restore') {
+    throw new Error('usage: window-size fill|restore');
+  }
+
+  const proc = Application('System Events').processes.whose({ frontmost: true })[0];
+  const win = proc.attributes.byName('AXFocusedWindow').value();
+  if (!win) return;
+
+  const frame = [...win.position(), ...win.size()];
+  const screen = visibleFrame(frame);
+  const id = windowId(proc.unixId(), frame);
+  const dir = $.NSTemporaryDirectory().js + 'window-size/';
+  const file = id === null ? null : `${dir}${id}.json`;
+
+  if (mode === 'fill') {
+    if (close(frame, screen)) return;
+    if (file) {
+      $.NSFileManager.defaultManager
+        .createDirectoryAtPathWithIntermediateDirectoriesAttributesError(dir, true, $(), null);
+      $(JSON.stringify({ before: frame, filled: screen }))
+        .writeToFileAtomicallyEncodingError(file, true, $.NSUTF8StringEncoding, null);
+    }
+    setFrame(win, screen);
+    return;
+  }
+
+  const saved = file && read(file);
+  if (file) $.NSFileManager.defaultManager.removeItemAtPathError(file, null);
+  if (saved && close(frame, saved.filled)) {
+    setFrame(win, saved.before);
+    return;
+  }
+  const [x, y, w, h] = screen;
+  const sw = Math.round(w * 2 / 3);
+  const sh = Math.round(h * 2 / 3);
+  setFrame(win, [x + Math.round((w - sw) / 2), y + Math.round((h - sh) / 2), sw, sh]);
+}
+
+// The visible frame, in Accessibility's top-left coordinates, of the screen
+// holding the window's center. NSScreen measures up from the primary screen's
+// bottom edge.
+function visibleFrame([x, y, w, h]) {
+  const screens = $.NSScreen.screens.js;
+  const top = screens[0].frame.size.height;
+  const flip = (r) => [r.origin.x, top - r.origin.y - r.size.height, r.size.width, r.size.height];
+  const cx = x + w / 2;
+  const cy = y + h / 2;
+  const s = screens.find((s) => {
+    const [sx, sy, sw, sh] = flip(s.frame);
+    return cx >= sx && cx < sx + sw && cy >= sy && cy < sy + sh;
+  }) || $.NSScreen.mainScreen;
+  return flip(s.visibleFrame);
+}
+
+// The CGWindowID of the pid's on-screen window with this frame, or null.
+function windowId(pid, [x, y, w, h]) {
+  const list = ObjC.castRefToObject($.CGWindowListCopyWindowInfo(
+    $.kCGWindowListOptionOnScreenOnly | $.kCGWindowListExcludeDesktopElements,
+    $.kCGNullWindowID,
+  )).js;
+  for (const info of list) {
+    const d = ObjC.deepUnwrap(info);
+    const b = d.kCGWindowBounds;
+    if (d.kCGWindowOwnerPID === pid && d.kCGWindowLayer === 0 &&
+        close([b.X, b.Y, b.Width, b.Height], [x, y, w, h])) {
+      return d.kCGWindowNumber;
+    }
+  }
+  return null;
+}
+
+function read(file) {
+  const s = $.NSString.stringWithContentsOfFileEncodingError(file, $.NSUTF8StringEncoding, null);
+  if (s.isNil()) return null;
+  try { return JSON.parse(s.js); } catch { return null; }
+}
+
+// Apps round sizes to their own increments (Alacritty to whole cells), so a
+// frame is compared with some slack.
+function close(a, b) {
+  return a.every((v, i) => Math.abs(v - b[i]) <= 24);
+}
+
+// Size before and after moving, since a window too big for its new spot, or
+// one moving to another screen, can be clamped on the first try.
+function setFrame(win, [x, y, w, h]) {
+  win.size = [w, h];
+  win.position = [x, y];
+  win.size = [w, h];
+}

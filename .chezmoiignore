@@ -16,6 +16,7 @@ CLAUDE.md
 {{/* skhd is a macOS hotkey daemon. */}}
 {{ if ne .chezmoi.os "darwin" -}}
 .config/skhd
+.local/bin/window-size
 .claude/skills/skhd
 {{ end -}}
 
@@ -72,6 +73,7 @@ Library/LaunchAgents/*
 !.local/bin/git-blame-trace.sh
 !.local/bin/git-line-commit.sh
 !.local/bin/notify
+!.local/bin/window-size
 !install-mac-fonts.sh
 !build-mm.sh
 !configure-mac-screencapture.sh
