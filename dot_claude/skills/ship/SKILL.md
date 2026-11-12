@@ -327,9 +327,9 @@ open, each further push needs its own go-ahead (see
 
    An adopted PR already exists: push, and update its description with
    `bkt pr edit <n> --description ...` only if I said to.
-5. Record the PR URL. Open the screenshots folder and the PR for me
-   (`open ~/Pictures/screenshots/<key> "<pr url>"`), since
-   Bitbucket's API can't attach files and I'll drag them in.
+5. Record the PR URL and open it for me (`open "<pr url>"`). Bitbucket's API
+   can't attach files, so I'll drag the screenshots in from
+   `~/Pictures/screenshots/<key>/`.
 6. Append a retro to `~/.claude/ship-retros.md` (create it if missing): date,
    repo, issue, PR, what the board and QA caught that the builder should have,
    what my go-ahead feedback caught that the board and QA didn't, setup
