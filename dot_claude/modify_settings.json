@@ -46,6 +46,12 @@ managed=$(jq -n --arg status "$status_cmd" --arg notify "$notify_cmd" --argjson 
         | with_entries(select(.value != []))
       end')
 
+# The Mac's terminal stack is pinned light. Claude's "auto" theme asks the
+# terminal for its background, and a pane in a zellij session with no client
+# attached (as `mm ship` starts them) gets no answer, so it falls back to dark.
+theme_filter='.'
+[ "$(uname)" = Darwin ] && theme_filter='.theme = "light"'
+
 current=$(cat)
 [ -n "$current" ] || current='{}'
 
@@ -62,4 +68,4 @@ jq --argjson managed "$managed" '
         reduce ($managed | to_entries[]) as $e (.hooks // {};
             .[$e.key] = ((.[$e.key] // [] | map(select(is_managed | not))) + $e.value))
     )
-' <<<"$current"
+' <<<"$current" | jq "$theme_filter"
