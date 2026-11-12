@@ -132,8 +132,10 @@ last-seen: <created_on of the newest comment handled; empty means since the PR o
 2. If origin is in `nordicnaturals`, load the `nordic` skill now.
 3. If the tree has changes you didn't make, stop and notify me; they're mine.
 4. Make the checkout runnable. In a fresh worktree (`git worktree list`, first
-   entry is the main checkout), copy over the main checkout's untracked env files
-   (`.env`, `.env.local`, and the like, the ones `.gitignore` covers) and
+   entry is the main checkout), copy over the main checkout's untracked local
+   config, the files `.gitignore` covers that the app needs to run: env files
+   (`.env`, `.env.local`, and the like) and `.shopify/project.json`, at the
+   same paths, without overwriting any the worktree already has. Then
    install dependencies with the lockfile's own tool (`yarn install
    --frozen-lockfile`, `npm ci`, `pnpm install --frozen-lockfile`, ...).
 5. Note how this repo is checked: lint, typecheck, test, build, and how to run
