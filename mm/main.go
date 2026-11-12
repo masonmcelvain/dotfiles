@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 	"syscall"
 
 	"github.com/charmbracelet/x/term"
@@ -33,6 +34,14 @@ const usage = `usage: mm COMMAND
 With stdout not a terminal, agents and sessions print a plain table.
 `
 
+const shipUsage = `usage: mm ship ISSUE-KEY|PR [NOTE...] | TASK IN WORDS
+
+Hand a Jira issue, Bitbucket PR or task to a Claude agent in its own checkout
+and zellij session. TARGET is an issue key or link, a PR number or link, or
+words; after an issue or PR, the rest is a note passed to the agent as an
+instruction. Mac only.
+`
+
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Fprint(os.Stderr, usage)
@@ -56,13 +65,22 @@ func main() {
 	case "sessions":
 		runSessions(args)
 	case "ship":
+		// ship has no flags, so anything that looks like one is a mistake
+		// rather than a task to hand an agent.
+		if len(args) > 0 && strings.HasPrefix(args[0], "-") {
+			if args[0] == "-h" || args[0] == "--help" {
+				fmt.Print(shipUsage)
+				return
+			}
+			die("unknown flag %s\n\n%s", args[0], strings.TrimSuffix(shipUsage, "\n"))
+		}
 		// The ship skill and its agents only reach the Mac, where the work is.
 		if runtime.GOOS != "darwin" {
 			die("ship only runs on the Mac")
 		}
 		requireZellij()
 		if len(args) == 0 {
-			die("usage: mm ship ISSUE-KEY|PR [NOTE...] | TASK IN WORDS")
+			die("%s", strings.TrimSuffix(shipUsage, "\n"))
 		}
 		msg, err := ship.Run(ship.SplitArgs(args))
 		if err != nil {
