@@ -263,8 +263,9 @@ Everything is local and done. Get it ready to publish, then ask me.
    `## Deploy`. Add `## Assumptions` only for ones a reviewer should weigh.
    Leave the agent machinery out; it's for the humans who'll review it.
 3. Gather the screenshots worth attaching into
-   `$(git rev-parse --git-dir)/ship/attachments/`, named as `pr.md` names them.
-   Nothing that shows secrets, tokens or personal data.
+   `~/Pictures/screenshots/<key>/` (the branch's slug for a task with no key
+   yet), named as `pr.md` names them. Nothing that shows secrets, tokens or
+   personal data.
 4. Fill the ledger's **Go-ahead** section and set the phase to
    `awaiting-go-ahead`.
 5. Notify me and end your turn with the report (below), which closes with
@@ -304,9 +305,10 @@ open, each further push needs its own go-ahead (see
 ## Phase 8: publish
 
 1. If I gave an issue key for a task, rename the branch to it
-   (`git branch -m <key>`) and reword every commit subject that doesn't
-   already lead with it; they're unpushed, so rewriting is fine. Re-run the
-   gate.
+   (`git branch -m <key>`), move its screenshots folder to
+   `~/Pictures/screenshots/<key>/`, and reword every commit subject that
+   doesn't already lead with it; they're unpushed, so rewriting is fine.
+   Re-run the gate.
 
    ```
    git rebase origin/<base> -x 'git commit --amend -m "<key> $(git log -1 --format=%B)"'
@@ -325,8 +327,8 @@ open, each further push needs its own go-ahead (see
 
    An adopted PR already exists: push, and update its description with
    `bkt pr edit <n> --description ...` only if I said to.
-5. Record the PR URL. Open the attachments folder and the PR for me
-   (`open "$(git rev-parse --git-dir)/ship/attachments" "<pr url>"`), since
+5. Record the PR URL. Open the screenshots folder and the PR for me
+   (`open ~/Pictures/screenshots/<key> "<pr url>"`), since
    Bitbucket's API can't attach files and I'll drag them in.
 6. Append a retro to `~/.claude/ship-retros.md` (create it if missing): date,
    repo, issue, PR, what the board and QA caught that the builder should have,
