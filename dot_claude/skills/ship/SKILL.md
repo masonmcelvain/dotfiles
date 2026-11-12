@@ -258,10 +258,13 @@ Everything is local and done. Get it ready to publish, then ask me.
    first line, a blank line, then the description, following the `nordic`
    skill's layout in a Nordic repo and CLAUDE.md's PR guidelines otherwise. It
    carries everything a reviewer needs, since nothing else gets posted: what
-   changed and why, `## Changes`, `## QA` with what was verified and how (and
-   the screenshots by file name, plus any manual steps QA couldn't do), and
-   `## Deploy`. Add `## Assumptions` only for ones a reviewer should weigh.
-   Leave the agent machinery out; it's for the humans who'll review it.
+   changed and why, `## Changes` when it does several things, `## QA` with
+   what was verified and how (and the screenshots by file name, plus any
+   manual steps QA couldn't do), and `## Deploy`. Add `## Assumptions` only for
+   ones a reviewer should weigh. Leave the agent machinery out; it's for the
+   humans who'll review it. Then run the description through the `humanizer`
+   skill in embedded mode, with CLAUDE.md's writing voice examples as the
+   sample.
 3. Gather the screenshots worth attaching into
    `~/Pictures/screenshots/<key>/` (the branch's slug for a task with no key
    yet), named as `pr.md` names them. Nothing that shows secrets, tokens or

@@ -10,3 +10,12 @@ exact = true
 stripComponents = 3
 include = ["*/skills/bkt", "*/skills/bkt/**"]
 {{ end -}}
+
+{{/* blader/humanizer strips AI tells from commit and PR prose. Pinned to a
+     tag and bumped by hand, since a skill's text runs as instructions. */}}
+[".claude/skills/humanizer"]
+type = "archive"
+url = "https://github.com/blader/humanizer/archive/refs/tags/v4.0.0.tar.gz"
+exact = true
+stripComponents = 1
+include = ["*/SKILL.md", "*/LICENSE"]
