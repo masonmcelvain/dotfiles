@@ -16,6 +16,57 @@ Lead with the claim, then give the evidence for it. I have a hard time following
 
 This applies to responses, investigation summaries, commit bodies, PR descriptions, and review comments.
 
+## Writing voice
+
+Commits, PRs, review comments and Jira text go out under my name, so write them the way I would: short and plain. Say why the change exists and anything a reviewer can't see in the diff. Leave the rest to the diff, the issue and the linked thread.
+
+- Most commits need no body. When one does, one or two sentences.
+- A PR description is usually its references plus one to three sentences. A small PR can be just a link.
+- Use everyday words and short sentences, one idea each. Split a sentence rather than joining clauses with a semicolon or dash.
+- Write as me. "I", "we" and "let's" are fine, and so is saying what I'm unsure of ("I couldn't get the form to load locally, so this is untested").
+- Keep audit IDs, spec numbers and other identifiers only when a reader needs them to look something up.
+
+Some PRs I wrote:
+
+<examples>
+<example>
+The ifixit-nextjs-dev PR deploy failed a few times in https://github.com/iFixit/ifixit/pull/55534, and it turns out we don't deploy strapi when there are changes to the vercel deploy script. This change deploys strapi in that case, and also clarifies the webhook response message to make debugging a little easier.
+</example>
+<example>
+- connect https://github.com/iFixit/ifixit/issues/51463
+
+These fields are going away, so let's drop them from the type.
+</example>
+<example>
+- close https://github.com/iFixit/ifixit/issues/54409
+
+Resetting seems to make Akeneo unsearchable until we rebuild the indices. Let's try pruning deleted products/product models before rebuilding the indices, which should have the same effect.
+
+## On deploy
+
+Update the Akeneo crontab to use `reindex-in-place` instead of `reindex`.
+</example>
+<example>
+- fix a bug I introduced in https://github.com/iFixit/react-commerce/pull/2169
+
+## QA
+
+www.ifixit.com/products/asdf will 500. On this branch it should 404.
+</example>
+<example>
+I decided to make `redirectToType` an enum instead of a boolean because I found it more readable as an admin user. If folks disagree I welcome their feedback.
+</example>
+</examples>
+
+And a commit body, first as you tend to write it, then as I would:
+
+<example>
+Keyboard users lost their place because the modal's close handler returned focus to document.body instead of the trigger, so the next Tab started at the top of the page. Store the trigger element when the modal opens and restore focus to it on close, falling back to body when the trigger has unmounted.
+</example>
+<example>
+Focus jumped to the top of the page on close, so keyboard users lost their place.
+</example>
+
 ## Commit guidelines
 
 Use conventional commit messages following this pattern:
@@ -31,7 +82,7 @@ Use conventional commit messages following this pattern:
 - The description starts lowercase (unless it begins with an acronym or proper noun) and uses the imperative tense, not the passive tense. For example, "add Polish language" instead of "adds Polish language".
 - The first line must be 50 characters or less.
 - Trivial changes don't need a body (e.g. `fix: --help typo`).
-- When there is a body, lead with the motivation: explain why the change is needed, not just what it does. Keep it brief, in complete sentences.
+- When there is a body, lead with the motivation: explain why the change is needed, not just what it does, in complete sentences.
 - Cite evidence in the body when it exists: Slack thread links, Sentry issue links, API docs, and commit hashes. Bare URLs on their own line are fine.
 - Never link pull requests or issues in a commit message. When one is worth citing, write its bare number without a `#` (e.g. "zellij issue 3998"), so GitHub doesn't auto-link it; never use `#123` or a URL.
 

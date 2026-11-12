@@ -70,12 +70,12 @@ except Deploy:
 ```
 https://nordicnaturals.atlassian.net/browse/US-1234
 
-What changed and why, in a few sentences, for a reviewer who hasn't read the
-issue.
+What changed and why, in one to three sentences, for a reviewer who hasn't
+read the issue.
 
 ## Changes
 
-- Bulleted changeset, grouped by area when it spans several
+- Bulleted changeset, grouped by area, only when the PR does several things
 
 ## QA
 
