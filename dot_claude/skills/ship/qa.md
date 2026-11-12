@@ -11,19 +11,16 @@ the code does what the builder thought; QA shows it does what the issue asked.
 
 Match the method to the change; most web changes use more than one.
 
-- **Browser**: drive the dev app through the AC's path with `agent-browser`,
-  which runs a headless Chromium that never takes my screen's focus, in a
-  session named after the branch (`--session US-1234`) so parallel runs stay
-  apart. Screenshot the states that matter, check the console for new errors
-  and the network panel for failed requests, try a narrow viewport and keyboard
-  navigation when the change is UI. Capture a "before" from the base branch
-  only when the dev setup makes that cheap; otherwise describe it.
-- **My Chrome profile** (Claude in Chrome, or agent-browser's `--profile`
-  pointing at my Chrome profile or `--auto-connect`) only with my permission,
-  asked for each run: it uses my real browser and sign-ins, and the extension
-  steals focus from whatever I'm doing. Reach for it only when an AC can't be
-  shown in a fresh agent-browser session, such as a page behind an SSO login
-  that local dev can't fake.
+- **Browser**: drive the app through the AC's path with `agent-browser`, which
+  runs headless and doesn't take my focus, in a session named after the branch
+  (`--session US-1234`). If a bot check like Cloudflare's blocks it, switch to
+  my own Chrome with Claude in Chrome (the `claude-in-chrome` skill), in a new
+  tab of your own that you close when you're done. No permission needed. Being
+  blocked never makes an AC BLOCKED while Chrome is left to try. Screenshot the states that matter, check the
+  console for new errors and the network panel for failed requests, try a
+  narrow viewport and keyboard navigation when the change is UI. Capture a
+  "before" from the base branch or the live site when that's cheap; otherwise
+  describe it.
 - **HTTP**: `curl -i` the endpoints with the cases from the spec, plus the error
   and auth-failure cases. Keep the transcripts.
 - **Script**: a one-off script that sets up state and asserts on the outcome,
@@ -35,9 +32,20 @@ Match the method to the change; most web changes use more than one.
 - **Regression**: the existing tests around the change, and the full suite if
   CI won't run it.
 
-Local dev only: no production or staging URLs, no real customer accounts, no
-real payment, email or SMS sends. If an AC can't be shown without them, it's a
-manual step for me.
+Show each AC in the real app, the way a user would reach it: the local dev
+server first, pointed at a dev store, then the live site for read-only
+comparison. A test harness or script that stands in for the page is weaker
+evidence, so use one only after you've actually tried to run the app and it
+failed. Say what you ran and the error it gave.
+
+**Production is read-only.** My Chrome is signed in as me, including to
+production admin tools, so a wrong click there changes real data. On production
+and staging, only look: browse pages, read admin screens, check the console and
+network. Never save, publish, delete or import anything, place an order, submit
+a form that saves anything, change an account or setting, or send email or
+SMS. Mutations are only for local dev and the dev stores. If you can't tell
+whether a store or admin is a dev one, treat it as production. If an AC can
+only be shown by changing production, it's a manual step for me.
 
 ## Running it
 
@@ -47,8 +55,8 @@ Spawn a `qa-engineer` with:
 - how to run the app and the check commands from phase 0, and anything the
   setup taught you
 - the evidence directory: `$(git rev-parse --git-dir)/ship/qa/round-<n>/`
-- the ground rules: it doesn't edit the repo, doesn't commit, and doesn't
-  push or post anything to Bitbucket or Jira
+- the ground rules: it doesn't edit the repo, doesn't commit, doesn't push or
+  post anything to Bitbucket or Jira, and treats production as read-only
 
 It comes back with a report: per AC `PASS`, `FAIL` or `BLOCKED`, the evidence
 files, for each failure the steps, the expected and actual results, and its
@@ -65,17 +73,13 @@ finding is addressed once it's `fixed` (QA re-ran it and it passes) or
   round's report, if it's gone) to re-run what failed and spot-check its
   neighbors. Three failures on the same AC is an escalation.
 - **BLOCKED** (it can't get the app running, or the data the AC needs doesn't
-  exist locally): try once yourself to fix the setup. If that doesn't work, the
+  exist locally): check that the report names the command it ran and the error.
+  If it doesn't, the agent didn't really try, so send it back. Then try once
+  yourself to fix the setup. If that doesn't work, the
   AC becomes a manual QA step in the PR description, with exact instructions,
   and the retro
   records what was missing. Building a project "verify" skill for this repo is
   the long-term fix; suggest it to me.
-- **BLOCKED on my Chrome profile**: notify me with what it needs and why
-  (`"ship: US-1234" "QA needs my Chrome profile for the admin login (AC3)"`),
-  record the question in the ledger, and carry on with everything else. Only
-  my yes in the session lets a QA agent use it, for that run and the ACs I
-  agreed to; tell the agent so when you re-run them. A no, or no answer by
-  phase 7, makes those ACs manual QA steps.
 
 ## Writing it up
 

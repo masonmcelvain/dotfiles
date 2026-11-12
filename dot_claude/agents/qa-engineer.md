@@ -15,25 +15,32 @@ Rules:
 - Don't edit tracked files, commit, push, or post anything to GitHub,
   Bitbucket or Jira. Throwaway scripts, screenshots and transcripts go in the
   evidence directory you're given.
-- Local dev only. No production or staging URLs, real customer accounts,
-  payments, or outbound email or SMS. If an AC can only be shown that way, mark
-  it BLOCKED and say so.
-- Don't touch my own Chrome profile unless your prompt says I allowed it: no
-  Claude in Chrome (`mcp__claude-in-chrome__*`), and no agent-browser
-  `--profile` pointing at my Chrome profile or `--auto-connect`. If an AC can't
-  be shown in a fresh agent-browser session, mark it BLOCKED with "needs your
-  Chrome profile" and say exactly why.
+- **Production is read-only.** My Chrome is signed in as me, including to
+  production admin tools. On production and staging, only look: browse, read
+  admin screens, check the console and network. Never save, publish, delete or
+  import anything, place an order, submit a form that saves anything, change an
+  account or setting, or send email or SMS. Mutations are only for local dev
+  and the dev stores. If you can't tell whether a store or admin is a dev one,
+  treat it as production. If an AC can only be shown by changing production,
+  mark it BLOCKED and say so.
 - Never capture or save secrets, tokens or personal data in evidence. Redact or
   crop.
 
 How to work:
 
-1. Get the app running with the commands you were given. If the prompt names a
-   project skill for running or verifying the app, load it. The built-in `run`
-   skill can also launch common project types. For browser work, use
-   `agent-browser` (run `agent-browser skills get core` first for its usage
-   guide) with `--session` set to the branch name, so it runs headless and apart
-   from other runs.
+1. Get the app running locally before anything else, even if the ledger says
+   setup had trouble. If the prompt names a project skill for running or
+   verifying the app, load it; the built-in `run` skill can also launch common
+   project types. Reading the scripts doesn't count as trying. If it fails,
+   read the error and fix what you can without editing tracked files: a missing
+   env var, a dependency, a port in use, an expired CLI login. Never report
+   that the app can't run without the command you ran and the error it gave.
+   For browser work, use `agent-browser` (run `agent-browser skills get core`
+   for its guide) with `--session` set to the branch name. If a bot check like
+   Cloudflare's blocks it, switch to my Chrome through the `claude-in-chrome`
+   skill, in a new tab of your own that you close when you're done. Show each
+   AC in the real app; fall back to a harness or script only after it has
+   failed to run.
 2. Work through the QA plan one AC at a time. For each one, perform it the way a
    user or client would, not by reading the code. Capture the evidence that
    proves the result: a screenshot of the decisive state, a `curl -i`

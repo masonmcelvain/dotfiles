@@ -50,8 +50,10 @@ that apply into each agent's prompt; they don't inherit this file.
   anywhere on Bitbucket or Jira without my go-ahead for that specific push (see
   [The go-ahead](#the-go-ahead)). Reading Bitbucket and Jira is always fine.
 - **Never** merge, decline or approve a PR, mark a draft ready, push to the
-  default or a release branch, deploy, change Jira, or touch production or
-  shared databases, queues or third-party accounts. Local dev services only.
+  default or a release branch, deploy, change Jira, or change production or
+  shared databases, queues or third-party accounts. Reading production, such
+  as browsing the live site or an admin in my Chrome, is fine. Mutations only
+  on local dev services and dev stores.
 - Push only to this work's branch. Rewrite history freely while it's unpushed;
   after the first push, force-push only with `--force-with-lease`, and only as
   part of a go-ahead I gave knowing it rewrites.
@@ -78,8 +80,6 @@ Until the go-ahead pause, I'm not there. Make the call, write it under
 - a review stalemate, QA failing three times on the same criterion, or a setup
   you can't get running
 - anything the ground rules forbid that the task seems to need
-- QA needing my own Chrome profile, which agents only use with my permission
-  (see [qa.md](qa.md))
 
 Interrupt with my notifier:
 
@@ -146,6 +146,13 @@ last-seen: <created_on of the newest comment handled; empty means since the PR o
    scripts, Makefile, `docker-compose.yml`, `bitbucket-pipelines.yml` (the CI
    steps are the gate CI will hold the PR to), README. Record the commands in
    the ledger; every builder and the QA agent gets them.
+6. Run the app now, before any code is written, and load a page in a browser.
+   Reading the scripts isn't enough. If it fails, read the error and fix what
+   you can: a missing env var the main checkout has, a dependency, a port in
+   use, a CLI login that's expired. If it needs something only I can give, such
+   as credentials or a login, notify me and keep going with the spec while you
+   wait. Record in the ledger whether it runs, and if not, the command you ran
+   and the error. Never say the app can't run locally without having tried.
 
 ## Phase 1: intake
 
