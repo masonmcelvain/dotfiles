@@ -15,6 +15,10 @@
 .claude/skills/review-loop
 {{/* Held only fzf's CTRL-E binding. */}}
 .bash_keybindings
+{{/* tmux and vim configs, no longer used. */}}
+.tmux.conf
+.vimrc
+.vim/after
 {{/* Ship and its agents went Mac-only; clear what Linux already had. */}}
 {{ if ne .chezmoi.os "darwin" -}}
 .claude/skills/ship
