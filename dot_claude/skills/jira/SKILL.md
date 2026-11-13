@@ -57,6 +57,11 @@ acli jira workitem transition --key ABC-123 --status "In Progress" --yes
   `--body-file`, rather than quoting it inline.
 - Status names in `transition --status` are per-project workflow names. If one
   is rejected, check the ticket's current status and ask me which to use.
+- Pick `--type` for what the work is. Don't default to `Task`. A defect is a
+  `Bug`, an investigation is whatever type the project uses for one, and so on.
+  Work types are per project, so list them with their descriptions first:
+  `acli jira project view --key ABC --json` (under `issueTypes`). If the work
+  could fit two types, ask me. `edit` can't change the type afterwards.
 - `create --generate-json` and `edit --generate-json` print a template for
   setting fields that have no flag, used with `--from-json`.
 

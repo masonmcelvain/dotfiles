@@ -45,6 +45,17 @@ and `acli` can't add them afterwards. Pass them in `additionalAttributes` with
 If either ID is rejected, look them up again on a recent US ticket that has
 them filled in.
 
+Pick the work type for what the ticket is, not `Task` by default:
+
+- **Bug**: something that worked, or should work, is broken.
+- **Enhancement**: an improvement to something that already exists.
+- **Technical Story**: new engineering work, including tooling and refactors.
+- **Discovery**: an investigation or spike whose output is an answer, not code.
+- **Task**: a chore that fits none of the above.
+
+Leave `Story`, `New Feature` and `Epic` to product unless I ask for one, and
+never use `Test` (Zephyr's) or `Sub-task` without a `--parent`.
+
 ## Branches
 
 The branch name is the key and nothing else: `US-1234`. One branch per issue.
