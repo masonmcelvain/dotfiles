@@ -2,18 +2,17 @@
 // window-size fill|restore - resize the focused window (Mac only, run by skhd).
 //
 // fill covers the screen's visible area (minus the menu bar and Dock) without
-// making the window a full-screen app in its own Space. restore puts a window
-// that fill grew back where it was; any other window shrinks to a centered
-// two-thirds of the screen. macOS's own Window > Fill can't do this, since only
-// apps with a Window menu have it and Alacritty has none, so the window is
-// resized through the Accessibility API, which skhd's Accessibility access
-// covers.
+// making the window a full-screen app in its own Space. restore puts a filled
+// window back where it was; any other window shrinks to a centered two-thirds
+// of the screen.
 //
-// The frame from before a fill is kept in a temp file named for the window's
-// CGWindowID, which unlike its title or index stays fixed for its lifetime.
+// Both zoom the window the way double-clicking its title bar does, through the
+// green button's AXZoomWindow action, so the app animates it and remembers the
+// frame to go back to. Setting the frame over the Accessibility API instead
+// jumps in steps, so that's only the fallback, for a window with no zoom button
+// or an app whose zoom doesn't fill the screen (Safari's fits the page).
 
 ObjC.import('AppKit');
-ObjC.import('CoreGraphics');
 
 function run(argv) {
   const mode = argv[0];
@@ -25,34 +24,45 @@ function run(argv) {
   const win = proc.attributes.byName('AXFocusedWindow').value();
   if (!win) return;
 
-  const frame = [...win.position(), ...win.size()];
-  const screen = visibleFrame(frame);
-  const id = windowId(proc.unixId(), frame);
-  const dir = $.NSTemporaryDirectory().js + 'window-size/';
-  const file = id === null ? null : `${dir}${id}.json`;
+  const screen = visibleFrame(frame(win));
+  const filled = close(frame(win), screen);
 
   if (mode === 'fill') {
-    if (close(frame, screen)) return;
-    if (file) {
-      $.NSFileManager.defaultManager
-        .createDirectoryAtPathWithIntermediateDirectoriesAttributesError(dir, true, $(), null);
-      $(JSON.stringify({ before: frame, filled: screen }))
-        .writeToFileAtomicallyEncodingError(file, true, $.NSUTF8StringEncoding, null);
-    }
-    setFrame(win, screen);
+    if (filled) return;
+    if (!zoom(win) || !close(frame(win), screen)) setFrame(win, screen);
     return;
   }
 
-  const saved = file && read(file);
-  if (file) $.NSFileManager.defaultManager.removeItemAtPathError(file, null);
-  if (saved && close(frame, saved.filled)) {
-    setFrame(win, saved.before);
-    return;
-  }
+  // A window filled without zooming has no frame to go back to, and zooming
+  // it leaves it about the same size.
+  if (filled && zoom(win) && !close(frame(win), screen)) return;
   const [x, y, w, h] = screen;
   const sw = Math.round(w * 2 / 3);
   const sh = Math.round(h * 2 / 3);
   setFrame(win, [x + Math.round((w - sw) / 2), y + Math.round((h - sh) / 2), sw, sh]);
+}
+
+function frame(win) {
+  return [...win.position(), ...win.size()];
+}
+
+// Zooms the window as a title bar double-click would, returning false when it
+// has no zoom button. The green button is AXFullScreenButton, whose AXPress
+// goes full screen, unless the window can't go full screen.
+function zoom(win) {
+  for (const b of win.buttons()) {
+    let sub;
+    try { sub = b.subrole(); } catch { continue; }
+    if (sub === 'AXFullScreenButton') {
+      b.actions.byName('AXZoomWindow').perform();
+      return true;
+    }
+    if (sub === 'AXZoomButton') {
+      b.actions.byName('AXPress').perform();
+      return true;
+    }
+  }
+  return false;
 }
 
 // The visible frame, in Accessibility's top-left coordinates, of the screen
@@ -69,29 +79,6 @@ function visibleFrame([x, y, w, h]) {
     return cx >= sx && cx < sx + sw && cy >= sy && cy < sy + sh;
   }) || $.NSScreen.mainScreen;
   return flip(s.visibleFrame);
-}
-
-// The CGWindowID of the pid's on-screen window with this frame, or null.
-function windowId(pid, [x, y, w, h]) {
-  const list = ObjC.castRefToObject($.CGWindowListCopyWindowInfo(
-    $.kCGWindowListOptionOnScreenOnly | $.kCGWindowListExcludeDesktopElements,
-    $.kCGNullWindowID,
-  )).js;
-  for (const info of list) {
-    const d = ObjC.deepUnwrap(info);
-    const b = d.kCGWindowBounds;
-    if (d.kCGWindowOwnerPID === pid && d.kCGWindowLayer === 0 &&
-        close([b.X, b.Y, b.Width, b.Height], [x, y, w, h])) {
-      return d.kCGWindowNumber;
-    }
-  }
-  return null;
-}
-
-function read(file) {
-  const s = $.NSString.stringWithContentsOfFileEncodingError(file, $.NSUTF8StringEncoding, null);
-  if (s.isNil()) return null;
-  try { return JSON.parse(s.js); } catch { return null; }
 }
 
 // Apps round sizes to their own increments (Alacritty to whole cells), so a
