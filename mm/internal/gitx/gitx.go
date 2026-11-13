@@ -76,6 +76,17 @@ func Dirty(dir string) bool {
 	return len(strings.TrimSpace(string(out))) > 0
 }
 
+// LinkedWorktree reports whether dir is in a linked worktree, made by `git
+// worktree add`, rather than the repo's main checkout.
+func LinkedWorktree(dir string) bool {
+	out, err := Git(dir, "rev-parse", "--path-format=absolute", "--git-dir", "--git-common-dir")
+	if err != nil {
+		return false
+	}
+	gitDir, common, _ := strings.Cut(out, "\n")
+	return gitDir != common
+}
+
 // Worktrees maps each branch checked out in the repo at dir to the worktree
 // holding it.
 func Worktrees(dir string) map[string]string {

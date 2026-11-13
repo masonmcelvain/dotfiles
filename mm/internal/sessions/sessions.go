@@ -13,7 +13,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"slices"
+	"strings"
 	"text/tabwriter"
 	"time"
 
@@ -156,53 +158,101 @@ func SwitchTo(name string) (argv []string, err error) {
 	return nil, nil
 }
 
-// releaseBranch detaches HEAD in a deleted session's checkout so its branch
-// is free to check out in another worktree; git refuses a branch that any
-// worktree holds. The commit and files stay put. It returns why it didn't,
-// if it didn't.
-//
-// A dirty tree keeps its branch: detaching would strand the uncommitted work
-// away from the branch it belongs to.
-func releaseBranch(rows []Row, name, cwd, branch string) string {
-	if branch == "" {
-		return ""
+// cleanup is what deleting a session does to its checkout afterwards.
+type cleanup struct {
+	// worktree is a linked worktree to remove, freeing its branch with it.
+	worktree string
+	// detach is a main checkout to detach HEAD in, so another worktree can
+	// check out branch; git refuses a branch that any worktree holds.
+	detach string
+	branch string
+	// note says why the checkout was left alone, if it was.
+	note string
+}
+
+// planCleanup decides what to do with session r's checkout once r is gone. A
+// linked worktree is removed, keeping its branch and commits. The main
+// checkout only detaches HEAD, keeping its files. Either is skipped while
+// another live session, or this one, is still in the checkout, and a dirty
+// tree is left as is: removing or detaching would strand uncommitted work.
+func planCleanup(rows []Row, r Row) cleanup {
+	if r.Branch == "" {
+		return cleanup{}
 	}
-	if fi, err := os.Stat(cwd); err != nil || !fi.IsDir() {
-		return ""
+	if fi, err := os.Stat(r.CWD); err != nil || !fi.IsDir() {
+		return cleanup{}
+	}
+	top, err := gitx.Git(r.CWD, "rev-parse", "--show-toplevel")
+	if err != nil {
+		return cleanup{}
 	}
 
-	// Another live session in the same checkout is still using the branch.
-	for _, r := range rows {
-		if r.Name != name && !r.Exited && r.CWD == cwd {
-			return ""
+	for _, o := range rows {
+		if o.Name != r.Name && !o.Exited && within(o.CWD, top) {
+			return cleanup{}
 		}
 	}
 	if current, _ := zellij.InCurrent(); current != "" &&
-		zellij.SessionCWD(zellij.InfoDir(), current) == cwd {
-		return ""
+		within(zellij.SessionCWD(zellij.InfoDir(), current), top) {
+		return cleanup{}
 	}
 
-	if _, err := gitx.Git(cwd, "symbolic-ref", "-q", "HEAD"); err != nil {
-		return ""
+	linked := gitx.LinkedWorktree(top)
+	if !linked {
+		if _, err := gitx.Git(top, "symbolic-ref", "-q", "HEAD"); err != nil {
+			return cleanup{}
+		}
 	}
-	if gitx.Dirty(cwd) {
-		return branch + " still checked out (uncommitted changes)"
+	if gitx.Dirty(top) {
+		if linked {
+			return cleanup{note: "kept worktree (uncommitted changes)"}
+		}
+		return cleanup{note: r.Branch + " still checked out (uncommitted changes)"}
 	}
-
-	if _, err := gitx.Git(cwd, "switch", "-q", "--detach"); err != nil {
-		return "couldn't release " + branch
+	if linked {
+		return cleanup{worktree: top}
 	}
-	return ""
+	return cleanup{detach: top, branch: r.Branch}
 }
 
-// deleteSession deletes session r, killing it first if it's live, then releases
-// its branch. It returns the message to flash.
-func deleteSession(rows []Row, r Row) string {
+// run carries out the plan, returning a note for the flash.
+func (c cleanup) run() string {
+	switch {
+	case c.worktree != "":
+		// Run from the shared git dir, since the worktree is going away.
+		common, err := gitx.Git(c.worktree, "rev-parse", "--path-format=absolute", "--git-common-dir")
+		if err == nil {
+			_, err = gitx.Git(common, "worktree", "remove", c.worktree)
+		}
+		if err != nil {
+			return "couldn't remove worktree " + text.Tilde(c.worktree)
+		}
+		return "removed worktree " + text.Tilde(c.worktree)
+	case c.detach != "":
+		if _, err := gitx.Git(c.detach, "switch", "-q", "--detach"); err != nil {
+			return "couldn't release " + c.branch
+		}
+	}
+	return c.note
+}
+
+// within reports whether dir is root or inside it.
+func within(dir, root string) bool {
+	if dir == "" {
+		return false
+	}
+	rel, err := filepath.Rel(root, dir)
+	return err == nil && rel != ".." && !strings.HasPrefix(rel, "../")
+}
+
+// deleteSession deletes session r, killing it first if it's live, then cleans
+// up its checkout as planned. It returns the message to flash.
+func deleteSession(r Row, plan cleanup) string {
 	if zellij.Delete(r.Name) != nil {
 		return "couldn't delete " + r.Name
 	}
 	msg := "deleted " + r.Name
-	if note := releaseBranch(rows, r.Name, r.CWD, r.Branch); note != "" {
+	if note := plan.run(); note != "" {
 		msg += " · " + note
 	}
 	return msg

@@ -100,16 +100,20 @@ func (s *Source) Key(key string, sel int) picker.Action {
 }
 
 func (s *Source) confirmDelete(r Row) picker.Action {
-	q := fmt.Sprintf("delete %s? y yes · else no", r.Name)
-	if !r.Exited {
-		q = fmt.Sprintf("kill and delete %s? y yes · else no", r.Name)
+	plan := planCleanup(s.rows, r)
+	what := r.Name
+	if plan.worktree != "" {
+		what += " and worktree " + text.Tilde(plan.worktree)
 	}
-	rows := s.rows
+	q := fmt.Sprintf("delete %s? y yes · else no", what)
+	if !r.Exited {
+		q = fmt.Sprintf("kill and delete %s? y yes · else no", what)
+	}
 	return picker.Action{Ask: &picker.Prompt{Text: q, Then: func(answer string) picker.Action {
 		if answer != "y" {
 			return picker.Action{}
 		}
-		return picker.Action{Flash: deleteSession(rows, r), Reload: true}
+		return picker.Action{Flash: deleteSession(r, plan), Reload: true}
 	}}}
 }
 
