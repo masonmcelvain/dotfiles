@@ -158,8 +158,6 @@ if command -v fnm >/dev/null; then
   fi
 fi
 
-[ -n "$_is_interactive" ] && eval "$(zoxide init bash)"
-
 # https://starship.rs/
 [ -n "$_is_interactive" ] && eval "$(starship init bash)"
 export LC_ALL="en_US.UTF-8"
@@ -200,3 +198,7 @@ export PATH="$WASMTIME_HOME/bin:$PATH"
 export ANDROID_HOME="$HOME/Android/Sdk"
 export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
 {{- end }}
+
+# Last, because starship's init moves the hook out of PROMPT_COMMAND, where
+# zoxide's doctor looks for it before every `z`.
+[ -n "$_is_interactive" ] && eval "$(zoxide init bash)"
