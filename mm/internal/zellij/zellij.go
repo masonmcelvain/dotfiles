@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 
@@ -110,13 +111,69 @@ func ParseLayoutCWD(layout string) string {
 	return ""
 }
 
-// SessionCWD is the directory session name is rooted in, or "" when zellij
-// hasn't written its layout yet.
-func SessionCWD(info, name string) string {
+// ParseMetadataName returns the session name from the `name "..."` line that
+// opens a session-metadata.kdl, or "" when there isn't one.
+func ParseMetadataName(metadata string) string {
+	for line := range strings.Lines(metadata) {
+		rest, ok := strings.CutPrefix(strings.TrimSpace(line), "name ")
+		if !ok {
+			continue
+		}
+		name, err := strconv.Unquote(strings.TrimSpace(rest))
+		if err != nil {
+			return ""
+		}
+		return name
+	}
+	return ""
+}
+
+// sessionDir is session name's directory under info. Zellij 0.46 names these
+// directories with a hash rather than the session name, so look for the one
+// whose metadata names the session, after trying the older name-as-directory
+// layout.
+func sessionDir(info, name string) string {
 	if info == "" {
 		return ""
 	}
-	data, err := os.ReadFile(filepath.Join(info, name, "session-layout.kdl"))
+	if dir := filepath.Join(info, name); fileExists(filepath.Join(dir, "session-metadata.kdl")) {
+		return dir
+	}
+	paths, _ := filepath.Glob(filepath.Join(info, "*", "session-metadata.kdl"))
+	for _, p := range paths {
+		if readMetadataName(p) == name {
+			return filepath.Dir(p)
+		}
+	}
+	return ""
+}
+
+// readMetadataName reads just enough of a session-metadata.kdl to find its
+// name, which is the first line.
+func readMetadataName(path string) string {
+	f, err := os.Open(path)
+	if err != nil {
+		return ""
+	}
+	defer f.Close()
+	buf := make([]byte, 512)
+	n, _ := f.Read(buf)
+	return ParseMetadataName(string(buf[:n]))
+}
+
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
+}
+
+// SessionCWD is the directory session name is rooted in, or "" when zellij
+// hasn't written its layout yet.
+func SessionCWD(info, name string) string {
+	dir := sessionDir(info, name)
+	if dir == "" {
+		return ""
+	}
+	data, err := os.ReadFile(filepath.Join(dir, "session-layout.kdl"))
 	if err != nil {
 		return ""
 	}
@@ -127,10 +184,11 @@ func SessionCWD(info, name string) string {
 // when the session exits, which makes this when an exited session was last
 // used. Live sessions share a rewrite tick, so it means nothing for them.
 func SessionMtime(info, name string) (time.Time, bool) {
-	if info == "" {
+	dir := sessionDir(info, name)
+	if dir == "" {
 		return time.Time{}, false
 	}
-	fi, err := os.Stat(filepath.Join(info, name, "session-metadata.kdl"))
+	fi, err := os.Stat(filepath.Join(dir, "session-metadata.kdl"))
 	if err != nil {
 		return time.Time{}, false
 	}

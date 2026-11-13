@@ -1,6 +1,8 @@
 package zellij
 
 import (
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 )
@@ -55,5 +57,35 @@ func TestFindTabPane(t *testing.T) {
 	}
 	if _, ok := FindTabPane(data, "hx"); ok {
 		t.Error("FindTabPane found a pane in a tab that isn't there")
+	}
+}
+
+func TestParseMetadataName(t *testing.T) {
+	cases := map[string]string{
+		"name \"acme-US-1234\"\ntabs {\n": "acme-US-1234",
+		"name \"a \\\"quoted\\\" one\"\n": `a "quoted" one`,
+		"tabs {\n}\n":                     "",
+	}
+	for in, want := range cases {
+		if got := ParseMetadataName(in); got != want {
+			t.Errorf("ParseMetadataName(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
+
+func TestSessionDir(t *testing.T) {
+	info := t.TempDir()
+	for dir, name := range map[string]string{"9c58259642a8": "hashed", "legacy": "legacy"} {
+		os.MkdirAll(filepath.Join(info, dir), 0o755)
+		os.WriteFile(filepath.Join(info, dir, "session-metadata.kdl"), []byte("name \""+name+"\"\n"), 0o644)
+	}
+	if got := sessionDir(info, "hashed"); got != filepath.Join(info, "9c58259642a8") {
+		t.Errorf("hashed: got %q", got)
+	}
+	if got := sessionDir(info, "legacy"); got != filepath.Join(info, "legacy") {
+		t.Errorf("legacy: got %q", got)
+	}
+	if got := sessionDir(info, "missing"); got != "" {
+		t.Errorf("missing: got %q", got)
 	}
 }
