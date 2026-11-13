@@ -1,6 +1,6 @@
 ---
 name: nordic
-description: Nordic Naturals conventions for branches, commits and pull requests - the Jira key (US-1234) is the branch name and leads every commit message and PR title, and PRs go to Bitbucket with the changeset, QA and deploy steps in the description. Use before naming a branch, committing, or opening or editing a PR in a repo whose origin is in the nordicnaturals Bitbucket workspace.
+description: Nordic Naturals conventions for branches, commits and pull requests - the Jira key (US-1234) is the branch name and leads every commit message and PR title, and PRs go to Bitbucket with the changeset, QA and deploy steps in the description. Use before naming a branch, committing, or opening or editing a PR in a repo whose origin is in the nordicnaturals Bitbucket workspace, and before creating a ticket in nordicnaturals.atlassian.net Jira.
 ---
 
 # Nordic Naturals
@@ -31,6 +31,19 @@ branch and reword the commits once I give you one (only while they're unpushed).
 Jira is `https://nordicnaturals.atlassian.net`; read issues with the `jira`
 skill, and link them as `https://nordicnaturals.atlassian.net/browse/US-1234`.
 Don't change Jira (status, comments, assignee) unless I ask.
+
+When I ask for a new US ticket, fill in its two required fields when you
+create it. Without them, Jira takes the ticket but won't let anyone assign it,
+and `acli` can't add them afterwards. Pass them in `additionalAttributes` with
+`--from-json`, as ADF (see the `jira` skill's Custom fields section):
+
+- **Acceptance Criteria** (`customfield_11249`): a bullet list of checkable
+  outcomes.
+- **Deployment Instructions** (`customfield_11250`): what has to happen at
+  deploy, which app(s) it ships in, or `None.`
+
+If either ID is rejected, look them up again on a recent US ticket that has
+them filled in.
 
 ## Branches
 

@@ -34,7 +34,8 @@ tight JQL query. Other read-only groups: `acli jira project list`,
 
 Every command below changes Jira, which other people see and get notified
 about. Only run one when I asked for that change, and report the key or URL
-afterwards.
+afterwards. Before creating a ticket on `nordicnaturals.atlassian.net`, load
+the `nordic` skill for the fields it requires.
 
 ```bash
 acli jira workitem create --project ABC --type Task --summary "..." --description-file desc.txt --json
@@ -58,6 +59,45 @@ acli jira workitem transition --key ABC-123 --status "In Progress" --yes
   is rejected, check the ticket's current status and ask me which to use.
 - `create --generate-json` and `edit --generate-json` print a template for
   setting fields that have no flag, used with `--from-json`.
+
+### Custom fields
+
+Some projects require custom fields, and Jira only enforces that later: the
+create succeeds, then assigning or transitioning the ticket fails. Set them at
+create time, because `acli` can only set custom fields on `create`. `edit` has
+no way to, so a ticket created without them has to be filled in through the
+web UI.
+
+Pass them in `additionalAttributes` of a `--from-json` file, keyed by field
+ID. Rich-text fields take ADF, the same as `description`:
+
+```json
+{
+  "projectKey": "ABC",
+  "type": "Task",
+  "summary": "...",
+  "description": {"type": "doc", "version": 1, "content": [
+    {"type": "paragraph", "content": [{"type": "text", "text": "..."}]}
+  ]},
+  "additionalAttributes": {
+    "customfield_12345": {"type": "doc", "version": 1, "content": [
+      {"type": "bulletList", "content": [
+        {"type": "listItem", "content": [
+          {"type": "paragraph", "content": [{"type": "text", "text": "First criterion"}]}
+        ]}
+      ]}
+    ]}
+  }
+}
+```
+
+```bash
+acli jira workitem create --from-json workitem.json --json
+```
+
+`acli` can't list fields by name. To find an ID, view a recent ticket of the
+same type that has the field filled in, with `--fields '*all' --json`, and match
+the `customfield_*` values to what the web UI shows.
 
 `acli jira workitem <command> --help` has the rest, including `link`,
 `attachment`, `watcher`, `clone` and `archive`.
