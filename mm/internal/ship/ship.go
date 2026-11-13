@@ -141,6 +141,17 @@ func Session(name string, t Target) string {
 	}
 }
 
+// browserUnsafe is what agent-browser refuses in a session name.
+var browserUnsafe = regexp.MustCompile(`[^\p{L}\p{N}_-]+`)
+
+// BrowserSession is the agent-browser session a run's agents share, so a
+// branch gets one headless Chrome rather than one per agent that names its
+// own. It's the zellij session's name, which is already one per run, with
+// anything agent-browser refuses (a dot in a repo name) turned into a hyphen.
+func BrowserSession(session string) string {
+	return browserUnsafe.ReplaceAllString(session, "-")
+}
+
 // Prompt is what Claude starts with. It names the skill rather than typing
 // /ship, because Claude Code leaves a command-line prompt that starts with a
 // slash in the input box instead of sending it. A note from me goes last,
@@ -227,8 +238,11 @@ func Run(arg, note string) (string, error) {
 	if shell == "" {
 		shell = "bash"
 	}
-	argv := []string{shell, "-ic", `claude --permission-mode auto "$1"; exec "$0" -i`,
-		shell, Prompt(arg, t, branch, note)}
+	// AGENT_BROWSER_SESSION is exported for every agent's shell to inherit,
+	// and for the shell left behind, where I can look at the same browser.
+	argv := []string{shell, "-ic",
+		`export AGENT_BROWSER_SESSION="$2"; claude --permission-mode auto "$1"; exec "$0" -i`,
+		shell, Prompt(arg, t, branch, note), BrowserSession(session)}
 	if err := zellij.RunInTab(session, "claude", dir, argv); err != nil {
 		return "", fmt.Errorf("created %s but couldn't start Claude in it: %v", session, err)
 	}

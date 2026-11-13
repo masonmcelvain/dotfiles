@@ -59,6 +59,19 @@ func TestNames(t *testing.T) {
 	}
 }
 
+func TestBrowserSession(t *testing.T) {
+	cases := map[string]string{
+		"storefront-US-1234":        "storefront-US-1234",
+		"acme.web-pr42":             "acme-web-pr42",
+		"storefront_v2-fix-the-bug": "storefront_v2-fix-the-bug",
+	}
+	for in, want := range cases {
+		if got := BrowserSession(in); got != want {
+			t.Errorf("BrowserSession(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
+
 func TestPRHead(t *testing.T) {
 	same := `{"pull_request": {
 		"source": {"branch": {"name": "US-1234"}, "repository": {"full_name": "acme/storefront"}},

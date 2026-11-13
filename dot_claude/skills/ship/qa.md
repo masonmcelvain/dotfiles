@@ -12,8 +12,8 @@ the code does what the builder thought; QA shows it does what the issue asked.
 Match the method to the change; most web changes use more than one.
 
 - **Browser**: drive the app through the AC's path with `agent-browser`, which
-  runs headless and doesn't take my focus, in a session named after the branch
-  (`--session US-1234`). If a bot check like Cloudflare's blocks it, switch to
+  runs headless and doesn't take my focus, in the run's one session (see the
+  ground rules; never a session of its own). If a bot check like Cloudflare's blocks it, switch to
   my own Chrome with Claude in Chrome (the `claude-in-chrome` skill), in a new
   tab of your own that you close when you're done. No permission needed. Being
   blocked never makes an AC BLOCKED while Chrome is left to try. Screenshot the states that matter, check the

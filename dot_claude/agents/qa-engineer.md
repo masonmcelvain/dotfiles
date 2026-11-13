@@ -36,7 +36,10 @@ How to work:
    env var, a dependency, a port in use, an expired CLI login. Never report
    that the app can't run without the command you ran and the error it gave.
    For browser work, use `agent-browser` (run `agent-browser skills get core`
-   for its guide) with `--session` set to the branch name. If a bot check like
+   for its guide) in the run's one session: `$AGENT_BROWSER_SESSION` when it's
+   set, so don't pass `--session`, and otherwise the name your prompt gives.
+   Never invent a session name of your own, since each one is another Chrome
+   left running. If a bot check like
    Cloudflare's blocks it, switch to my Chrome through the `claude-in-chrome`
    skill, in a new tab of your own that you close when you're done. Show each
    AC in the real app; fall back to a harness or script only after it has

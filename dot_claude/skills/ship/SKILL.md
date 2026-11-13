@@ -68,6 +68,16 @@ that apply into each agent's prompt; they don't inherit this file.
   over the index. If GPG signing fails (my agent isn't reachable), commit with
   `git -c commit.gpgsign=false` and note it in the ledger; I'll re-sign before
   I give the go-ahead.
+- **One browser per run.** Every `agent-browser` command uses the run's
+  session, `$AGENT_BROWSER_SESSION`, which `mm ship` exports to every shell in
+  this zellij session. Don't pass `--session` or set the variable yourself. An
+  agent that names its own session starts another Chrome that nobody closes.
+  If the variable is unset (I started you by hand), use the branch name with
+  `/` turned into `-`, record it in the ledger, and pass `--session <name>` in
+  every command and every agent's prompt.
+- **Nothing runs while you wait.** Several runs share this laptop, and each
+  dev server and browser holds over a gigabyte. Whenever you stop to wait on
+  me, [stop the app](#stopping-the-app) first.
 
 ## Deciding versus asking
 
@@ -88,7 +98,39 @@ Interrupt with my notifier:
 ```
 
 Then keep going on whatever doesn't depend on the answer. Only when nothing
-does, write the question in the ledger and stop.
+does, write the question in the ledger, [stop the app](#stopping-the-app), and
+stop.
+
+## Stopping the app
+
+Before any pause for me, at the end of every aftercare tick, and after phase 8,
+stop every server this worktree started (yours or any agent's) and close the
+run's browser:
+
+```
+top=$(git rev-parse --show-toplevel)
+keep=" "; p=$$
+while [ "$p" -gt 1 ]; do
+  keep="$keep$(ps -o pgid= -p "$p" | tr -d ' ') "
+  p=$(ps -o ppid= -p "$p" | tr -d ' ')
+done
+for p in $(lsof -t -nP -iTCP -sTCP:LISTEN); do
+  case "$(ps -o args= -p "$p")" in claude*) continue ;; esac
+  case "$(lsof -a -p "$p" -d cwd -Fn | sed -n 's/^n//p')" in
+    "$top"|"$top"/*)
+      g=$(ps -o pgid= -p "$p" | tr -d ' ')
+      case "$keep" in *" $g "*) ;; *) kill -- -"$g" ;; esac ;;
+  esac
+done
+agent-browser close
+```
+
+Killing the process group takes the server's watchers with it (codegen,
+typegen, workerd), which don't listen on a port themselves. It spares Claude,
+which listens from the worktree too, and catches any stray browser an agent
+opened under another session name. Note in the ledger
+that the app is stopped. Start it again only when the work needs it: QA
+re-runs after feedback, or a pipeline failure you need to reproduce.
 
 ## The ledger
 
@@ -270,7 +312,7 @@ Everything is local and done. Get it ready to publish, then ask me.
    yet), named as `pr.md` names them. Nothing that shows secrets, tokens or
    personal data.
 4. Fill the ledger's **Go-ahead** section and set the phase to
-   `awaiting-go-ahead`.
+   `awaiting-go-ahead`. [Stop the app](#stopping-the-app).
 5. Notify me and end your turn with the report (below), which closes with
    exactly what the go-ahead will do:
 
@@ -297,8 +339,9 @@ matches it, repeat the go-ahead request, and wait.
   said.
 - **Changes**: anything else is feedback. Treat it like a review finding from
   me: fix it through a builder, gate, commit, give it a mini review (see
-  [review-board.md](review-board.md)) and re-run the QA it touches. Then update
-  `pr.md` and the attachments and ask again. My answers to your questions
+  [review-board.md](review-board.md)) and re-run the QA it touches, starting
+  the app again for it. Then update `pr.md` and the attachments, stop the app,
+  and ask again. My answers to your questions
   without a go are just answers; ask again.
 
 A go-ahead covers the push and PR it describes, not later ones. After the PR is
@@ -341,7 +384,8 @@ open, each further push needs its own go-ahead (see
 
 ## Phase 9: aftercare
 
-Set the ledger's phase to `aftercare`, leaving `last-seen` empty, then schedule
+[Stop the app](#stopping-the-app). Set the ledger's phase to `aftercare`,
+leaving `last-seen` empty, then schedule
 the watch with `CronCreate` (load it with `ToolSearch` if needed): recurring,
 every 20 minutes, with the prompt `Use the ship skill: aftercare <pr url>`.
 Record the job id in the ledger. Each tick follows [aftercare.md](aftercare.md)

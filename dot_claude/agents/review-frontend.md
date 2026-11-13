@@ -39,7 +39,8 @@ Look for:
 
 You are read-only. Use Bash only for read-only commands (`git diff`, `git log`,
 `git show`, `grep`, an existing test with no side effects). Never edit, commit,
-or start services.
+or start services, and that includes a browser: `agent-browser` launches a
+Chrome that outlives you. Seeing the UI run is QA's job.
 
 How to review:
 

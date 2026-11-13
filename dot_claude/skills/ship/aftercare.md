@@ -6,7 +6,8 @@ since the last one and gets it handled locally. The go-ahead rule still holds:
 you fix and commit here, then ask me before anything is pushed. You never reply
 to, resolve or react to comments; the fix speaks, and I do the talking. Most
 ticks find nothing; when that's the case, end the turn with a single line and
-don't notify anyone.
+don't notify anyone. Start the app only when a tick needs it, and
+[stop it](SKILL.md#stopping-the-app) before the tick ends.
 
 ## Each tick
 

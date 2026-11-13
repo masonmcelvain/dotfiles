@@ -1,0 +1,848 @@
+    1     0   2768 /sbin/launchd
+  524     1   3408 /usr/libexec/logd
+  526     1   4176 /usr/libexec/UserEventAgent
+  528     1   4256 /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/Support/fseventsd
+  529     1   2784 /System/Library/PrivateFrameworks/MediaRemote.framework/Support/mediaremoted
+  532     1   2016 /usr/sbin/systemstats
+  536     1   4272 /usr/libexec/configd
+  538     1   4144 /System/Library/CoreServices/powerd.bundle/powerd
+  539     1    560 /usr/libexec/IOMFB_bics_daemon
+  543     1    672 /usr/libexec/remoted
+  547     1   1024 /System/Library/PrivateFrameworks/CoreSpeech.framework/corespeechd_system
+  549     1   1424 /usr/libexec/watchdogd
+  553     1   8128 /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/mds
+  555     1   1072 /usr/libexec/kernelmanagerd
+  556     1   1744 /usr/libexec/diskarbitrationd
+  561     1    416 /usr/sbin/syslogd
+  563     1   1584 /usr/libexec/thermalmonitord
+  564     1   4400 /System/Library/PrivateFrameworks/CoreDuetContext.framework/Resources/contextstored
+  565     1   2464 /usr/libexec/xprotectd
+  566     1   5456 /usr/libexec/opendirectoryd
+  567     1   4240 /System/Library/PrivateFrameworks/ApplePushService.framework/apsd
+  568     1   3216 /System/Library/CoreServices/launchservicesd
+  569     1   1520 /usr/libexec/timed
+  570     1    528 /System/Library/PrivateFrameworks/MobileDevice.framework/Versions/A/Resources/usbmuxd
+  571     1   2528 /usr/sbin/securityd
+  572     1    480 auditd
+  574     1   9920 /usr/libexec/locationd
+  575     1   1696 /usr/libexec/nesessionmanager
+  577     1    496 autofsd
+  578     1   5728 /usr/libexec/dasd
+  579     1   2304 /usr/libexec/corerepaird
+  581     1    928 /usr/sbin/distnoted
+  585     1   1648 /System/Library/CoreServices/logind
+  586     1   1408 /System/Library/PrivateFrameworks/GenerationalStorage.framework/Versions/A/Support/revisiond
+  587     1    528 /usr/sbin/KernelEventAgent
+  591     1  11536 /usr/sbin/bluetoothd
+  592     1   2640 /usr/sbin/notifyd
+  594     1   3904 /usr/libexec/corebrightnessd
+  595     1    704 /usr/libexec/AirPlayXPCHelper
+  596     1   2720 /System/Library/Frameworks/CoreMediaIO.framework/Versions/A/Resources/com.apple.cmio.registerassistantservice
+  599     1  42640 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer
+  601     1  18304 /System/Library/CoreServices/loginwindow.app/Contents/MacOS/loginwindow
+  602     1   3040 /usr/sbin/cfprefsd
+  603     1   6656 /usr/libexec/runningboardd
+  605     1   1216 /System/Library/CoreServices/coreservicesd
+  610     1   4096 /usr/libexec/lsd
+  611     1   3280 /usr/sbin/coreaudiod
+  615     1   1296 /usr/libexec/apfsd
+  616     1   5600 /usr/libexec/nsurlsessiond
+  621     1   2576 /System/Library/PrivateFrameworks/CoreAnalytics.framework/Support/analyticsd
+  628     1   2992 /usr/libexec/eligibilityd
+  636     1    576 /usr/sbin/distnoted
+  643     1    576 /usr/sbin/distnoted
+  646     1   7088 /usr/libexec/airportd
+  650     1   5264 /usr/libexec/symptomsd
+  651     1   2880 /System/Library/Frameworks/Security.framework/Versions/A/XPCServices/authd.xpc/Contents/MacOS/authd
+  652     1    576 /usr/sbin/distnoted
+  660     1   1232 /usr/libexec/ApplicationFirewall/socketfilterfw
+  664     1    576 /usr/sbin/distnoted
+  666     1   7408 /usr/libexec/syspolicyd
+  670     1   6704 /usr/sbin/mDNSResponder
+  672     1   1120 Core Audio Driver (ParrotAudioPlugin.driver)
+  676     1   1520 Core Audio Driver (ZoomAudioDevice.driver)
+  678     1   2288 /usr/libexec/audiomxd
+  680     1   2032 /System/Library/CoreServices/TimeMachine/backupd
+  685     1   1616 /usr/libexec/audioclocksyncd
+  686     1    848 /usr/libexec/com.apple.cmio.videodriverkithostextension.systemextension/Contents/MacOS/com.apple.cmio.videodriverkithostextension
+  689     1   2160 /usr/libexec/cameracaptured
+  690     1    752 /usr/sbin/mDNSResponderHelper
+  691     1   1024 /System/Library/Frameworks/CoreMediaIO.framework/Versions/A/Resources/UVCAssistant.systemextension/Contents/MacOS/UVCAssistant
+  701     1    832 /System/Library/DriverExtensions/com.apple.DriverKit-IOUserDockChannelSerial.dext/com.apple.DriverKit-IOUserDockChannelSerial
+  706     1   2480 /usr/libexec/modelmanagerd
+  707     1    928 /System/Library/DriverExtensions/com.apple.AppleUserHIDDrivers.dext/com.apple.AppleUserHIDDrivers
+  715     1    576 /usr/sbin/distnoted
+  716     1   1088 /System/Library/CoreServices/Software Update.app/Contents/Resources/suhelperd
+  723     1    576 /usr/sbin/distnoted
+  740     1    576 /usr/sbin/distnoted
+  742     1   5584 /usr/libexec/searchpartyd
+  746     1  38080 /System/Library/DriverExtensions/AppleCentauriAlpha.dext/AppleCentauriAlpha
+  748     1   1712 /System/Library/DriverExtensions/AppleCentauriControl.dext/AppleCentauriControl
+  749     1   4832 /System/Library/DriverExtensions/AppleCentauriBeta.dext/AppleCentauriBeta
+  752   532    640 /usr/sbin/systemstats
+  756     1    576 /usr/sbin/distnoted
+  762     1   7408 /usr/libexec/wifip2pd
+  788     1   1184 /usr/sbin/netbiosd
+  806     1    576 /usr/sbin/distnoted
+  809     1   2048 /System/Library/CoreServices/appleeventsd
+  817     1  12080 /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/mds_stores
+  819     1   3312 /Library/PaperCut Hive/pc-edgenode-service
+  821     1  28208 /Applications/Cloudflare WARP.app/Contents/Resources/CloudflareWARP
+  822     1   1792 /Library/Application Support/Logitech.localized/LogiOptionsPlus/logioptionsplus_agent.app/Contents/Frameworks/logioptionsplus_updater.app/Contents/MacOS/logioptionsplus_updater
+  824     1   7232 /Library/Iru/Iru Agent.app/Contents/Helpers/Iru Daemon.app/Contents/MacOS/kandji-daemon
+  830     1    576 /usr/sbin/distnoted
+  847     1      0 /Library/SystemExtensions/0A46E75B-46C1-49D6-B67E-B2F6EB08B9DE/com.crowdstrike.falcon.Agent.systemextension/Contents/MacOS/com.crowdstrike.falcon.Agent
+  857     1   6448 /Library/SystemExtensions/812ECAC5-CF0F-40C8-AA47-6073768530C0/io.kandji.KandjiAgent.ESF-Extension.systemextension/Contents/MacOS/io.kandji.KandjiAgent.ESF-Extension
+  874     1   2048 /usr/sbin/distnoted
+  901     1   3792 /usr/libexec/lsd
+  921   819   7680 v2026-11-02-0148/pc-queue-handler
+  922   819   4032 v2026-11-02-0148/pc-notification-listener
+  923   819   3696 v2026-11-02-0148/pc-printer-discovery
+  925   819   2800 v2026-11-02-0148/pc-printer-monitor
+  926   819    912 v2026-11-02-0148/pc-event-monitor
+  927   819  15504 v2026-11-02-0148/pc-printjob-spooler
+  928   819   4448 v2026-11-02-0148/pc-printjob-processor
+  942     1   1952 /Library/Iru/Iru Agent.app/Contents/Helpers/Iru Parameter Agent.app/Contents/MacOS/kandji-parameter-agent
+  943   824   1600 /Library/Iru/Iru Agent.app/Contents/Helpers/Iru CLI.app/Contents/MacOS/iru-cli
+  972     1    528 /usr/libexec/rosetta/oahd
+ 1019     1   5792 /usr/libexec/gamepolicyd
+ 1029     1    656 /usr/sbin/distnoted
+ 1050     1    832 /System/Library/DriverExtensions/IOUserBluetoothSerialDriver.dext/IOUserBluetoothSerialDriver
+ 1051     1    848 /System/Library/DriverExtensions/IOUserBluetoothSerialDriver.dext/IOUserBluetoothSerialDriver
+ 1081     1    576 /usr/sbin/distnoted
+ 1115     1   1552 /System/Library/Frameworks/LocalAuthentication.framework/Support/coreauthd
+ 1127     1   2816 /usr/libexec/UserEventAgent
+ 1129     1  15744 /System/Library/CoreServices/WindowManager.app/Contents/MacOS/WindowManager
+ 1135     1   2512 /usr/sbin/universalaccessd
+ 1139     1   1264 /usr/libexec/pboard
+ 1145     1   5456 /usr/libexec/nsurlsessiond
+ 1148     1   5376 /usr/libexec/rapportd
+ 1153     1   3696 /System/Library/PrivateFrameworks/UserNotificationsCore.framework/Support/usernotificationsd
+ 1154     1   6800 /usr/sbin/usernoted
+ 1165     1   4752 /System/Library/CoreServices/WiFiAgent.app/Contents/MacOS/WiFiAgent
+ 1169     1   4752 /System/Library/PrivateFrameworks/IDS.framework/identityservicesd.app/Contents/MacOS/identityservicesd
+ 1172     1    560 /System/Library/PrivateFrameworks/SystemMigrationNetwork.framework/Resources/migrationhelper
+ 1184     1   5072 /System/Library/PrivateFrameworks/CloudKitDaemon.framework/Support/cloudd
+ 1185     1   2544 /System/Library/PrivateFrameworks/AuthKit.framework/Versions/A/Support/akd
+ 1197     1  11952 /usr/libexec/sharingd
+ 1204     1    576 /usr/sbin/distnoted
+ 1211     1   3024 /System/Library/PrivateFrameworks/FamilyCircle.framework/Versions/A/Resources/familycircled
+ 1213     1   5136 /System/Library/PrivateFrameworks/IMCore.framework/imagent.app/Contents/MacOS/imagent
+ 1222     1   3664 /System/Library/CoreServices/sharedfilelistd
+ 1231     1   3088 /usr/sbin/filecoordinationd
+ 1255     1   2784 /System/Library/CoreServices/AccessibilityUIServer.app/Contents/MacOS/AccessibilityUIServer
+ 1256     1   1968 /usr/libexec/ContinuityCaptureAgent
+ 1258     1   3056 /usr/libexec/nearbyd
+ 1279     1    592 /usr/sbin/distnoted
+ 1287     1    592 /usr/sbin/distnoted
+ 1297     1   1232 /System/Library/CoreServices/SubmitDiagInfo
+ 1300     1  14384 /System/Library/CoreServices/ControlCenter.app/Contents/MacOS/ControlCenter
+ 1303     1   2704 /System/Library/Frameworks/ApplicationServices.framework/Frameworks/ATS.framework/Support/fontd
+ 1306     1    592 /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Support/fontworker
+ 1307     1   7072 /System/Library/PrivateFrameworks/ChronoCore.framework/Support/chronod
+ 1308     1   2560 /System/Library/PrivateFrameworks/StatusKit.framework/StatusKitAgent
+ 1322     1   1520 /System/Library/PrivateFrameworks/CommunicationsFilter.framework/CMFSyncAgent
+ 1324     1  15120 /System/Library/CoreServices/NotificationCenter.app/Contents/MacOS/NotificationCenter
+ 1328     1  15664 /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/corespotlightd
+ 1331     1   2720 /System/Library/PrivateFrameworks/ViewBridge.framework/Versions/A/XPCServices/ViewBridgeAuxiliary.xpc/Contents/MacOS/ViewBridgeAuxiliary
+ 1338     1   4080 /System/Library/PrivateFrameworks/CoreSpeech.framework/corespeechd
+ 1344     1   2000 /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/mdbulkimport
+ 1360     1   2144 /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+ 1371     1   9200 /System/Library/CoreServices/Dock.app/Contents/MacOS/Dock
+ 1378     1   2656 /System/Library/CoreServices/WallpaperAgent.app/Contents/MacOS/WallpaperAgent
+ 1383     1   7248 /System/Library/CoreServices/Batteries.app/Contents/PlugIns/BatteriesAvocadoWidgetExtension.appex/Contents/MacOS/BatteriesAvocadoWidgetExtension
+ 1385     1    720 /System/Applications/Calendar.app/Contents/PlugIns/CalendarWidgetExtension.appex/Contents/MacOS/CalendarWidgetExtension
+ 1386     1    624 /System/Library/Frameworks/CryptoTokenKit.framework/ctkahp.bundle/Contents/MacOS/ctkahp
+ 1388     1   2048 /System/Library/Frameworks/InputMethodKit.framework/Resources/imklaunchagent
+ 1391     1   1184 /System/Applications/Weather.app/Contents/PlugIns/WeatherWidget.appex/Contents/MacOS/WeatherWidget
+ 1394     1    928 /System/Library/Frameworks/CryptoTokenKit.framework/ctkd
+ 1397     1    512 /System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/CVMServer
+ 1399     1   1120 /System/Applications/News.app/Contents/PlugIns/NewsToday2.appex/Contents/MacOS/NewsToday2
+ 1400     1   1152 /System/Applications/Home.app/Contents/PlugIns/HomeWidget.appex/Contents/MacOS/HomeWidget
+ 1401     1   1120 /System/Applications/News.app/Contents/PlugIns/NewsTag.appex/Contents/MacOS/NewsTag
+ 1405     1    880 /System/Library/ExtensionKit/Extensions/WallpaperImageExtension.appex/Contents/MacOS/WallpaperImageExtension
+ 1406     1   7328 /System/Library/PrivateFrameworks/TextInputUIMacHelper.framework/Versions/A/XPCServices/CursorUIViewService.xpc/Contents/MacOS/CursorUIViewService
+ 1410     1   2768 /System/Library/PrivateFrameworks/UserActivity.framework/Agents/useractivityd
+ 1411     1   1136 /System/Library/PrivateFrameworks/MediaRemote.framework/Support/mediaremoteagent
+ 1412     1   1728 /usr/libexec/avconferenced
+ 1415     1    688 /System/Library/Frameworks/CryptoTokenKit.framework/ctkahp.bundle/Contents/MacOS/ctkahp
+ 1426     1    608 automountd
+ 1427     1   1520 /System/Library/PrivateFrameworks/AMPDevices.framework/Versions/A/Support/AMPDeviceDiscoveryAgent
+ 1430     1   1056 /System/Applications/Weather.app/Contents/PlugIns/WeatherIntents.appex/Contents/MacOS/WeatherIntents
+ 1431     1   1056 /System/Applications/VoiceMemos.app/Contents/PlugIns/VoiceMemosSettingsWidgetExtension.appex/Contents/MacOS/VoiceMemosSettingsWidgetExtension
+ 1432     1   1136 /System/Applications/Journal.app/Contents/PlugIns/JournalWidgets.appex/Contents/MacOS/JournalWidgets
+ 1433     1   1152 /System/Applications/FindMy.app/Contents/PlugIns/FindMyWidgetPeople.appex/Contents/MacOS/FindMyWidgetPeople
+ 1446     1   1040 /System/Applications/News.app/Contents/PlugIns/NewsTodayIntents.appex/Contents/MacOS/NewsTodayIntents
+ 1448     1   1136 /System/Applications/Clock.app/Contents/PlugIns/WorldClockWidget.appex/Contents/MacOS/WorldClockWidget
+ 1451     1   1056 /System/Applications/VoiceMemos.app/Contents/PlugIns/RecordWidgetExtension.appex/Contents/MacOS/RecordWidgetExtension
+ 1453     1   1152 /System/Applications/Home.app/Contents/PlugIns/HomeEnergyWidgetsExtension.appex/Contents/MacOS/HomeEnergyWidgetsExtension
+ 1454     1   1152 /System/Library/Image Capture/Support/icdd
+ 1456     1    640 /usr/libexec/ptpcamerad
+ 1458     1   1136 /System/Applications/Podcasts.app/Contents/PlugIns/PodcastsWidget.appex/Contents/MacOS/PodcastsWidget
+ 1459     1    672 /System/Library/PrivateFrameworks/MobileTimer.framework/PlugIns/MobileTimerIntents.appex/Contents/MacOS/MobileTimerIntents
+ 1460     1   1136 /System/Applications/FindMy.app/Contents/PlugIns/FindMyWidgetItems.appex/Contents/MacOS/FindMyWidgetItems
+ 1462     1   1136 /System/Library/CoreServices/Screen Time.app/Contents/PlugIns/ScreenTimeWidgetExtension.appex/Contents/MacOS/ScreenTimeWidgetExtension
+ 1465     1   1136 /System/Applications/Journal.app/Contents/PlugIns/JournalWidgetsSecure.appex/Contents/MacOS/JournalWidgetsSecure
+ 1466     1   1120 /System/Applications/Stocks.app/Contents/PlugIns/StocksWidget.appex/Contents/MacOS/StocksWidget
+ 1469     1   1296 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/chrome_crashpad_handler
+ 1470     1   1232 /Applications/Microsoft Excel.app/Contents/PlugIns/ExcelWidget_mac.appex/Contents/MacOS/ExcelWidget_mac
+ 1471     1   1072 /System/Library/CoreServices/Screen Time.app/Contents/PlugIns/ScreenTimeWidgetIntentsExtension.appex/Contents/MacOS/ScreenTimeWidgetIntentsExtension
+ 1472     1   1232 /Applications/Microsoft PowerPoint.app/Contents/PlugIns/PowerPointWidget_mac.appex/Contents/MacOS/PowerPointWidget_mac
+ 1474     1    720 /System/Applications/Notes.app/Contents/PlugIns/com.apple.Notes.WidgetExtension.appex/Contents/MacOS/com.apple.Notes.WidgetExtension
+ 1475     1    704 /System/Applications/Tips.app/Contents/PlugIns/TipsWidgetExtension.appex/Contents/MacOS/TipsWidgetExtension
+ 1485  1360   8528 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif).app/Contents/MacOS/Google Chrome Helper (Aperitif)
+ 1486  1360  16288 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif).app/Contents/MacOS/Google Chrome Helper (Aperitif)
+ 1488  1360   4928 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif).app/Contents/MacOS/Google Chrome Helper (Aperitif)
+ 1491     1    720 /System/Library/CoreServices/PeopleViewService.app/Contents/PlugIns/PeopleWidget_macOSExtension.appex/Contents/MacOS/PeopleWidget_macOSExtension
+ 1493  1360  17616 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+ 1494  1360  17280 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+ 1495     1    720 /System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app/Contents/Extensions/SafariWidgetExtension.appex/Contents/MacOS/SafariWidgetExtension
+ 1503     1   1216 /Library/Application Support/Logitech.localized/LogiRightSightForWebcams/LogiRightSight.app/Contents/MacOS/LogiRightSight
+ 1504     1   5456 /Applications/Utilities/Kandji Extension Manager.app/Contents/MacOS/Kandji Extension Manager
+ 1506     1   1680 /Users/mmcelvain/Library/PaperCut Hive/pc-print-client-service
+ 1509     1  16512 /Library/Application Support/Logitech.localized/LogiOptionsPlus/logioptionsplus_agent.app/Contents/MacOS/logioptionsplus_agent
+ 1510     1   1888 /System/Library/CoreServices/AirPlayUIAgent.app/Contents/MacOS/AirPlayUIAgent
+ 1512     1      0 /Applications/Falcon.app/Contents/Library/LaunchServices/Falcon Notifications.app/Contents/MacOS/Falcon Notifications
+ 1513     1   6640 /Library/Application Support/Iru/Iru Menu/Iru Menu.app/Contents/MacOS/Iru Menu
+ 1514     1   2560 /System/Library/CoreServices/diagnostics_agent
+ 1515     1   3264 /System/Library/CoreServices/TextInputMenuAgent.app/Contents/MacOS/TextInputMenuAgent
+ 1519     1   1664 /Applications/Google Drive.app/Contents/MacOS/Google Drive
+ 1520     1  15584 /Applications/Cloudflare WARP.app/Contents/MacOS/Cloudflare WARP
+ 1521  1360   2816 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+ 1524  1360   5024 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+ 1529  1360  15408 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+ 1535     1   2176 /System/Library/PrivateFrameworks/FamilyControls.framework/Resources/parentalcontrolsd
+ 1537  1506   3152 v2026-08-18-0951/pc-print-client
+ 1548  1360  19648 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+ 1550     1  19488 /System/Library/CoreServices/Spotlight.app/Contents/MacOS/Spotlight
+ 1582     1   1264 /System/Applications/Shortcuts.app/Contents/PlugIns/ShortcutsWidgetExtension.appex/Contents/MacOS/ShortcutsWidgetExtension
+ 1585     1   1248 /Applications/Microsoft Word.app/Contents/PlugIns/WordWidget_mac.appex/Contents/MacOS/WordWidget_mac
+ 1609     1    720 /System/Applications/Reminders.app/Contents/PlugIns/RemindersWidgetExtension.appex/Contents/MacOS/RemindersWidgetExtension
+ 1614     1   1312 /Applications/Google Drive.app/Contents/MacOS/crashpad_handler
+ 1617  1519  17344 /Applications/Google Drive.app/Contents/MacOS/Google Drive
+ 1628     1    880 /System/Library/Frameworks/WebKit.framework/Versions/A/XPCServices/com.apple.WebKit.GPU.xpc/Contents/MacOS/com.apple.WebKit.GPU
+ 1629     1    896 /System/Library/Frameworks/WebKit.framework/Versions/A/XPCServices/com.apple.WebKit.Networking.xpc/Contents/MacOS/com.apple.WebKit.Networking
+ 1630     1     48 /System/Library/Frameworks/WebKit.framework/Versions/A/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent
+ 1638     1   1328 /System/Library/Frameworks/ImageCaptureCore.framework/Versions/A/XPCServices/mscamerad-xpc.xpc/Contents/MacOS/mscamerad-xpc
+ 1644  1537   8032 /Users/mmcelvain/Library/PaperCut Hive/v2026-08-18-0951/pc-tasktray
+ 1669     1    576 /usr/sbin/distnoted
+ 1671     1   1248 /Library/Application Support/Logitech.localized/LogiOptionsPlus/logioptionsplus_agent.app/Contents/MacOS/logi_crashpad_handler
+ 1683  1360  18016 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+ 1686  1360   2368 /Users/mmcelvain/.local/bin/claude
+ 1729     1   1248 /Library/Application Support/Logitech.localized/LogiOptionsPlus/logioptionsplus_agent.app/Contents/Frameworks/logioptionsplus_updater.app/Contents/MacOS/logi_crashpad_handler
+ 1760  1360  16480 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+ 1761  1360  15296 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+ 1762  1360   3152 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+ 1769     1    672 /System/Applications/System Settings.app/Contents/PlugIns/csimporter.appex/Contents/MacOS/csimporter
+ 1772  1360  30496 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+ 1777     1    544 /System/Library/CoreServices/CrashReporterSupportHelper
+ 1780  1360   8848 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+ 1781  1360  25200 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+ 1786  1360   3120 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif).app/Contents/MacOS/Google Chrome Helper (Aperitif)
+ 1787  1360   5600 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif).app/Contents/MacOS/Google Chrome Helper (Aperitif)
+ 1794  1360  19296 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+ 1861  1360   7968 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+ 1864     1   2928 /opt/homebrew/bin/skhd
+ 1883     1   5824 /usr/libexec/PerfPowerServices
+ 1940     1    576 /usr/sbin/distnoted
+ 2102     1    752 /System/Library/ExtensionKit/Extensions/WallpaperLegacyExtension.appex/Contents/MacOS/WallpaperLegacyExtension
+ 2104     1    704 /System/Library/ExtensionKit/Extensions/WallpaperDynamicExtension.appex/Contents/MacOS/WallpaperDynamicExtension
+ 2105     1    848 /System/Library/ExtensionKit/Extensions/WallpaperAerialsExtension.appex/Contents/MacOS/WallpaperAerialsExtension
+ 2107     1    656 /System/Library/ExtensionKit/Extensions/WallpaperSonomaExtension.appex/Contents/MacOS/WallpaperSonomaExtension
+ 2108     1    656 /System/Library/ExtensionKit/Extensions/WallpaperMacintoshExtension.appex/Contents/MacOS/WallpaperMacintoshExtension
+ 2109     1    656 /System/Library/ExtensionKit/Extensions/WallpaperSequoiaExtension.appex/Contents/MacOS/WallpaperSequoiaExtension
+ 2110     1    656 /System/Library/ExtensionKit/Extensions/WallpaperGradientExtension.appex/Contents/MacOS/WallpaperGradientExtension
+ 2111     1    656 /System/Library/ExtensionKit/Extensions/NeptuneOneWallpaper.appex/Contents/MacOS/NeptuneOneWallpaper
+ 2157     1    720 /System/Library/Frameworks/CoreSpotlight.framework/spotlightknowledged
+ 2162     1   1952 /usr/libexec/lsd
+ 2285     1   1872 /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/mdbulkimport
+ 2312     1   2016 /System/Library/CoreServices/PowerChime.app/Contents/MacOS/PowerChime
+ 2339     1   2560 /System/Library/Input Methods/PressAndHold.app/Contents/PlugIns/PAH_Extension.appex/Contents/MacOS/PAH_Extension
+ 2463     1   2400 /System/Library/PrivateFrameworks/SafariPlatformSupport.framework/Versions/A/XPCServices/com.apple.SafariPlatformSupport.Helper.xpc/Contents/MacOS/com.apple.SafariPlatformSupport.Helper
+ 2648     1    704 /System/Cryptexes/App/usr/libexec/PasswordBreachAgent
+ 3384     1   1920 /Library/Iru/Iru Agent.app/Contents/Helpers/Iru Library Manager.app/Contents/MacOS/kandji-library-manager
+ 6005     1    576 /System/Library/PrivateFrameworks/CoreFP.framework/Versions/A/fairplayd
+ 6050     1   1264 keyboxd
+ 6053     1   1232 gpg-agent
+ 6054  6053   1120 scdaemon
+ 6937     1    560 /usr/bin/ssh-agent
+ 7267  1360  25920 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+ 7483     1   8768 /System/Library/Frameworks/AppKit.framework/Versions/C/XPCServices/com.apple.appkit.xpc.openAndSavePanelService.xpc/Contents/MacOS/com.apple.appkit.xpc.openAndSavePanelService
+10088     1  11904 /opt/homebrew/bin/zellij
+10574     1    592 /usr/sbin/distnoted
+11211     1  19664 /opt/homebrew/bin/zellij
+13249     1    720 /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/mdwrite
+13683     1   4944 /System/Library/PrivateFrameworks/AppStoreComponents.framework/Support/appstorecomponentsd
+15566     1   3024 /System/Library/CoreServices/UserNotificationCenter.app/Contents/MacOS/UserNotificationCenter
+16575     1    736 /System/Library/PrivateFrameworks/SafariSafeBrowsing.framework/com.apple.Safari.SafeBrowsing.Service
+19038     1   2960 /System/Library/CoreServices/SystemUIServer.app/Contents/MacOS/SystemUIServer
+24223     1   1152 /Library/Application Support/Google/ChromeEnterpriseCompanion/ChromeEnterpriseCompanion.app/Contents/MacOS/ChromeEnterpriseCompanion
+24226   926    320 pc-prenotification
+24227   926    368 pc-printer-registration
+24228   926    368 pc-printer-addition
+24229   926    592 pc-printer-errors
+24230   926    400 pc-connection-monitor
+24232   926    448 pc-backend-jobs
+24247     1   1376 /Library/Application Support/Google/ChromeEnterpriseCompanion/ChromeEnterpriseCompanion.app/Contents/MacOS/ChromeEnterpriseCompanion
+24248 24223   1424 /Library/Application Support/Google/ChromeEnterpriseCompanion/ChromeEnterpriseCompanion.app/Contents/MacOS/ChromeEnterpriseCompanion
+24251     1   1376 /Library/Application Support/Google/ChromeEnterpriseCompanion/ChromeEnterpriseCompanion.app/Contents/MacOS/ChromeEnterpriseCompanion
+29833     1    592 /usr/sbin/distnoted
+29893     1    960 /usr/sbin/appleh16camerad
+30846     1   5136 /Applications/Google Drive.app/Contents/Applications/FinderHelper.app/Contents/PlugIns/FinderSyncExtension.appex/Contents/MacOS/FinderSyncExtension
+41402     1   4256 node
+41413 41402   4288 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+41621 41413    960 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+41644 41413   3200 /Users/mmcelvain/code/nordic-naturals-hydrogen/.claude/worktrees/US-4490/node_modules/@cloudflare/workerd-darwin-arm64/bin/workerd
+41916 41621   1184 npm exec react-router typegen --watch
+42018 41916    976 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+51120     1   1184 npm exec react-router typegen --watch
+51157 51120   5376 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+53222     1   2416 /usr/libexec/aned
+56367  1360   4272 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+59178     1  28512 /Applications/Alacritty.app/Contents/MacOS/alacritty
+59198     1   6192 /System/Library/PrivateFrameworks/SafariPlatformSupport.framework/Versions/A/XPCServices/com.apple.SafariPlatformSupport.Helper.xpc/Contents/MacOS/com.apple.SafariPlatformSupport.Helper
+66848  1360  20096 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+67351     1  12400 /opt/homebrew/bin/zellij
+67649     1  12320 /opt/homebrew/bin/zellij
+68259     1  13920 /opt/homebrew/bin/zellij
+68533     1  12672 /opt/homebrew/bin/zellij
+68763  1360  71984 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+68764  1360  24960 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+68892     1  14048 /opt/homebrew/bin/zellij
+69165     1  13584 /opt/homebrew/bin/zellij
+69517     1  13744 /opt/homebrew/bin/zellij
+69871     1  13856 /opt/homebrew/bin/zellij
+70445 67873    944 /opt/homebrew/bin/bash
+70448 70445   4240 node
+70467 70448  14928 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+70524 70467  15840 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+70646 70467   3296 /Users/mmcelvain/code/nordic-naturals-hydrogen/.claude/worktrees/US-4605/node_modules/@cloudflare/workerd-darwin-arm64/bin/workerd
+70747 70524   1200 npm exec react-router typegen --watch
+70795 70747  12368 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+70866 67567    944 /opt/homebrew/bin/bash
+70868 70866   4208 node
+70875 70868  16336 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+71043 70875   3216 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+71071 70875   3584 /Users/mmcelvain/code/nordic-naturals-hydrogen/.claude/worktrees/US-4604/node_modules/@cloudflare/workerd-darwin-arm64/bin/workerd
+71269 71043   1200 npm exec react-router typegen --watch
+71337 71269    976 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+71625     1   4624 /opt/homebrew/Cellar/agent-browser/0.42.0/libexec/lib/node_modules/agent-browser/bin/agent-browser-darwin-arm64
+71627 71625  82864 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing
+71644     1   1696 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+71646     1    976 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+71671 71627  34368 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif GPU).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif GPU)
+71672 71627  44160 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+71674 71627   8576 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+71693 71627  21168 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+71714 71627   8272 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+71743 71627   3600 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+71751 68753    944 /opt/homebrew/bin/bash
+71752 71751   4224 node
+71763 71752  17088 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+71939 71763    976 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+71958 71763   3664 /Users/mmcelvain/code/nordic-naturals-hydrogen/.claude/worktrees/US-4482/node_modules/@cloudflare/workerd-darwin-arm64/bin/workerd
+72070  1360  20304 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+72073  1360  24640 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+72077  1360  21408 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+72079  1360  36336 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+72085  1360  36464 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+72283 71939   1200 npm exec react-router typegen --watch
+72345 72283    976 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+72960 69393    944 /opt/homebrew/bin/bash
+72978 72960   5264 node
+72999 72978  26112 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+73091 69086    944 /opt/homebrew/bin/bash
+73094 73091   5312 node
+73118 73094  25200 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+73170 72999  15792 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+73191 72999  26752 /Users/mmcelvain/code/nordic-naturals-hydrogen/.claude/worktrees/US-4475/node_modules/@cloudflare/workerd-darwin-arm64/bin/workerd
+73194 68445    944 /opt/homebrew/bin/bash
+73196 73194   5264 node
+73211 73196  18848 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+73323 73118  14432 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+73333 73170   1200 npm exec react-router typegen --watch
+73344 73118   5488 /Users/mmcelvain/code/nordic-naturals-hydrogen/.claude/worktrees/US-4481/node_modules/@cloudflare/workerd-darwin-arm64/bin/workerd
+73398 73333   5680 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+73528 73211  15168 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+73541 69729    944 /opt/homebrew/bin/bash
+73546 73541   5312 node
+73583 73211   3568 /Users/mmcelvain/code/nordic-naturals-hydrogen/.claude/worktrees/US-4488/node_modules/@cloudflare/workerd-darwin-arm64/bin/workerd
+73584 73323   1200 npm exec react-router typegen --watch
+73591 73546  17120 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+73645 73584  12144 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+73913 73528   1200 npm exec react-router typegen --watch
+74001 73913   5664 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+74011 73591    976 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+74050 73591   3584 /Users/mmcelvain/code/nordic-naturals-hydrogen/.claude/worktrees/US-4472/node_modules/@cloudflare/workerd-darwin-arm64/bin/workerd
+74162 74011   1200 npm exec react-router typegen --watch
+74273 74162   4112 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+74483     1   3072 /opt/homebrew/Cellar/agent-browser/0.42.0/libexec/lib/node_modules/agent-browser/bin/agent-browser-darwin-arm64
+74484 74483  26144 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing
+74505     1   1808 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+74509     1    976 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+74559 74484   6320 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif GPU).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif GPU)
+74560 74484  25392 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+74565 74484   2992 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+74572 71627  99200 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+74582 74484   3488 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+74586 74484  27888 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+74587 74484   4768 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+74595 74484   3264 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+74722 74484   3424 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+74767 74484   3712 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+75749  1360   3056 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/157.0.8103.52/Helpers/Google Chrome Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome Helper (Aperitif Renderer)
+76602     1  18992 /opt/homebrew/Cellar/agent-browser/0.42.0/libexec/lib/node_modules/agent-browser/bin/agent-browser-darwin-arm64
+76603 76602 130320 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing
+76609     1   2032 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+76611     1    976 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+76623 76603  84320 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+76624 76603  57792 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+76625 76603   9184 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+76638 76603  46000 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+76640 76603  10720 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+76641 76603  18992 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+76650     1   3856 /System/Library/PrivateFrameworks/SafariPlatformSupport.framework/Versions/A/XPCServices/com.apple.SafariPlatformSupport.Helper.xpc/Contents/MacOS/com.apple.SafariPlatformSupport.Helper
+76651 76603   6576 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+76671 76603   3920 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+76701 76603   7488 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+76910 76603 304720 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+79883     1   3056 /opt/homebrew/Cellar/agent-browser/0.42.0/libexec/lib/node_modules/agent-browser/bin/agent-browser-darwin-arm64
+79884 79883  32496 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing
+79895     1   2224 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+79897     1    976 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+79900 79884   8032 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif GPU).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif GPU)
+79901 79884  18592 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+79902 79884   3088 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+79913 79884   4048 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+79914 79884  36176 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+79915 79884   6512 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+79917 79884   4560 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+80589     1   8400 node
+80596 80589  80416 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+80740 80596  13744 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+80764 80596 110544 /Users/mmcelvain/code/nordic-naturals-hydrogen/.claude/worktrees/US-4469/node_modules/@cloudflare/workerd-darwin-arm64/bin/workerd
+80995 80740   1200 npm exec react-router typegen --watch
+81046 80995  11248 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+81909 79884   3280 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+84390     1   4848 /opt/homebrew/Cellar/agent-browser/0.42.0/libexec/lib/node_modules/agent-browser/bin/agent-browser-darwin-arm64
+84391 84390  72288 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing
+84405     1    992 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+84407     1    992 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+84419 84391  40592 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif GPU).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif GPU)
+84421 84391  27040 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+84430 84391   7136 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+84439 84391  22736 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+84440 84391  62640 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+84441 84391  11584 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+84443 84391   9120 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+84920 79884   3776 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+85756     1   3136 /System/Library/PrivateFrameworks/EmailDaemon.framework/Versions/A/maild
+85758     1   6368 /System/Library/CoreServices/Software Update.app/Contents/Resources/softwareupdated
+85759     1   5952 /System/Library/PrivateFrameworks/PhotoAnalysis.framework/Versions/A/Support/photoanalysisd
+85760     1  12128 /System/Library/CoreServices/iconservicesagent
+85761     1  10400 /System/Library/PrivateFrameworks/HomeKitDaemon.framework/Support/homed
+85762     1   9328 /System/Library/PrivateFrameworks/AssistantServices.framework/Versions/A/Support/assistantd
+85763     1   9040 /usr/libexec/routined
+85764     1   5552 /System/Library/PrivateFrameworks/MediaAnalysis.framework/Versions/A/mediaanalysisd
+85765     1  14256 /usr/libexec/duetexpertd
+85766     1  11232 /System/Library/CoreServices/CoreServicesUIAgent.app/Contents/MacOS/CoreServicesUIAgent
+85767     1  10000 /System/Library/PrivateFrameworks/VoiceShortcuts.framework/Versions/A/Support/siriactionsd
+85768     1  11216 /System/Library/PrivateFrameworks/CoreSuggestions.framework/Versions/A/Support/suggestd
+85769     1   8944 /System/Library/PrivateFrameworks/TelephonyUtilities.framework/callservicesd
+85770     1   7376 /usr/libexec/mobileassetd
+85771     1   7536 /usr/libexec/spotlightknowledged.updater
+85772     1   7600 /usr/libexec/searchpartyuseragent
+85773     1   8592 /System/Library/PrivateFrameworks/DoNotDisturbServer.framework/Support/donotdisturbd
+85774     1   8544 /usr/libexec/remindd
+85775     1  10672 /System/Library/Frameworks/Accounts.framework/Versions/A/Support/accountsd
+85776     1   7744 /usr/libexec/linkd
+85777     1   8672 /usr/libexec/knowledge-agent
+85778     1   6528 /System/Library/Frameworks/Contacts.framework/Support/contactsd
+85779     1   8688 /System/Library/PrivateFrameworks/FileProvider.framework/Support/fileproviderd
+85780     1  14368 /System/Library/CoreServices/UIKitSystem.app/Contents/MacOS/UIKitSystem
+85781     1   7696 /usr/libexec/networkserviceproxy
+85782     1   7264 /System/Library/PrivateFrameworks/DataAccess.framework/Support/dataaccessd
+85783     1   8528 /System/Library/PrivateFrameworks/CalendarDaemon.framework/Support/calaccessd
+85784     1   8720 /System/Library/PrivateFrameworks/HearingCore.framework/heard
+85785     1   8496 /System/Library/Frameworks/LocalAuthentication.framework/Support/coreautha.bundle/Contents/MacOS/coreautha
+85786     1   7584 /usr/libexec/tipsd
+85787     1   7040 /usr/libexec/siriknowledged
+85788     1   6512 /System/Library/PrivateFrameworks/BiomeStreams.framework/Support/BiomeAgent
+85789     1  10048 /System/Library/PrivateFrameworks/IntelligenceFlowContextRuntime.framework/Versions/A/intelligencecontextd
+85790     1   4320 /usr/libexec/secinitd
+85791     1   8432 /System/Library/PrivateFrameworks/AppleMediaServices.framework/Resources/amsaccountsd
+85792     1   5664 /usr/libexec/trustd
+85793     1  11616 /System/Library/CoreServices/CoreLocationAgent.app/Contents/MacOS/CoreLocationAgent
+85794     1   5952 /usr/libexec/trustd
+85795     1   6096 /usr/libexec/replayd
+85796     1   8944 /System/Library/CoreServices/talagentd
+85797     1   6048 /System/Library/PrivateFrameworks/GeoServices.framework/Versions/A/XPCServices/com.apple.geod.xpc/Contents/MacOS/com.apple.geod
+85798     1   9120 /System/Library/PrivateFrameworks/SkyLight.framework//Versions/A/Resources/AquaAppearanceHelper.app/Contents/MacOS/AquaAppearanceHelper
+85799     1   9232 /System/Library/PrivateFrameworks/WorkflowKit.framework/XPCServices/ShortcutsViewService.xpc/Contents/MacOS/ShortcutsViewService
+85800     1   5792 /usr/libexec/secd
+85801     1   8720 /System/Library/PrivateFrameworks/CoreDuetContext.framework/Resources/ContextStoreAgent
+85802     1   6720 /System/Library/PrivateFrameworks/IMDPersistence.framework/XPCServices/IMDPersistenceAgent.xpc/Contents/MacOS/IMDPersistenceAgent
+85803     1   7632 /usr/libexec/coreduetd
+85804     1   6592 /usr/libexec/appleaccountd
+85805     1   6400 /System/Library/PrivateFrameworks/GenerativeExperiencesRuntime.framework/Versions/A/generativeexperiencesd
+85806     1   6160 /System/Library/PrivateFrameworks/TCC.framework/Support/tccd
+85807     1   6560 /System/Library/PrivateFrameworks/TCC.framework/Support/tccd
+85808     1      0 /Applications/Falcon.app/Contents/PlugIns/StaticAnalysis.bundle/Contents/XPCServices/FXPredictService.xpc/Contents/MacOS/FXPredictService
+85809     1   7696 /System/Library/CoreServices/audioaccessoryd
+85810     1   4944 /System/Library/PrivateFrameworks/MapsSync.framework/mapssyncd
+85811     1   8800 /System/Library/CoreServices/Keychain Circle Notification.app/Contents/MacOS/Keychain Circle Notification
+85812     1      0 /Applications/Falcon.app/Contents/PlugIns/FileAnalysis.bundle/Contents/XPCServices/FileAnalysisService.xpc/Contents/MacOS/FileAnalysisService
+85813     1   7104 /System/Library/Frameworks/CoreTelephony.framework/Support/CommCenter
+85814     1   5968 /usr/libexec/findmylocateagent
+85815     1   5744 /usr/libexec/milod
+85816     1   8880 /System/Library/PrivateFrameworks/BackgroundTaskManagement.framework/Support/BackgroundTaskManagementAgent.app/Contents/MacOS/BackgroundTaskManagementAgent
+85817     1   5504 /System/Library/PrivateFrameworks/ModelCatalogRuntime.framework/Versions/A/modelcatalogd
+85818     1   5680 /System/Library/PrivateFrameworks/BiomeStreams.framework/Support/biomed
+85819     1   5520 /System/Library/PrivateFrameworks/SyncedDefaults.framework/Support/syncdefaultsd
+85820     1   9360 /System/Cryptexes/App/usr/libexec/AuthenticationServicesAgent
+85821     1   4976 /usr/libexec/assetsubscriptiond
+85822     1   5104 /System/Library/PrivateFrameworks/AXAssetLoader.framework/Support/axassetsd
+85823     1   5760 /System/Library/PrivateFrameworks/ModelCatalogRuntime.framework/Versions/A/ModelCatalogAgent
+85824     1   5056 /usr/libexec/mlhostd
+85825     1   5008 /System/Library/PrivateFrameworks/SessionCore.framework/Support/liveactivitiesd
+85826     1   6176 /System/Library/PrivateFrameworks/UsageTracking.framework/Versions/A/UsageTrackingAgent
+85827     1   7056 /usr/libexec/proactived
+85828     1   4864 /System/Library/Frameworks/LocalAuthentication.framework/Support/coreauthd
+85829     1   6336 /System/Library/PrivateFrameworks/CacheDelete.framework/deleted
+85830     1   5728 /System/Library/PrivateFrameworks/GeoServices.framework/Versions/A/XPCServices/com.apple.geod.xpc/Contents/MacOS/com.apple.geod
+85831     1   6160 /usr/libexec/triald
+85832     1   6512 /usr/libexec/nehelper
+85833     1   7408 /System/Library/PrivateFrameworks/iCloudDriveCore.framework/Versions/A/Support/bird
+85834     1   4864 /usr/libexec/ospredictiond
+85835     1   4592 /System/Library/PrivateFrameworks/CloudSubscriptionFeatures.framework/FeatureAccessAgent
+85836     1   5168 /usr/libexec/dmd
+85837     1   4496 /usr/libexec/storagekitd
+85838     1   5376 /usr/libexec/PowerUIAgent
+85839     1   3952 /usr/sbin/cfprefsd
+85840     1   9600 /System/Library/Frameworks/QuickLookThumbnailing.framework/Support/com.apple.quicklook.ThumbnailsAgent
+85841     1   5584 /usr/libexec/triald_system
+85842     1   3472 /usr/libexec/containermanagerd
+85843     1   5760 /usr/libexec/swcd
+85844     1   4816 /System/Library/PrivateFrameworks/MobileTimer.framework/Executables/mobiletimerd
+85845     1   6976 /System/Library/PrivateFrameworks/CloudKitDaemon.framework/Support/cloudd
+85846     1   3456 /System/Library/Frameworks/SystemExtensions.framework/Versions/A/Helpers/sysextd
+85847     1   4960 /usr/libexec/biometrickitd
+85848     1   6960 /usr/libexec/pkd
+85849     1   4048 /usr/libexec/historicalaudiod
+85850     1   4064 /usr/sbin/WirelessRadioManagerd
+85851     1   5248 /System/Library/PrivateFrameworks/CoreRecents.framework/Versions/A/Support/recentsd
+85852     1   3600 /System/Library/PrivateFrameworks/SystemStatusServer.framework/Support/systemstatusd
+85853     1   4128 /usr/libexec/AssetCache/AssetCache
+85854     1   4736 /System/Library/PrivateFrameworks/BackgroundTaskManagement.framework/Resources/backgroundtaskmanagementd
+85855     1   4496 /System/Library/PrivateFrameworks/Synapse.framework/Support/contentlinkingd
+85856     1   2768 /usr/libexec/amfid
+85857     1   4736 /usr/libexec/rtcreportingd
+85858     1   3712 /System/Library/PrivateFrameworks/AOSKit.framework/Versions/A/XPCServices/com.apple.iCloudHelper.xpc/Contents/MacOS/com.apple.iCloudHelper
+85859     1   4272 /System/Cryptexes/App/usr/libexec/SafariLaunchAgent
+85860     1   4608 /System/Library/PrivateFrameworks/CoreAnalytics.framework/Support/analyticsagent
+85861     1   4832 /System/Library/Frameworks/CryptoTokenKit.framework/ctkd
+85862     1   3616 /usr/libexec/assessmentagent
+85863     1   3248 /usr/libexec/centaurid
+85864     1   4880 /usr/libexec/gamecontrollerd
+85865     1   2112 /System/Library/Frameworks/MediaExtension.framework/Versions/A/Helpers/MENotificationAgent
+85866     1      0 /Applications/Falcon.app/Contents/PlugIns/FileMetadata.bundle/Contents/XPCServices/FileMetadataService.xpc/Contents/MacOS/FileMetadataService
+85867     1   3184 /usr/libexec/securityd_system
+85869     1   4848 /System/Library/PrivateFrameworks/iCloudNotification.framework/iCloudNotificationAgent
+85870     1   3552 /System/Library/CoreServices/osanalyticshelper
+85871     1   3696 /usr/libexec/powerexperienced
+85872     1   3824 /System/Library/Frameworks/ManagedSettings.framework/Versions/A/ManagedSettingsAgent
+85873     1   3728 /usr/libexec/mobileactivationd
+85874     1   3696 /usr/libexec/feedbackd
+85875     1   2848 /System/Library/CoreServices/pbs
+85876     1   3136 /usr/libexec/sandboxd
+85877     1   4272 /System/Library/PrivateFrameworks/CommerceKit.framework/Versions/A/Resources/commerce
+85878     1   3408 /System/Library/PrivateFrameworks/CoreFollowUp.framework/Versions/A/Support/followupd
+85879     1   3712 /System/Library/CoreServices/TimeMachine/backupd-helper
+85880     1   3248 /System/Library/CoreServices/iconservicesd
+85881     1   1536 /usr/libexec/MTLAssetUpgraderD
+85882     1   1664 /System/Library/PrivateFrameworks/SystemAdministration.framework/XPCServices/writeconfig.xpc/Contents/MacOS/writeconfig
+85883     1   2112 /System/Library/PrivateFrameworks/IntlPreferences.framework/Support/localizationswitcherd
+85884     1   2480 /System/Library/Frameworks/Security.framework/Versions/A/XPCServices/com.apple.CodeSigningHelper.xpc/Contents/MacOS/com.apple.CodeSigningHelper
+85885     1   4112 /System/Library/PrivateFrameworks/CoreCDP.framework/Versions/A/Resources/cdpd
+85886     1   3024 /System/Library/PrivateFrameworks/PackageKit.framework/Resources/installd
+85887     1   4560 /System/Library/PrivateFrameworks/AppleCredentialManager.framework/AppleCredentialManagerDaemon
+85888     1   2496 /System/Library/PrivateFrameworks/AssetCacheServicesExtensions.framework/XPCServices/AssetCacheTetheratorService.xpc/Contents/MacOS/AssetCacheTetheratorService
+85889     1   3488 /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/XPCServices/com.apple.hiservices-xpcservice.xpc/Contents/MacOS/com.apple.hiservices-xpcservice
+85890     1   3024 /System/Library/PrivateFrameworks/PackageKit.framework/Resources/system_installd
+85891     1   5600 /System/Library/PrivateFrameworks/CoreADI.framework/adid
+85892     1   1632 /usr/sbin/cfprefsd
+85893     1   2336 /usr/libexec/keybagd
+85894     1   3328 /usr/sbin/spindump
+85895     1   6720 /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/managedcorespotlightd
+85896     1   1536 /usr/sbin/cfprefsd
+85897     1   2768 /usr/libexec/usermanagerd
+85898     1   1504 /usr/libexec/logd_helper
+85899     1   1904 /usr/libexec/online-auth-agent
+85900     1   1664 /usr/libexec/applekeystored
+85901     1   2240 /System/Library/PrivateFrameworks/GeoServices.framework/geodMachServiceBridge
+85902     1   1488 /usr/libexec/hidd
+85903     1   1760 /System/Library/CoreServices/liquiddetectiond.app/liquiddetectiond
+85904     1   2096 /System/Library/PrivateFrameworks/CacheDelete.framework/deleted_helper
+85905     1   2528 /usr/libexec/sysmond
+85906     1   1504 /usr/libexec/smd
+85907     1   1520 /usr/libexec/seputil
+85910     1   3808 /usr/libexec/secinitd
+85911     1   2880 /usr/libexec/trustdFileHelper
+85912     1   2976 /usr/libexec/containermanagerd_system
+85913     1   4208 /usr/libexec/gamecontrolleragentd
+85914     1   3872 /System/Library/PrivateFrameworks/CloudTelemetry.framework/Versions/A/XPCServices/CloudTelemetryService.xpc/Contents/MacOS/CloudTelemetryService
+85915     1   5136 /System/Library/PrivateFrameworks/MobileAssetDaemon.framework/Versions/A/XPCServices/com.apple.MobileAsset.DownloadService.Builtin.xpc/Contents/MacOS/com.apple.MobileAsset.DownloadService.Builtin
+85916     1   6784 /System/Library/PrivateFrameworks/ReplicatorCore.framework/Support/replicatord
+85917     1   6416 /System/Library/PrivateFrameworks/PhotoLibraryServices.framework/Versions/A/Support/photolibraryd
+85919     1   4592 /System/Library/CoreServices/ScopedBookmarkAgent
+85922     1   1776 /System/Library/Frameworks/NetFS.framework/Versions/A/XPCServices/PlugInLibraryService.xpc/Contents/MacOS/PlugInLibraryService
+85923     1   5712 /System/Library/PrivateFrameworks/GeoServices.framework/Versions/A/XPCServices/com.apple.geod.xpc/Contents/MacOS/com.apple.geod
+85924     1   3632 /usr/libexec/secinitd
+85925     1   3632 /usr/libexec/secinitd
+85926     1   1920 /usr/sbin/cfprefsd
+85927     1   1920 /usr/sbin/cfprefsd
+85928     1   3920 /usr/libexec/trustd
+85929     1   5184 /usr/libexec/trustd
+85930     1   2848 /usr/libexec/containermanagerd
+85931     1   2848 /usr/libexec/containermanagerd
+85939     1   3824 /System/Library/PrivateFrameworks/CoreThreadCommissionerService.framework/CoreThreadCommissionerServiced
+85964     1   6160 /usr/libexec/neagent
+85971     1   4416 /System/Library/PrivateFrameworks/TelephonyUtilities.framework/XPCServices/com.apple.FaceTime.FTConversationService.xpc/Contents/MacOS/com.apple.FaceTime.FTConversationService
+85977     1   5920 /System/Library/PrivateFrameworks/ContinuousDialogManagerService.framework/assistant_cdmd
+85978     1   4528 /System/Library/Frameworks/Speech.framework/Versions/A/XPCServices/localspeechrecognition.xpc/Contents/MacOS/localspeechrecognition
+85979     1   6128 /System/Library/PrivateFrameworks/SiriTTSService.framework/sirittsd
+85981     1   6560 /System/Library/PrivateFrameworks/ScreenTimeCore.framework/Versions/A/ScreenTimeAgent
+85982     1   7616 /System/Library/PrivateFrameworks/CoreParsec.framework/parsecd
+85983     1   7392 /System/Library/PrivateFrameworks/iTunesCloud.framework/Support/itunescloudd
+85986     1   4816 /System/Library/Frameworks/AudioToolbox.framework/AudioComponentRegistrar
+85988     1   3760 /System/Library/PrivateFrameworks/EcosystemAnalytics.framework/Support/ecosystemanalyticsd
+85989     1   4896 /usr/libexec/swtransparencyd
+85993     1   4144 /System/Library/PrivateFrameworks/CoreParsec.framework/parsec-fbf
+85996     1   5088 /System/Library/PrivateFrameworks/TrialServer.framework/Versions/A/XPCServices/TrialArchivingService.xpc/Contents/MacOS/TrialArchivingService
+85997     1   4064 /System/Library/PrivateFrameworks/ProtectedCloudStorage.framework/Helpers/ProtectedCloudKeySyncing
+86006     1   4912 /System/Library/Frameworks/ExtensionFoundation.framework/Versions/A/XPCServices/extensionkitservice.xpc/Contents/MacOS/extensionkitservice
+86012     1   4896 /System/Library/PrivateFrameworks/CascadeSets.framework/Versions/A/XPCServices/SetStoreUpdateService.xpc/Contents/MacOS/SetStoreUpdateService
+86013     1   5312 /System/Library/PrivateFrameworks/MobileAccessoryUpdater.framework/Support/accessoryupdaterd
+86014     1   3824 /System/Library/PrivateFrameworks/CloudTelemetry.framework/Versions/A/XPCServices/CloudTelemetryService.xpc/Contents/MacOS/CloudTelemetryService
+86017     1   3392 /System/Library/PrivateFrameworks/AssetCacheServices.framework/Versions/A/XPCServices/AssetCacheLocatorService.xpc/Contents/MacOS/AssetCacheLocatorService
+86025     1   7680 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+86027     1   7680 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+86028     1   3888 /System/Library/PrivateFrameworks/CloudTelemetry.framework/Versions/A/XPCServices/CloudTelemetryService.xpc/Contents/MacOS/CloudTelemetryService
+86042     1   4176 /usr/libexec/pkd
+86044     1   3184 /usr/libexec/containermanagerd
+86063     1   5936 /System/Library/PrivateFrameworks/CommunicationTrust.framework/Support/communicationtrustd
+86075     1   3744 /usr/libexec/trustd
+86082     1   3904 /System/Library/PrivateFrameworks/MobileSoftwareUpdate.framework/Support/softwareupdated
+86083     1   4000 /System/Library/PrivateFrameworks/IntelligenceFlowRuntime.framework/Versions/A/intelligenceflowd
+86098     1    432 /usr/libexec/dirhelper
+86105     1   3344 /System/Library/PrivateFrameworks/MobileSoftwareUpdate.framework/Versions/A/XPCServices/com.apple.MobileSoftwareUpdate.CleanupPreparePathService.xpc/Contents/MacOS/com.apple.MobileSoftwareUpdate.CleanupPreparePathService
+86133     1   4624 /usr/libexec/fskitd
+86139     1   3456 /usr/libexec/findmybeaconingd
+86146     1   4352 /System/Library/PrivateFrameworks/XprotectFramework.framework/Versions/A/XPCServices/XprotectService.xpc/Contents/MacOS/XprotectService
+86148     1   2320 /System/Library/CoreServices/ReportCrash
+86161     1   1536 /System/Library/PrivateFrameworks/CoreSymbolication.framework/coresymbolicationd
+86182     1   4784 /System/Library/PrivateFrameworks/Ecosystem.framework/Support/ecosystemd
+86195     1   7152 /System/Library/PrivateFrameworks/ContactsDonation.framework/Versions/A/Support/contactsdonationagent
+86201     1   9312 /usr/libexec/GamePolicyAgent
+86202     1   1808 /System/Library/Frameworks/NetFS.framework/Versions/A/XPCServices/PlugInLibraryService.xpc/Contents/MacOS/PlugInLibraryService
+86204     1   4256 /System/Library/PrivateFrameworks/ContextKit.framework/Versions/A/XPCServices/ContextService.xpc/Contents/MacOS/ContextService
+86557     1   7456 /System/Library/PrivateFrameworks/SiriAnalytics.framework/Versions/A/XPCServices/SAExtensionOrchestrator.xpc/Contents/MacOS/SAExtensionOrchestrator
+86563     1   6992 /System/Library/Frameworks/ExtensionFoundation.framework/Versions/A/XPCServices/extensionkitservice.xpc/Contents/MacOS/extensionkitservice
+86564     1   6208 /System/Library/ExtensionKit/Extensions/BiomeSELFIngestor.appex/Contents/MacOS/BiomeSELFIngestor
+86566     1   6320 /System/Library/ExtensionKit/Extensions/IFTranscriptSELFIngestor.appex/Contents/MacOS/IFTranscriptSELFIngestor
+86571     1   6400 /System/Library/ExtensionKit/Extensions/IFTelemetrySELFIngestor.appex/Contents/MacOS/IFTelemetrySELFIngestor
+86573     1   6576 /System/Library/ExtensionKit/Extensions/GMSSELFIngestor.appex/Contents/MacOS/GMSSELFIngestor
+86661     1   4480 /usr/libexec/inputanalyticsd
+86717     1   5088 /System/Library/PrivateFrameworks/IntelligencePlatformCore.framework/Versions/A/intelligenceplatformd
+86732     1   6672 /System/Library/Frameworks/ExtensionFoundation.framework/Versions/A/XPCServices/extensionkitservice.xpc/Contents/MacOS/extensionkitservice
+86733     1   7248 /System/Library/ExtensionKit/Extensions/AudiovisualThumbnailExtension.appex/Contents/MacOS/AudiovisualThumbnailExtension
+86734     1  12288 /System/Library/ExtensionKit/Extensions/TextThumbnailExtension.appex/Contents/MacOS/TextThumbnailExtension
+86736     1   7792 /System/Library/Frameworks/AudioToolbox.framework/XPCServices/com.apple.audio.SandboxHelper.xpc/Contents/MacOS/com.apple.audio.SandboxHelper
+86737     1  10560 /System/Library/PrivateFrameworks/AppStoreDaemon.framework/Support/appstoreagent
+86738     1   3120 /System/Library/PrivateFrameworks/InstallCoordination.framework/Support/installcoordinationd
+86739     1   2832 /System/Library/PrivateFrameworks/AppStoreDaemon.framework/Versions/A/XPCServices/com.apple.AppStoreDaemon.StorePrivilegedODRService.xpc/Contents/MacOS/com.apple.AppStoreDaemon.StorePrivilegedODRService
+86740     1   9040 /System/Library/PrivateFrameworks/AppleMediaServicesUI.framework/amsengagementd
+86741     1   7072 /usr/libexec/promotedcontentd
+86746     1   2592 /usr/libexec/fairplaydeviceidentityd
+87252     1   7520 /System/Library/Frameworks/ExtensionFoundation.framework/Versions/A/XPCServices/extensionkitservice.xpc/Contents/MacOS/extensionkitservice
+87430     1  34528 /System/Applications/Utilities/Activity Monitor.app/Contents/MacOS/Activity Monitor
+87446     1   2688 /System/Library/Frameworks/ColorSync.framework/Support/colorsync.useragent
+87447     1   6384 /System/Library/PrivateFrameworks/IntelligencePlatformCompute.framework/Versions/A/XPCServices/IntelligencePlatformComputeService.xpc/Contents/MacOS/IntelligencePlatformComputeService
+87448     1   2368 /System/Library/PrivateFrameworks/AssetCacheServicesExtensions.framework/XPCServices/AssetCacheManagerService.xpc/Contents/MacOS/AssetCacheManagerService
+87449     1   1952 /System/Library/Frameworks/ColorSync.framework/Versions/A/XPCServices/com.apple.ColorSyncXPCAgent.xpc/Contents/MacOS/com.apple.ColorSyncXPCAgent
+87450     1   2608 /usr/libexec/colorsyncd
+87562     1   9760 /opt/homebrew/Cellar/agent-browser/0.42.0/libexec/lib/node_modules/agent-browser/bin/agent-browser-darwin-arm64
+87576 87562 110560 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing
+87588     1   6752 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+87590     1   6752 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+87594 87576  67040 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif GPU).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif GPU)
+87595 87576  52864 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+87600 87576  24992 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+87604     1   7184 /System/Library/PrivateFrameworks/XprotectFramework.framework/Versions/A/XPCServices/XProtectBridgeService.xpc/Contents/MacOS/XProtectBridgeService
+87605     1   4848 /System/Library/PrivateFrameworks/CloudTelemetry.framework/Versions/A/XPCServices/CloudTelemetryService.xpc/Contents/MacOS/CloudTelemetryService
+87609 87576  48880 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+87610 87576 118432 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+87611 87576  50080 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+87613 87576  43264 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+87618 87576  95536 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+87621     1   3616 /System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService
+87622     1   3136 /System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService
+87697 71627  30832 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+87875 87576 348048 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+88507     1  11552 /System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService
+88508     1  10928 /System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService
+88547     1  11552 /System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService
+88567     1   3616 /System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService
+89187     1   9312 /opt/homebrew/Cellar/agent-browser/0.42.0/libexec/lib/node_modules/agent-browser/bin/agent-browser-darwin-arm64
+89192 89187  98272 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing
+89196     1   6752 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+89200     1   6752 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+89206 89192  56736 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif GPU).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif GPU)
+89208 89192  54592 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+89209 89192  26592 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+89221 89192  54080 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+89222 89192 122144 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+89223 89192  57920 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+89285 89192  46400 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+89289     1   3792 /System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService
+89383     1   3632 /System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService
+89552 89192  32096 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+90438     1   2240 /System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService
+90440     1   3792 /System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService
+90482     1  13888 /usr/libexec/studentd
+90766     1   4368 /System/Library/PrivateFrameworks/NewDeviceOutreach.framework/ndoagent
+90767     1   4192 /usr/libexec/mobilerepaird
+90768     1   3600 /System/Library/PrivateFrameworks/AppleDeviceQuerySupport.framework/Versions/A/XPCServices/AppleDeviceQueryService.xpc/Contents/MacOS/AppleDeviceQueryService
+90769     1   3712 /usr/libexec/nfcd
+90779     1   3824 /System/Library/PrivateFrameworks/NearFieldPrivateServices.framework/Versions/A/XPCServices/NFStorageServer.xpc/Contents/MacOS/NFStorageServer
+92014 87576  38992 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+92017     1   7888 /System/Library/Frameworks/VideoToolbox.framework/Versions/A/XPCServices/VTEncoderXPCService.xpc/Contents/MacOS/VTEncoderXPCService
+92135     1   9696 /opt/homebrew/Cellar/agent-browser/0.42.0/libexec/lib/node_modules/agent-browser/bin/agent-browser-darwin-arm64
+92136 92135 104880 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing
+92138     1   6976 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+92144     1   6976 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+92156 92136  65008 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif GPU).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif GPU)
+92157 92136  53296 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+92215 92136  29920 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+92217     1  15552 /System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService
+92229 92136  67520 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+92240 92136 118464 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+92242 92136  75584 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+92244     1   7888 /System/Library/Frameworks/VideoToolbox.framework/Versions/A/XPCServices/VTEncoderXPCService.xpc/Contents/MacOS/VTEncoderXPCService
+92253 84391  59472 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+92255     1  11568 /System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService
+92277 92136  64528 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+92301 84391  41968 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+92304     1  10304 /System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService
+92331 92136  42112 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+92399 92136  42176 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+92540 84391  42240 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+93122     1   9152 /opt/homebrew/Cellar/agent-browser/0.42.0/libexec/lib/node_modules/agent-browser/bin/agent-browser-darwin-arm64
+93123 93122 119872 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing
+93127     1   6976 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+93132     1   6976 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/chrome_crashpad_handler
+93138 93123  66544 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif GPU).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif GPU)
+93139 93123  58144 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+93141 93123  33280 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif)
+93152 93123  76656 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+93158 93123 117824 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+93159 93123  83360 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+93162     1  14896 /System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService
+93163     1   3792 /System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService
+93164 93123  71360 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+93190 89192  48736 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+93201     1  11568 /System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService
+93243 93123  47104 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+93329 93123  47216 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+93351 87576  47024 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+93890 76603  50528 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+94473 71627  50528 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+95204 70074   6048 /opt/homebrew/bin/bash
+95332 76603  53568 /Users/mmcelvain/.agent-browser/browsers/chrome-157.0.8103.78/Google Chrome for Testing.app/Contents/Frameworks/Google Chrome for Testing Framework.framework/Versions/157.0.8103.78/Helpers/Google Chrome for Testing Helper (Aperitif Renderer).app/Contents/MacOS/Google Chrome for Testing Helper (Aperitif Renderer)
+95342     1   4016 /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/mdworker_shared
+95357     1  13200 /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/mdworker_shared
+95495 69086   5248 /opt/homebrew/bin/bash
+95547 68445   5248 /opt/homebrew/bin/bash
+95583 95495  45200 node
+95584 95495    864 /opt/homebrew/bin/bash
+95586 95584   1472 ugrep
+95590 95583 564560 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+95875 95547  43040 node
+95876 95547    864 /opt/homebrew/bin/bash
+95877 95547    480 tail
+95878 95876   1472 ugrep
+95884 95875 433424 /Users/mmcelvain/.local/share/fnm/node-versions/v24.22.2/installation/bin/node
+96212 94417   7168 /opt/homebrew/bin/bash
+96213 96212   1920 ps
+96214 95204     32 sleep
+83672 59178    976 /usr/bin/login
+83673 83672   1056 -bash
+83741 83673  10208 mm
+62078 59178    960 /usr/bin/login
+62079 62078   1040 -bash
+62126 62079    384 /bin/bash
+62131 62126    960 /opt/homebrew/Cellar/helix/25.07.1/libexec/bin/hx
+62132 62131   1024 /opt/homebrew/Cellar/marksman/2026-02-08/libexec/marksman
+67362 67351   1040 /opt/homebrew/bin/bash
+67363 67351   1040 /opt/homebrew/bin/bash
+67658 67649   1040 /opt/homebrew/bin/bash
+67490 67351   1056 /opt/homebrew/bin/bash
+67567 67490  54368 claude
+10449 10088   1024 /opt/homebrew/bin/bash
+10237 10088   1024 /opt/homebrew/bin/bash
+10238 10088   1024 /opt/homebrew/bin/bash
+10239 10088   1024 /opt/homebrew/bin/bash
+67661 67649   1040 /opt/homebrew/bin/bash
+68266 68259   1040 /opt/homebrew/bin/bash
+11386 11211   1024 /opt/homebrew/bin/bash
+11387 11211   1024 /opt/homebrew/bin/bash
+11388 11211   1680 /opt/homebrew/bin/bash
+94417 11388 306864 claude
+95603 94417   1712 caffeinate
+67827 67649   1072 /opt/homebrew/bin/bash
+67873 67827 125040 claude
+76569 67873   5232 /opt/homebrew/opt/node/bin/node
+76583 76569    976 /opt/homebrew/Cellar/node/26.13.1/bin/node
+76584 76569  10000 /opt/homebrew/Cellar/node/26.13.1/bin/node
+76595 76584   1872 /opt/homebrew/Cellar/node/26.13.1/bin/node
+94549 67873   1696 caffeinate
+68271 68259   1040 /opt/homebrew/bin/bash
+68544 68533   1040 /opt/homebrew/bin/bash
+68329 68259   1072 /opt/homebrew/bin/bash
+68445 68329 237600 claude
+79247 68445   7872 /opt/homebrew/opt/node/bin/node
+79264 79247   7872 /opt/homebrew/Cellar/node/26.13.1/bin/node
+79265 79247   9392 /opt/homebrew/Cellar/node/26.13.1/bin/node
+79272 79265   1856 /opt/homebrew/Cellar/node/26.13.1/bin/node
+95184 68445   1712 caffeinate
+68545 68533   1040 /opt/homebrew/bin/bash
+68896 68892   1040 /opt/homebrew/bin/bash
+68638 68533   1072 /opt/homebrew/bin/bash
+68753 68638  83488 claude
+95239 68753   1712 caffeinate
+68904 68892   1040 /opt/homebrew/bin/bash
+69172 69165   1040 /opt/homebrew/bin/bash
+68979 68892   1072 /opt/homebrew/bin/bash
+69086 68979 172352 claude
+80263 69086   6336 /opt/homebrew/opt/node/bin/node
+80282 80263    976 /opt/homebrew/Cellar/node/26.13.1/bin/node
+80284 80263   9120 /opt/homebrew/Cellar/node/26.13.1/bin/node
+80306 80284   1856 /opt/homebrew/Cellar/node/26.13.1/bin/node
+95383 69086   1712 caffeinate
+69177 69165   1040 /opt/homebrew/bin/bash
+69528 69517   1040 /opt/homebrew/bin/bash
+69340 69165   1072 /opt/homebrew/bin/bash
+69393 69340 257168 claude
+95483 69393   1712 caffeinate
+69529 69517   1040 /opt/homebrew/bin/bash
+69886 69871   1040 /opt/homebrew/bin/bash
+69609 69517   1072 /opt/homebrew/bin/bash
+69729 69609 213824 claude
+95556 69729   1712 caffeinate
+69887 69871   1040 /opt/homebrew/bin/bash
+94148 59178   6864 /usr/bin/login
+94149 94148   6400 -bash
+94328 94149  15632 zellij
+69940 69871   1072 /opt/homebrew/bin/bash
+70074 69940 201088 claude
+95834 70074   1712 caffeinate
