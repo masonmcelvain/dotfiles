@@ -6,6 +6,8 @@ func TestParse(t *testing.T) {
 	cases := map[string]Target{
 		"US-1234": {Kind: Issue, Key: "US-1234"},
 		"us-1234": {Kind: Issue, Key: "US-1234"},
+		"us1234":  {Kind: Issue, Key: "US-1234"},
+		"US4600":  {Kind: Issue, Key: "US-4600"},
 		"https://acme.atlassian.net/browse/US-1234":                                         {Kind: Issue, Key: "US-1234"},
 		"https://acme.atlassian.net/jira/software/projects/US/boards/1?selectedIssue=US-12": {Kind: Issue, Key: "US-12"},
 		"https://bitbucket.org/acme/storefront/pull-requests/42/diff":                       {Kind: PR, Repo: "acme/storefront", Num: 42},

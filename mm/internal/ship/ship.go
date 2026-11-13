@@ -48,13 +48,16 @@ type Target struct {
 
 var (
 	keyRE = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9]+-\d+$`)
+	// A key typed without its dash, us4600. Only a letters-only project
+	// prefix, since with digits in it there's no telling where it ends.
+	bareKeyRE = regexp.MustCompile(`^([A-Za-z]{2,})(\d+)$`)
 	// A Jira issue link: /browse/KEY, or a board or search with the issue
 	// open in its side panel (?selectedIssue=KEY).
 	jiraRE = regexp.MustCompile(`^https://[^/]+\.atlassian\.net\S*?(?:/browse/|[?&]selectedIssue=)([A-Za-z][A-Za-z0-9]+-\d+)\b`)
 	prRE   = regexp.MustCompile(`^https://bitbucket\.org/([^/]+/[^/]+)/pull-requests/(\d+)`)
 )
 
-// Parse reads a target: a Jira issue key or link, a Bitbucket PR link or
+// Parse reads a target: a Jira issue key (US-1234, us-1234 or us1234) or link, a Bitbucket PR link or
 // number (with or without #), or anything else as a task description.
 // Anything with a space in it is a task, so a link followed by more words
 // never parses as the link alone.
@@ -65,6 +68,9 @@ func Parse(arg string) Target {
 	}
 	if keyRE.MatchString(arg) {
 		return Target{Kind: Issue, Key: strings.ToUpper(arg)}
+	}
+	if m := bareKeyRE.FindStringSubmatch(arg); m != nil {
+		return Target{Kind: Issue, Key: strings.ToUpper(m[1]) + "-" + m[2]}
 	}
 	if m := jiraRE.FindStringSubmatch(arg); m != nil {
 		return Target{Kind: Issue, Key: strings.ToUpper(m[1])}
